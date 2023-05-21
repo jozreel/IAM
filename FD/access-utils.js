@@ -112,7 +112,7 @@ const access_utils_factory = () => {
                     } else {
                         domain =  `${req.protocol}://${hostname}`
                     }
-                    const keydomain = has_access.payload.domain || ['http://localhost','http://localhost:3000',  'http://192.168.1.110', 'http://localhost:30001']; //remove this
+                    const keydomain = has_access.payload.domain || ['http://localhost','http://localhost:3000',  'http://192.168.1.110', 'http://localhost:3001']; //remove this
                     console.log(domain, keydomain);
                     if(has_access && keydomain.indexOf(domain) >=0)  {
                         req.appid =  has_access.payload.app
