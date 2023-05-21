@@ -56,6 +56,7 @@ const access_utils_factory = () => {
             const auth_header =  req.headers.authorization;
            
             const auth_header_parts =  auth_header.split(' ');
+            console.log(auth_header_parts);
             if(auth_header_parts.length <= 1) {
                
                 res.status(401);
