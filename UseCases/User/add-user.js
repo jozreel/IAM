@@ -54,7 +54,8 @@ const add_user_use_case = ({user_db, ad_utils, sms_utils}) => {
             user.encryptPassword(user.getPassword());
             const result = await user_db.insert_user({
                 email: user.getEmail(),
-                fullname: user.getFullName(),
+                firstname: user.getFirstName(),
+                lastname: user.getLastName(),
                 password: user.getPassword(),
                 lastpasswords: user.getLastPasswords(),
                 lastpasswordchangedate: user.getLastPasswordChangeDate(),

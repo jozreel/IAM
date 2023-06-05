@@ -25,7 +25,8 @@ const update_user_usecase = ({user_db}) => {
             }
             const updates = await user_db.update_user({
                 id,
-                fullname: user.getFullName(),
+                firstname: user.getFirstName(),
+                lastname: user.getLastName(),
                 photo: user.getPhoto(),
                 password: user.getPassword(),
                 lastpasswords: user.getLastPasswords(),

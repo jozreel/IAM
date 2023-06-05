@@ -4,7 +4,8 @@ const initialization_vector = "A08IFQ5zdCnIqDZA";
 const createUserFactory = ({ createUTCDate, verify_token}) => {
     return ({
         email,
-        fullname,
+        firstname,
+        lastname,
         password,
         lastpasswords = [],
         lastpasswordchangedate,
@@ -27,8 +28,11 @@ const createUserFactory = ({ createUTCDate, verify_token}) => {
         if (!emailre.test(email)) {
             throw new Error('Invalid email address');
         }
-        if (!fullname) {
-            throw new Error('Please provide the user\'s full name');
+        if (!firstname) {
+            throw new Error('Please provide the user\'s first name');
+        }
+        if (!lastname) {
+            throw new Error('Please provide the user\'s last name');
         }
         const telre = /^\+?1?([0-9]{3})?\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/
         if (!telre.test(telephone)) {
@@ -53,7 +57,8 @@ const createUserFactory = ({ createUTCDate, verify_token}) => {
        
         return Object.freeze({
             getEmail: () =>email,
-            getFullName: ()=>fullname,
+            getFirstName: ()=>firstname,
+            getLastName: () => lastname,
             getPassword: ()=> password,
             getLastPasswords: () =>lastpasswords,
             getLastPasswordChangeDate:() => lastpasswordchangedate ? createUTCDate(lastpasswordchangedate) : null,
