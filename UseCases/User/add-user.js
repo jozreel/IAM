@@ -68,12 +68,14 @@ const add_user_use_case = ({user_db, ad_utils, sms_utils}) => {
                 lastcode: user.getLastCode(),
                 lastcodecreationtime: user.getLastCodeCreationTime()
             });
+            if(data.mfa) {
             try {
                 await sms_utils.SendSms(user.getTelephone(), `This message is comming from vepp. Your code is ${randcode}`)
 
             } catch (smserr) {
                 console.log(smserr);
             }
+           }
 
             return result;
            
