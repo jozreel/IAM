@@ -6,7 +6,9 @@ const get_auth_usecase = ({user_db, app_db, app_api_auth_midleware , auth_midlew
             console.log('ACCESS', access);
             if(!access) {
               const uid =  req.access.uid;
+              
               const user = await user_db.get_user(uid);
+              console.log(user, uid);
               if(user.status === -1) {
                   throw new RangeError('User not active');
               }
