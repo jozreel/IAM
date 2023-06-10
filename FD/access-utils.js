@@ -67,7 +67,7 @@ const access_utils_factory = () => {
             if(auth_type.toLowerCase() === 'bearer') {
                 const token = auth_header_parts[1].trim();
                 if(token !== '') {
-                    console.log(token);
+                   
                     const has_access = verify_token(login_secret, token);
                     
                     req.access = has_access.payload;
@@ -113,7 +113,7 @@ const access_utils_factory = () => {
                         domain =  `${req.protocol}://${hostname}`
                     }
                     const keydomain = has_access.payload.domain || ['http://localhost','http://localhost:3000',  'http://192.168.1.110', 'http://localhost:3001','https://veppz.com']; //remove this
-                    console.log(domain, keydomain);
+                  
                     if(has_access && keydomain.indexOf(domain) >=0)  {
                         req.appid =  has_access.payload.app
                     next();
