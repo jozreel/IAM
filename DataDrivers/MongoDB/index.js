@@ -3,12 +3,21 @@ const ObjectID  =  require('mongodb').ObjectID;
 const url = process.env.DBURL;
 const dbname = process.env.DBNAME;
 const mongo_client =  new MongoClient(url, {useNewUrlParser: true, useUnifiedTopology: true});
-
+let cachedb;
 const makeDB = async () => {
-    if(!mongo_client.isConnected())  {
-        await mongo_client.connect();
+
+    try {
+        if (!cachedb) {
+            const dc = await dbclient.connect();
+        }
+         const db = dbclient.db(dbname);
+         cachedb =  db;
+         return db;
+
+    } catch (ex) {
+        console.log(ex);
+        throw ex;
     }
-    return mongo_client.db(dbname);
 }
 const ID = (id) => {
     if(typeof id !== 'string') {
