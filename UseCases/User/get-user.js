@@ -14,6 +14,7 @@ const get_user_usecase = ({user_db}) => {
             user.telephone = `${user.telephone.substring(0, user.telephone.length-7)}*****${user.telephone.substring(user.telephone.length-2)}`;
             return user;
         } catch (ex) {
+            console.log(ex);
             throw ex;
         }
     }
