@@ -4,7 +4,8 @@ const login_db = ({makeDB, ID}) => {
         try {
             const db = await makeDB();
             const result =  await db.collection(strings.LOGIN_COLLECION).insertOne(data);
-            return result.ops[0];
+            console.log(result);
+            return {_id: result.insertedId, ...data};
 
         } catch (ex) {
             throw ex;

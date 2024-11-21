@@ -11,6 +11,7 @@ const add_login_usecase  =  ({login_db, user_db, ad_utils}) => {
             }
             const email = data.email.toLowerCase();
             const exist =  await user_db.find_by_email({email, password: true});
+            console.log(exist);
             //check if userstatus is enabled
             if(!exist) {
                 throw new Error('The user was not found');
