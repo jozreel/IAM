@@ -18,7 +18,7 @@ const GenerateCodeUseCase = ({user_db, sms_utils}) => {
                 lastmodifieddate: user.getLastModifiedDate()
             });
 
-            await sms_utils.SendSms(user.getTelephone(), `This message is comming from vepp. Your code is ${randcode}`)
+            await sms_utils.SendSmsLocal(user.getTelephone(), `This message is comming from vepp. Your code is ${randcode}`)
 
             return {
                 _id: id,
