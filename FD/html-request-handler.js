@@ -2,6 +2,16 @@
 const raw_request_handler = (controller) => {
     return  async (req, res) => {
         try {
+            const auth_header =  req.headers.authorization;
+            let token = '';
+            if(auth_header) {
+                const auth_header_parts =  auth_header.split(' ');
+                const auth_type = auth_header_parts[0].trim();
+                if(auth_type.toLowerCase() === 'bearer') {
+                    token = auth_header_parts[1].trim();
+                }
+            }
+
            
             const httpPayload = {
                 body: req.body,
@@ -13,6 +23,7 @@ const raw_request_handler = (controller) => {
                 access: req.access,
                 path: req.path,
                 appid: req.appid,
+                token,
                 headers: {
                     'Content-Type': req.get('Content-Type'),
                     'Referer': req.get('referer'),

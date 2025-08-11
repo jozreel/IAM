@@ -21,8 +21,9 @@ const update_app = ({app_db, user_db, generate_unique_key}) => {
                 throw new RangeError('Application does not exist');
             }
             const app =  make_application({...exist, ...changes});
-            await check_roles(exist.roles, app.getRoles(), exist._id.toString());
+           
             if(app.getRoles().length !== 0) {
+                await check_roles(exist.roles, app.getRoles(), exist._id.toString());
                 const roles = app.getRoles();
                 for(let role of roles) {
                     if(!role.roleid) {

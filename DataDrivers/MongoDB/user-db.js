@@ -97,6 +97,16 @@ const user_db_factory =  ({makeDB, ID}) => {
             throw ex
         }
     }
+
+    const check_user_access = async (appid, accesscode) => {
+        try {
+            const app =  application
+
+
+        } catch (ex) {
+            throw ex;
+        }
+    }
     return Object.freeze({
         insert_user,
         update_user,

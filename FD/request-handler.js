@@ -4,6 +4,7 @@ const http_request_handler = (controller) => {
         try {
             const httpPayload = {
                 body: req.body,
+                data: req.body,
                 query: req.query,
                 file: req.file,
                 params: req.params,

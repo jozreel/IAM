@@ -47,6 +47,34 @@ const access_utils_factory = () => {
 
     }
 
+   
+    const decode_token = (secreto, token) => {
+
+        try {
+            const token_parts = token.split('.');
+            if(token_parts.length === 3) {
+                const header =  token_parts[0];
+                const payload = token_parts[1];
+                const signature =  token_parts[2];
+                const data = `${header}.${payload}`;
+                const hmac =  crypto.createHmac('sha256', secreto);
+                hmac.update(data);
+                const calculated_signature = encodeURIComponent(hmac.digest('base64'));
+                if(calculated_signature !== signature) {
+                    throw new Error('Invalid access token');
+                }
+                const headdata = JSON.parse(Buffer.from(decodeURIComponent(header), 'base64').toString('ascii'));
+                const payloaddata =  JSON.parse(Buffer.from(decodeURIComponent(payload), 'base64').toString('ascii'));
+                return ({payload: payloaddata, header: headdata, signature});
+            }
+
+        } catch (ex) {
+            throw ex;
+        }
+
+    }
+
+
     const auth_midleware = (req, res, next) => {
         try {
             if(req.method === 'OPTIONS') {
@@ -105,6 +133,7 @@ const access_utils_factory = () => {
             }
             if(token !== '') {
                     let domain;
+                    //possibly check in database to see registered apps and api keys
                     const has_access = verify_token(secret, token);
                     if(referer) {
                     const refurl = new URL(referer);
