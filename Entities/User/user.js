@@ -2,6 +2,11 @@ const crypto = require('crypto');
 const encryption_key = "b8z9VFNtbQQM0yBODcDb1lrOtVZH3D3x";
 const initialization_vector = "A08IFQ5zdCnIqDZA";
 const createUserFactory = ({ createUTCDate, verify_token}) => {
+    const maxemail =  80;
+    const maf_fiorstname = 80;
+    const max_lastname = 80;
+    const maxpassword =  16;
+    const max_tel = 11;
     return ({
         email,
         firstname,
@@ -18,7 +23,8 @@ const createUserFactory = ({ createUTCDate, verify_token}) => {
         lastcodecreationtime,
         resetcode,
         resetcodecreationtime,
-        createddate = createUTCDate()
+        createddate =createUTCDate(),
+        lastmodifieddate
     } = {}) => {
         if (!email) {
             throw new Error('Please provide an email')
@@ -37,6 +43,23 @@ const createUserFactory = ({ createUTCDate, verify_token}) => {
         const telre = /^\+?1?([0-9]{3})?\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/
         if (!telre.test(telephone)) {
             throw new Error('Invalid telephone number');
+        }
+        if(email && email.length > maxemail) {
+            throw new Exception(`Email max lenght is ${maxemail}`);
+        }
+        if(firstname && firstname.length > maf_fiorstname) {
+            throw new Error(`First nam has a max length of ${maf_fiorstname}`);
+        }
+        if(lastname && firstname.length > max_lastname) {
+            throw new Error(`Lastname has a max length of ${max_lastname}`)
+        }
+
+        if(password && password.length >   maxpassword) {
+            throw new Error(`Password has a max length of ${maxpassword}`);
+        }
+
+        if(telephone && telephone.length > max_tel) {
+            throw new Error(`Telephone has a max length of ${max_tel}`);
         }
  
         const encrypt_password = (text) => {
@@ -64,8 +87,8 @@ const createUserFactory = ({ createUTCDate, verify_token}) => {
             getLastPasswordChangeDate:() => lastpasswordchangedate ? createUTCDate(lastpasswordchangedate) : null,
             getPhoto: () => photo,
             getApplications: () => applications,
-            getLastModifiedDate: () => createUTCDate(),
-            getCreatedDate: () => createddate,
+            getLastModifiedDate: () => lastmodifieddate ? lastmodifieddate : createUTCDate(),
+            getCreatedDate: () => createddate ? createddate : createUTCDate(),
             getStatus: () => status,
             setPassword: val => password = val,
             setLastPasswords: (val) => lastpasswords = val,
@@ -80,7 +103,23 @@ const createUserFactory = ({ createUTCDate, verify_token}) => {
             getLastCodeCreationTime:()=>lastcodecreationtime,
             createLastCodeCreatedTime:() => lastcodecreationtime = createUTCDate(),
             getResetCode: ()=> resetcode,
-            getResetCodeCreationTime: () => resetcodecreationtime = createUTCDate()
+            getResetCodeCreationTime: () => resetcodecreationtime = createUTCDate(),
+            ToJson: ()=>({
+                email,
+                firstname,
+                lastname,
+                password: encrypt_password(password),
+                lastpasswords: lastpasswords.map(o => encrypt_password(p)),
+                lastpasswordchangedate,
+                photo,
+                applications,
+                createddate,
+                lastmodifieddate,
+                status,
+                ADUser,
+                lastcode,
+                lastcodecreationtime
+            })
         });
 
     }

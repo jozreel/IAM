@@ -1,5 +1,7 @@
 const secret = require('../../KEYS').app_secret;
 const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyToken}) => {
+    const MaxAppNmameLength = 120;
+    const MaxDomainLength = 120;
     return ({
         applicationname,
         apikey,
@@ -8,13 +10,21 @@ const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyToken})
         screens= [],
         domain,
         clientid,
-        createddate = createUTCDate()
+        createddate,
+        lastmodifieddate = createUTCDate()
     }={}) => {
         if(!applicationname) {
             throw new Error('Invalid application please provide a name');
         }
         if(!domain) {
             throw new Error('Please provide a domain for this application');
+        }
+        if(applicationname && applicationname.length > MaxAppNmameLength) {
+            throw new Error("App name has a max lengrh of "+MaxAppNmameLength);
+        }
+        if(domain && domain.length > MaxDomainLength) {
+
+            throw new Error('Dommain has a max length od '+domain);
         }
         
         return Object.freeze({
@@ -27,13 +37,24 @@ const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyToken})
             disable: () => disabled =  true,
             enable: () => disable = false,
             getScreens: () => screens,
-            getCreatedDate: () =>createddate,
-            getLastModifiedDate: () => createUTCDate(),
+            getCreatedDate: () =>createddate ? createddate : createUTCDate(),
+            getLastModifiedDate: () => lastmodifieddate ? lastmodifieddate : createUTCDate(),
             generateKey: (payload)=>generateAPIKey(payload, secret),
             setClientId: (cid) => clientid =  cid,
             setApiKey: (val) => apikey =  val,
             verufyToken: (token) => verifyToken(token),
-            setRoles: (val) => roles =  val
+            setRoles: (val) => roles =  val,
+            ToJson: () => ({
+                applicationname: applicationname,
+                apikey,
+                disabled,
+                roles,
+                screens,
+                domain,
+                clientid,
+                createddate,
+                lastmodifieddate
+            })
         });
     }
 }
