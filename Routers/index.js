@@ -5,7 +5,6 @@ module.exports = [
     {path: '/api/auth', module: require('./auth-route')},
     {path: '/api/oauth', module: require('./oauth-router')},
     {path: '/api/authorize', module: require('./authorize-router')},
-    {path: '/api/role', module: require('./role-router')}
-
-
+    {path: '/api/role', module: require('./role-router')},
+    {path: '/api/access', module: require('./access-router')}
 ]
