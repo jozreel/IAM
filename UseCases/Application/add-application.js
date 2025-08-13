@@ -2,7 +2,7 @@ const make_application = require('../../Entities/Application');
 const add_application = ({app_db}) => {
     return async (data) => {
         try {
-
+            
             const app =  make_application(data);
             if(app.getRoles().length !== 0) {
                 const roles = app.getRoles();

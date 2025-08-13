@@ -46,8 +46,8 @@ const autoID = async (sequence, filter, collection='counters') => {
 const user_db =  require('./user-db');
 const app_db =  require('./application-db');
 const login_db =  require('./login-db');
-const { default: role_db_factory } = require('./role-db');
-const { default: access_db_factory } = require('./access-db');
+const role_db_factory = require('./role-db');
+const access_db_factory  = require('./access-db');
 
 
 module.exports =  Object.freeze({

@@ -10,9 +10,10 @@ const role_db_factory = ({makeDB, ID}) => {
             roledata.id = crypto.randomUUID();                          
             const db =  await makeDB();
             const ud =  await db.collection(strings.APP_COLLECTON).updateOne({_id} , {
-                $push: {...roledata}
+                $push: {roles: {...roledata}}
             });
-            if(ud.matched > 0) {
+            console.log(ud);
+            if(ud.matchedCount > 0 && ud.modifiedCount !==0) {
                 return roledata;
             } else  {
                 throw new Error('Could not insert the role');
@@ -69,6 +70,52 @@ const role_db_factory = ({makeDB, ID}) => {
         }
     }
 
+    const GetRoleByName = async (rolename) => {
+        try {
+            
+                    
+            const db = await makeDB();
+             const regex = new RegExp(rolename, "ig");
+            const accs =  db.collection(strings.APP_COLLECTON).aggregate([{
+                $match: {"roles.name": {$regex: regex}}}, 
+                {$project: {roles: {$filter: {
+                    input: "$roles",
+                    as: "role",
+                    cond: {$regexMatch: {input: "$$role.name", regex}}}}}},{$unwind: "$roles"},
+                {$replaceRoot: { newRoot: "$roles" } }
+            ]);
+            const arr =  await accs.toArray();
+            const rl = arr[0];
+            if(rl) {
+               
+                const acclst = await db.collection(strings.APP_COLLECTON).findOne({_id: ID(rl.applicationid)}, {projection: {screens: 1}});
+                if(acclst && rl.access) {
+                    if(acclst.screens) {
+                        const acc_list = [];
+                        const access_mapp =  new Map();
+                        for(let a of acclst.screens) {
+                            access_mapp.set(a.id, a);
+                        }
+                        for(let a of rl.access) {
+                            const full_access =  access_mapp.get(a);
+                            access_obj =  access_model(full_access)
+                            acc_list.push(access_obj);
+                        }
+                       
+
+                   }
+                }
+                const res = build_role(rl);
+                return res;
+            }
+           
+
+        } catch(ex) {
+            throw ex;
+        }
+    }
+
+
 
     const UpdateAppRole = async (role) => {
         try {
@@ -113,7 +160,7 @@ const role_db_factory = ({makeDB, ID}) => {
             const roles = [];
             const _id =  ID(appid);
 
-            const res =  await db.collection(strings.APP_COLLECTON).findOne({id}, {projection: {roles: 1, access: 1, id: 0}});
+            const res =  await db.collection(strings.APP_COLLECTON).findOne({_id}, {projection: {roles: 1, access: 1}});
             const accessMap = new Map();
             if(res.access) {
                 for(let ac of res.access) {
@@ -227,7 +274,8 @@ const role_db_factory = ({makeDB, ID}) => {
         GetAppRoles,
         AddAccessToRole,
         RemoveAccessFromRole,
-        CheckRoleUserConstraint
+        CheckRoleUserConstraint,
+        GetRoleByName
     });
 
 

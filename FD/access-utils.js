@@ -118,6 +118,7 @@ const access_utils_factory = () => {
 
     const app_api_auth_midleware = (req, res, next) => {
         try {
+            
             const referer = req.get('referer');
             const hostname =  req.hostname;
             if(req.method === 'OPTIONS') {
@@ -125,7 +126,7 @@ const access_utils_factory = () => {
                 return;
             }
             const token =  req.headers.api;
-           
+            console.log(token, referer, hostname);
             if(!token || (!referer && !hostname)) {
                 res.status(403);
                 res.end('');
@@ -135,14 +136,16 @@ const access_utils_factory = () => {
                     let domain;
                     //possibly check in database to see registered apps and api keys
                     const has_access = verify_token(secret, token);
-                    if(referer) {
-                    const refurl = new URL(referer);
-                    domain =  `${refurl.protocol}//${refurl.host}`;
-                    } else {
-                        domain =  `${req.protocol}://${hostname}`
-                    }
-                    const keydomain = has_access.payload.domain || ['http://localhost','http://localhost:3000',  'http://192.168.1.110', 'http://localhost:3001','https://veppz.com']; //remove this
                   
+                    if(referer) {
+                        const refurl = new URL(referer);
+                        domain = rferurl.host //`${refurl.protocol}//${refurl.host}`;
+                    } else {
+                        domain =  hostname //`${req.protocol}://${hostname}`
+                    }
+                    has_access.payload.domain = 'localhost'; // for dev remove on deployment
+                    const keydomain = has_access.payload.domain || ['http://localhost','http://localhost:3000',  'http://192.168.1.110', 'http://localhost:3001','https://veppz.com']; //remove this
+                    console.log(keydomain, domain);
                     if(has_access && keydomain.indexOf(domain) >=0)  {
                         req.appid =  has_access.payload.app
                     next();

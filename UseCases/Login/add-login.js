@@ -3,6 +3,7 @@ const make_user = require('../../Entities/User');
 const add_login_usecase  =  ({login_db, user_db, ad_utils}) => {
     return async (data) => {
         try {
+            console.log(data);
             if(!data.email) {
                 throw new Error('Invalid login');
             }

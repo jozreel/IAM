@@ -5,6 +5,7 @@ const AddRoleController = ({add_role}) => {
             const res =  await add_role(req);
             return {
                 headers,
+                statusCode: 200,
                 body: res 
             }
 
