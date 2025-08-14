@@ -21,7 +21,7 @@ const http_request_handler = (controller) => {
                
             };
             const result = await controller(httpPayload);
-           
+             
             if(result.headers) {
                 res.set(result.headers)
             }
@@ -33,6 +33,7 @@ const http_request_handler = (controller) => {
 
             
             res.type('json');
+            
             res.status(result.statusCode)
             .send(result.body);
             }

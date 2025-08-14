@@ -4,11 +4,16 @@ const update_role = require("./update-role");
 const delete_role = require("./delete-role");
 const list_roles = require("./list-roles");
 const get_role = require("./get-role");
+const AddAccessToRole = require("./add-access-to-role");
+const RemoveAccessFromRole = require("./remove-access-from-role");
+
 
 module.exports = Object.freeze({
     AddRole: add_role({role_db}),
     UpdateRole: update_role({role_db}),
     DeleteRole: delete_role({role_db}),
     ListAppRoles: list_roles({role_db}),
-    GetRole: get_role({role_db})
+    GetRole: get_role({role_db}),
+    AddAccessToRole: AddAccessToRole({role_db}), 
+    RemoveAccessFromRole: RemoveAccessFromRole({role_db})
 });

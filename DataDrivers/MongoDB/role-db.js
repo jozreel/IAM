@@ -37,7 +37,7 @@ const role_db_factory = ({makeDB, ID}) => {
                 {$project: {roles: {$filter: {
                     input: "$roles",
                     as: "role",
-                    cond: {$eq: ["$$role.id", id]}}}}},{$unwind: "$roles"},
+                    cond: {$eq: ["$$role.id", roleid]}}}}},{$unwind: "$roles"},
                 {$replaceRoot: { newRoot: "$roles" } }
             ]);
             const arr =  await accs.toArray();
@@ -119,12 +119,12 @@ const role_db_factory = ({makeDB, ID}) => {
 
     const UpdateAppRole = async (role) => {
         try {
-            const id = ID(role.applicationid);
+            const _id = ID(role.applicationid);
             const db =  await makeDB();
             const upd = await db.collection(strings.APP_COLLECTON).updateOne({_id, "roles.id": role.id},{
                 $set: {"roles.$": role}
             });
-            if(upd?.matched >0) {
+            if(upd?.matchedCount > 0 && upd.updatedCount !==0) {
                 return role;
             } else {
                 throw new Error('Cannot iupdate this role');
@@ -142,8 +142,8 @@ const role_db_factory = ({makeDB, ID}) => {
             const rem =  await db.collection(strings.APP_COLLECTON).updateOne({_id, "roles.id": roleid}, {
                 $pull: {roles:  {id: roleid}}
             });
-            if(rem?.matched > 0) {
-                return {deteled: false}
+            if(rem?.matchedCount > 0 && rem.updatedCount !== 0) {
+                return {deteled: true}
             } else {
                 throw new Error("Could not delete the role");
             }
@@ -160,10 +160,10 @@ const role_db_factory = ({makeDB, ID}) => {
             const roles = [];
             const _id =  ID(appid);
 
-            const res =  await db.collection(strings.APP_COLLECTON).findOne({_id}, {projection: {roles: 1, access: 1}});
+            const res =  await db.collection(strings.APP_COLLECTON).findOne({_id}, {projection: {roles: 1, screens: 1}});
             const accessMap = new Map();
-            if(res.access) {
-                for(let ac of res.access) {
+            if(res.screens) {
+                for(let ac of res.screens) {
                     accessMap.set(ac.id, ac);
                 }
             }
@@ -178,17 +178,20 @@ const role_db_factory = ({makeDB, ID}) => {
                     const rs =  build_role(d);
                     const js =  rs.ToJson();
                     const accesslist = [];
-                     if(d.access) {
-                        for(let ra of d.access) {
+                     if(d.screens) {
+                        for(let ra of d.screens) {
                             const acc_d =  accessMap.get(ra); 
+                            console.log(acc_d)
+                            if(acc_d) {
                             const access_obj = access_model(acc_d);       
                             accesslist.push(access_obj.ToJson());
+                            }
                         }
                         js.access =  accesslist;
                     }
                     roles.push({...js });
                 }
-                return res;
+                return roles;
             } else {
                 throw new Error("Unable to fetch role data");
             }
@@ -203,12 +206,16 @@ const role_db_factory = ({makeDB, ID}) => {
         try {
             const db =  await makeDB();
             const _id = ID(appid);
+            let mut =  {$push: {"roles.$.screens": access}};
+            if(typeof access === 'object' && typeof access.push !== 'undefined' ) {
+                mut =  {$push: {"roles.$.screens": {$each: access}}}
+            }
+            console.log(mut);
+            const upd = await db.collection(strings.APP_COLLECTON).updateOne({_id, "roles.id": roleid}, mut);
 
-            const upd = await db.collection(strings.APP_COLLECTON).updateOne({_id, "roles.id": roleid}, {
-                $push: {"roles.$": access}
-            });
 
-            if(upd.matched > 0) {
+
+            if(upd.matchedCount > 0 && upd.updatedCount !== 0) {
                 return true;
             } else {
                 throw new Error("Could not add access to role");
@@ -224,12 +231,15 @@ const role_db_factory = ({makeDB, ID}) => {
         try {
             const db =  await makeDB();
             const _id = ID(appid);
-
+            let md =  {$pull: {"roles.$.screens" : access}};
+            if(typeof access === 'object' && typeof access.push !== undefined) {
+                md = {$pull: {"roles.$.screens": {$each: access}}};
+            }
             const upd = await db.collection(strings.APP_COLLECTON).updateOne({_id, "roles.id": roleid}, {
-                $pull: {"roles.$": access}
+                md
             });
 
-            if(upd.matched > 0) {
+            if(upd.matchedCount > 0 && upd.updatedCount !== 0) {
                 return true;
             } else {
                 throw new Error("Could not delere access from role");
@@ -244,7 +254,9 @@ const role_db_factory = ({makeDB, ID}) => {
     const CheckRoleUserConstraint = async(id) => {
         try {
             const db = await makeDB();
-            const usr_role =  await db.collection(strings.USER_COLLECTION).find_one({"applications.roleid": id}, {projection: _id, applications: {$elemMatch: {roleid: id}}});
+        
+            const usr_role =  await db.collection(strings.USER_COLLECTION).findOne({"applications.roleid": id}, {projection: {applications: {$elemMatch: {roleid: id}}}});
+            console.log(usr_role);
             return usr_role;
 
         } catch (ex) {
@@ -257,7 +269,7 @@ const role_db_factory = ({makeDB, ID}) => {
             id: data.id,
             name: data.name,
             applicationid: data.applicationid,
-            access: data.access || [],
+            access: data.screens || [],
             createddate: data.createddate,
             lastmodifieddate: data.lastmodifieddate,
         });

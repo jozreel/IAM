@@ -14,10 +14,11 @@ const delete_role = ({role_db}) => {
             }
             const  res = await role_db.RemoveAppRole(id, exist.GetApplicationId());
             return {
-                deleted: exist.ToJaon(), ...res
+                deleted: exist.ToJson(), ...res
             };
 
         } catch (ex) {
+            console.log(ex)
             throw ex;
         }
     }

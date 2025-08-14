@@ -2,13 +2,18 @@ const make_access =  require('../../Entities/Access')
 const add_access = ({access_db}) => {
     return async (req) => {
         try {
+           
             const data = req.data;
-            data.code = await access_db.GetNextId("accesscodes", {appid: data.appid});
+            if(!data.appid) {
+                data.applicationid = req.appid;
+            }
+            data.id =  crypto.randomUUID();
+            data.code = await access_db.GetNextCode("accesscodes", {appid: data.applicationid});
             if(data.code < 100) {
                 data.code = 1000;
             }
             const access = make_access(data);
-            const exist = access_db.FindAccessBycode(access.GetCode());
+            const exist = await access_db.FindAccessBycode(access.GetCode());
             if(exist) {
                 throw new Error("Suplicate access code");
             }
@@ -17,6 +22,7 @@ const add_access = ({access_db}) => {
             return idata
 
         } catch(ex) {
+            console.log(ex);
             throw ex;
         }
     }

@@ -3,7 +3,7 @@
 const strings = require("../../strings");
 const make_access = require('../../Entities/Access');
 
-const access_db_factory = ({makeDB, ID, AutoID}) => {
+const access_db_factory = ({makeDB, ID, autoID}) => {
 
     const InsertAccess = async(accessdata) => {
         try {
@@ -20,20 +20,21 @@ const access_db_factory = ({makeDB, ID, AutoID}) => {
 
     }
 
-    const FindAccessBycode = async (code, appid) => {
+    const FindAccessBycode = async (code) => {
         try {
             const db = await makeDB();
-            const _id =  ID(appid);
+            //const _id =  ID(appid);
             const accs =  db.collection(strings.APP_COLLECTON).aggregate([{
-                $match: {_id}}, 
+                $match: {"access.code": code}}, 
                 {$project: {screens: {$filter: {
                     input: "$screens",
                     as: "screen",
                     cond: {$eq: ["$$screen.code", code]}}}}},
                 {$unwind: "$screens"},
-                {$addFields: {"screens.applicationid": "_id"}},
+                {$addFields: {"screens.applicationid": "$_id"}},
                 {$replaceRoot: { newRoot: "$screens" } }
             ]);
+            const arr = await accs.toArray();
             const accs_data =  arr[0];
             if(accs_data) {
                 const res = build_access(accs_data);
@@ -186,7 +187,7 @@ const access_db_factory = ({makeDB, ID, AutoID}) => {
         RemoveAppAccess,
         GetAllAppAccess, 
         CheckAccessRoleConstraint,
-        GetNextCode: AutoID
+        GetNextCode: autoID
     })
 
 }

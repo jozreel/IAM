@@ -1,9 +1,6 @@
 const {Router, json} =  require('express');
 const { request_handler } = require('../FD');
-const GetAccessController = require('../Controllers/Access/get-access-controiller');
-const PostAccessController = require('../Controllers/Access/post-access-controller');
-const PutAccessController = require('../Controllers/Access/put-access-controller');
-const DeleteAccesController = require('../Controllers/Access/delete-access-controller');
+const {GetAccessController, PostAccessController, PutAccessController, DeleteAccesController} =  require('../Controllers/Access');
 const access_router =  Router();
 
 access_router.get('/', request_handler(GetAccessController));

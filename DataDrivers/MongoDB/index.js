@@ -34,8 +34,10 @@ const autoID = async (sequence, filter, collection='counters') => {
             filter.counterid = sequence;
             query =  filter;
         }
+       
         const res =  await db.collection(collection).findOneAndUpdate(query, {$inc: {seq: 1}}, {upsert: true, returnOriginal: false});
-        return res.value.seq;
+       
+        return res?.seq;
         
 
     } catch (ex) {
