@@ -2,10 +2,12 @@ const make_access = require('../../Entities/Access');
 const RemoveAccessFromRole = ({role_db}) => {
     return async req => {
         try {
-            const id = req.id;
+            const id = req.params.id;
             const rdata = req.data;
+            
             const data = rdata.access;
             const exist = await role_db.GetRoleById(id);
+            
             if(!exist) {
                 throw new Error("Could not find the role");
             }
@@ -23,7 +25,8 @@ const RemoveAccessFromRole = ({role_db}) => {
                 }
 
             } else {
-                const inacc = jdata ? jdata.find(j => j === data.access): null;
+                console.log(jdata, data.access);
+                const inacc = jdata ? jdata.find(j => j === data): null;
                 if(!inacc) {
                     throw new Error("The access is not assigned to the role")
                 }

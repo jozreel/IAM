@@ -7,6 +7,7 @@ const create_access_factory = ({CreateUtcDate}) => {
         createddate,
         lastmodifieddate
     }={}) => {
+       
         if(!applicationid) {
             throw new Error('An application is required');
         }
@@ -15,6 +16,12 @@ const create_access_factory = ({CreateUtcDate}) => {
         }
         if(!code) {
             throw new Error('Please suply an access code');
+        }
+        if(!createddate) {
+            createddate =  CreateUtcDate();
+        }
+        if(!lastmodifieddate) {
+            lastmodifieddate =  CreateUtcDate();
         }
         return Object.freeze({
             GetAccessName: () => accessname,

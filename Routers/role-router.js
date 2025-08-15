@@ -11,6 +11,6 @@ role_route.put('/:id', json(), request_handler(role_conmtroller.UpdateRoleContro
 role_route.get('/:id', request_handler(role_conmtroller.GetRoleController));
 role_route.delete('/:id', request_handler(role_conmtroller.DeleteRoleController));
 role_route.put('/addaccess/:id', json(), request_handler(role_conmtroller.AddAccessToRoleController));
-role_route.put('/removeaccess/:id', json(), role_conmtroller.RemoveAccessFromRoleController)
+role_route.put('/removeaccess/:id', json(), request_handler(role_conmtroller.RemoveAccessFromRoleController))
 
 module.exports = role_route;

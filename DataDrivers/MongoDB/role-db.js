@@ -124,7 +124,7 @@ const role_db_factory = ({makeDB, ID}) => {
             const upd = await db.collection(strings.APP_COLLECTON).updateOne({_id, "roles.id": role.id},{
                 $set: {"roles.$": role}
             });
-            if(upd?.matchedCount > 0 && upd.updatedCount !==0) {
+            if(upd?.matchedCount > 0 && upd.modifiedCount !==0) {
                 return role;
             } else {
                 throw new Error('Cannot iupdate this role');
@@ -142,7 +142,7 @@ const role_db_factory = ({makeDB, ID}) => {
             const rem =  await db.collection(strings.APP_COLLECTON).updateOne({_id, "roles.id": roleid}, {
                 $pull: {roles:  {id: roleid}}
             });
-            if(rem?.matchedCount > 0 && rem.updatedCount !== 0) {
+            if(rem?.matchedCount > 0 && rem.modifiedCount !== 0) {
                 return {deteled: true}
             } else {
                 throw new Error("Could not delete the role");
@@ -215,7 +215,7 @@ const role_db_factory = ({makeDB, ID}) => {
 
 
 
-            if(upd.matchedCount > 0 && upd.updatedCount !== 0) {
+            if(upd.matchedCount > 0 && upd.modifiedCount !== 0) {
                 return true;
             } else {
                 throw new Error("Could not add access to role");
@@ -235,12 +235,12 @@ const role_db_factory = ({makeDB, ID}) => {
             if(typeof access === 'object' && typeof access.push !== undefined) {
                 md = {$pull: {"roles.$.screens": {$each: access}}};
             }
-            const upd = await db.collection(strings.APP_COLLECTON).updateOne({_id, "roles.id": roleid}, {
+            const upd = await db.collection(strings.APP_COLLECTON).updateOne({_id, "roles.id": roleid}, 
                 md
-            });
+            );
 
-            if(upd.matchedCount > 0 && upd.updatedCount !== 0) {
-                return true;
+            if(upd.matchedCount > 0 && upd.modifiedCount !== 0) {
+                return {deleted: true};
             } else {
                 throw new Error("Could not delere access from role");
             }

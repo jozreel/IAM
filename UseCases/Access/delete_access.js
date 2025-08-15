@@ -7,14 +7,15 @@ const delete_access = ({access_db}) => {
                 throw new Error("The access was not found");
             }
             
-            const hass_roles =  await access_db.CheckAccessRoleConstraint(exist.GetId(), exist.GetApplicationId());
+            const has_roles =  await access_db.CheckAccessRoleConstraint(exist.GetId(), exist.GetApplicationId());
             if(has_roles) {
                 throw new Error("Cannot delete this access with linked roles");
             }
-            const res = await access_db.RemoveAppAccess(exist.gegtApplocationId(), exist.GetId());
+            const res = await access_db.RemoveAppAccess(exist.GetApplicationId(), exist.GetId());
             return {deleted: exist.ToJson(), ...res};
 
         } catch(ex) {
+            console.log(ex);
             throw ex;
         }
     }

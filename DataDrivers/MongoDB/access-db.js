@@ -61,7 +61,7 @@ const access_db_factory = ({makeDB, ID, autoID}) => {
                     as: "screen",
                     cond: {$eq: ["$$screen.id", id]}}}}},
                 {$unwind: "$screens"},
-                {$addFields: {"screens.applicationid": "_id"}},
+                {$addFields: {"screens.applicationid": "$_id"}},
                 {$replaceRoot: { newRoot: "$screens" } }
             ]);
            const arr =  await accs.toArray();
@@ -87,7 +87,7 @@ const access_db_factory = ({makeDB, ID, autoID}) => {
                 {"screens.id": id},
                 {$set: {"screens.$": {...access}}}
             );
-            if(res.matched > 0) {
+            if(res.matchedCount > 0 && res.modifiedCount !==0) {
                 return access;
             } else {
                 throw new Error("Could not update this access");
@@ -100,13 +100,15 @@ const access_db_factory = ({makeDB, ID, autoID}) => {
 
     const RemoveAppAccess =  async(appid, id) => {
         try {
+         
             const db =  await makeDB();
             const _id =  ID(appid);
             const  res =  await db.collection(strings.APP_COLLECTON).updateOne(
                 {_id},
-                {pull: {"screens": {id}}}
+                {$pull: {"screens": {id}}}
             )  
-            if(res.matched > 0) {
+            
+            if(res.matchedCount > 0 && res.modifiedCount !== 0) {
                 return {deleted:  true}
             } else {
                 throw new Error('Could not delete this access');
@@ -120,17 +122,18 @@ const access_db_factory = ({makeDB, ID, autoID}) => {
 
     const GetAllAppAccess = async (appid) => {
         try {
-            const db = makeDB();
+            const db = await makeDB();
             const _id =ID(appid);
             let res = [];
-            const crs =  await db.collection(strings.APP_COLLECTON).findOne({_id}, {projection: {id: 0, screens: 1}});
+            const crs =  await db.collection(strings.APP_COLLECTON).findOne({_id}, {projection: {screens: 1}});
             if(crs && crs.screens) {
                 for(let scr of crs.screens) {
                     if(!scr.applicationid) {
                         scr.applicationid =  appid;
                     }
+                  
                     const rd =  build_access(scr);
-                    res.push(rd);
+                    res.push(rd.ToJson());
 
                 }
                 return res;
@@ -147,12 +150,15 @@ const access_db_factory = ({makeDB, ID, autoID}) => {
     const CheckAccessRoleConstraint = async (id, appid) => {
         try {
             const db = await makeDB();
-            const _id =  Id(appid);
-            const crs =  await scrollBy.collection(strings.APP_COLLECTON).findOne({
+               
+            const _id =  ID(appid);
+            const crs =  await db.collection(strings.APP_COLLECTON).findOne({
                 _id,
                 "roles.access": id
             }, {projection: {roles: 1}});
+             console.log(crs);
             if(crs) {
+               
                 const roe =  crs.roles[0];
                 if(roe && !roe.applicationid) {
                     roe.applicationid = crs._id;
@@ -169,7 +175,7 @@ const access_db_factory = ({makeDB, ID, autoID}) => {
         const access = make_access({
             id: data.id,
             applicationid: data.applicationid,
-            accessname: data.accessmame,
+            accessname: data.accessname,
             code: data.code,
             createddate: data.createddate,
             lastmodifieddate: data.lastmodifieddate

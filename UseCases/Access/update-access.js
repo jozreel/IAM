@@ -18,6 +18,7 @@ const update_access = ({access_db}) => {
             await access_db.UpdateAccess(id,updata);
             return updata;
         } catch (ex) {
+            console.log(ex);
             throw ex;
         }
     }
