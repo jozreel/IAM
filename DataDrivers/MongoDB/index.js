@@ -26,7 +26,7 @@ const ID = (id) => {
     return new ObjectID(id);
 }
 
-const autoID = async (sequence, filter, collection='counters') => {
+const autoID = async (sequence, filter, collection='counters', start=1) => {
     try {
         const db =  await makeDB();
         let query = {_id: sequence};
@@ -34,9 +34,20 @@ const autoID = async (sequence, filter, collection='counters') => {
             filter.counterid = sequence;
             query =  filter;
         }
+
+        const counter = await db.collection(collection).findOne(query);
+        let res;
        
-        const res =  await db.collection(collection).findOneAndUpdate(query, {$inc: {seq: 1}}, {upsert: true, returnOriginal: false});
-       
+        if(counter) {
+           console.log('incrementing')
+            res =  await db.collection(collection).findOneAndUpdate(query, {$inc: {seq: 1}}, {upsert: true, returnDocument: "after"});
+            console.log(res);
+        } else {
+           
+             await db.collection(collection).insertOne({...query, seq:start});
+             res = {...query, seq:start}
+        }
+        console.log(res.seq);
         return res?.seq;
         
 

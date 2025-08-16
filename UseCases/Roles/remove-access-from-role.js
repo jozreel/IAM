@@ -5,7 +5,7 @@ const RemoveAccessFromRole = ({role_db}) => {
             const id = req.params.id;
             const rdata = req.data;
             
-            const data = rdata.access;
+            let data = rdata.access;
             const exist = await role_db.GetRoleById(id);
             
             if(!exist) {
@@ -13,11 +13,19 @@ const RemoveAccessFromRole = ({role_db}) => {
             }
             const jdata =  exist.GetAccess();
             if(typeof data === 'object' && typeof data.push !== 'undefined') {
-                const eacc =  exist.GstAccess();
+                const eacc =  exist.GetAccess();
                 
                 if(eacc) {
-                    const emap =  new Map(eacc);
-                    data = data.filter(d => emap.has(d));
+                    const emap =  new Map(eacc.map(a => [a,true]));
+                   
+                    const dmap = {};
+                    data = data.filter(d => {
+                        const has = dmap[d] || false;
+                      
+                        dmap[d] = 1; 
+                        return  !has && emap.has(d);
+                    });
+                   
                 }
 
                 if(data.length === 0) {

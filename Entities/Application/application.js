@@ -3,6 +3,7 @@ const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyToken})
     const MaxAppNmameLength = 120;
     const MaxDomainLength = 120;
     return ({
+        id,
         applicationname,
         apikey,
         disabled = false,
@@ -28,6 +29,7 @@ const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyToken})
         }
         
         return Object.freeze({
+            getId: () => id,
             getApplicationName: () => applicationname,
             getAPIKey: () => apikey,
             isDisabled: () => disabled,
@@ -48,8 +50,8 @@ const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyToken})
                 applicationname: applicationname,
                 apikey,
                 disabled,
-                roles,
-                screens,
+                roles : roles.length > 0 && typeof roles[0].GetIf !== 'undefined'  ? roles.map(r => r.ToJson()) : roles,
+                screens: screens.length > 0 && screens[0].GetId !== 'undefined' ? screens.map(s => s.ToJson()) :screens,
                 domain,
                 clientid,
                 createddate,

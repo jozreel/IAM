@@ -2,9 +2,12 @@ const strings = require('../../strings');
 const application_db_factory = ({makeDB, ID, autoID}) => {
     const insert_application = async (data) => {
         try {
+            console.log(data)
             const db =  await makeDB();
+            data._id = data.id;
             const result = await db.collection(strings.APP_COLLECTON).insertOne(data);
-            return result.ops[0];
+           
+            return data;
 
         } catch (ex) {
             throw ex;

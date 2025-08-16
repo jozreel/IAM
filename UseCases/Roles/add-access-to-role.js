@@ -4,30 +4,40 @@ const AddAccessToRole = ({role_db}) => {
         try {
             const id = req.params.id;
             const rdata = req.data;
-            const data = rdata.access;
+            let data = rdata.access;
             const exist = await role_db.GetRoleById(id);
-            console.log(exist, id);
+            
             if(!exist) {
                 throw new Error("Could not find the role");
             }
             const jdata =  exist.GetAccess();
+          
             if(typeof data === 'object' && typeof data.push !== 'undefined') {
-                const eacc =  exist.GstAccess();
-                
+                const eacc =  exist.GetAccess();
+               
                 if(eacc) {
-                    const emap =  new Map(eacc);
-                    data = data.filter(d => !emap.has(d));
+                   
+                    const emap =  new Map(eacc.map(a => [a,true]));
+                   
+                    const dmap = {};
+                    data = data.filter(d => {
+                        const has = dmap[d] || false;
+                        console.log(has, emap.has(d))
+                        dmap[d] = 1; 
+                        return  !has && !emap.has(d);
+                    });
                 }
+               
 
             } else {
                 const inacc = jdata ? jdata.find(j => j === data.access): null;
                 if(inacc) {
-                    return exist.TOJson();
+                    return exist.ToJson();
                 }
             }
         
             const upd = await role_db.AddAccessToRole(exist.GetApplicationId(), id, data);
-            return exist;
+            return {...exist.ToJson(), access: [...jdata, ...data]};
 
         } catch (ex) {
             console.log(ex);

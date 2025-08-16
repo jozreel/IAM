@@ -12,7 +12,7 @@ const role_db_factory = ({makeDB, ID}) => {
             const ud =  await db.collection(strings.APP_COLLECTON).updateOne({_id} , {
                 $push: {roles: {...roledata}}
             });
-            console.log(ud);
+            
             if(ud.matchedCount > 0 && ud.modifiedCount !==0) {
                 return roledata;
             } else  {
@@ -178,10 +178,10 @@ const role_db_factory = ({makeDB, ID}) => {
                     const rs =  build_role(d);
                     const js =  rs.ToJson();
                     const accesslist = [];
-                     if(d.screens) {
-                        for(let ra of d.screens) {
+                     if(d.access) {
+                        for(let ra of d.access) {
                             const acc_d =  accessMap.get(ra); 
-                            console.log(acc_d)
+                          
                             if(acc_d) {
                             const access_obj = access_model(acc_d);       
                             accesslist.push(access_obj.ToJson());
@@ -206,11 +206,11 @@ const role_db_factory = ({makeDB, ID}) => {
         try {
             const db =  await makeDB();
             const _id = ID(appid);
-            let mut =  {$push: {"roles.$.screens": access}};
+            let mut =  {$push: {"roles.$.access": access}};
             if(typeof access === 'object' && typeof access.push !== 'undefined' ) {
-                mut =  {$push: {"roles.$.screens": {$each: access}}}
+                mut =  {$push: {"roles.$.access": {$each: access}}}
             }
-            console.log(mut);
+            
             const upd = await db.collection(strings.APP_COLLECTON).updateOne({_id, "roles.id": roleid}, mut);
 
 
@@ -231,10 +231,11 @@ const role_db_factory = ({makeDB, ID}) => {
         try {
             const db =  await makeDB();
             const _id = ID(appid);
-            let md =  {$pull: {"roles.$.screens" : access}};
+            let md =  {$pull: {"roles.$.access" : access}};
             if(typeof access === 'object' && typeof access.push !== undefined) {
-                md = {$pull: {"roles.$.screens": {$each: access}}};
+                md = {$pull: {"roles.$.access": {$in: access}}};
             }
+            console.log(md, access);
             const upd = await db.collection(strings.APP_COLLECTON).updateOne({_id, "roles.id": roleid}, 
                 md
             );
@@ -256,7 +257,7 @@ const role_db_factory = ({makeDB, ID}) => {
             const db = await makeDB();
         
             const usr_role =  await db.collection(strings.USER_COLLECTION).findOne({"applications.roleid": id}, {projection: {applications: {$elemMatch: {roleid: id}}}});
-            console.log(usr_role);
+            
             return usr_role;
 
         } catch (ex) {
