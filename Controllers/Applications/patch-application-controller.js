@@ -2,9 +2,8 @@ const patch_application_controller = ({update_app}) => {
     return async (request) => {
         const headers = {"Content-Type": "application/json"};
         try {
-            const data =  request.body;
-            const id =  request.params.id;
-            const result =  await update_app(id,data);
+            
+            const result =  await update_app(request);
             return {
                 headers,
                 statusCode:200,

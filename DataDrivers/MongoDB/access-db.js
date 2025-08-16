@@ -11,7 +11,7 @@ const access_db_factory = ({makeDB, ID, autoID}) => {
             const appid =  ID(accessdata.applicationid);
             const upd =  await db.collection(strings.APP_COLLECTON).findOneAndUpdate({_id: appid}, {
                 $push: {screens: accessdata}
-            }, {returnOriginal: false});
+            }, {returnDocument: "after"});
             return upd ? upd.value : null;
 
         } catch(ex) {
@@ -25,11 +25,42 @@ const access_db_factory = ({makeDB, ID, autoID}) => {
             const db = await makeDB();
             //const _id =  ID(appid);
             const accs =  db.collection(strings.APP_COLLECTON).aggregate([{
-                $match: {"access.code": code}}, 
+                $match: {"screen.code": code}}, 
                 {$project: {screens: {$filter: {
                     input: "$screens",
                     as: "screen",
                     cond: {$eq: ["$$screen.code", code]}}}}},
+                {$unwind: "$screens"},
+                {$addFields: {"screens.applicationid": "$_id"}},
+                {$replaceRoot: { newRoot: "$screens" } }
+            ]);
+            const arr = await accs.toArray();
+            const accs_data =  arr[0];
+            if(accs_data) {
+                const res = build_access(accs_data);
+                return res;
+            }
+        
+
+
+        } catch (ex) {
+            throw ex;
+        }
+
+    }
+
+
+    const FindAccessByName = async (name) => {
+        try {
+            const db = await makeDB();
+            //const _id =  ID(appid);
+            const regex = new RegExp(name, "ig");
+            const accs =  db.collection(strings.APP_COLLECTON).aggregate([{
+                $match: {"screen.accessname": {$regex: regex}}}, 
+                {$project: {screens: {$filter: {
+                    input: "$screens",
+                    as: "screen",
+                    consd: {$regexMatch: {input: "$$screen.accessname", regex}}}}}},
                 {$unwind: "$screens"},
                 {$addFields: {"screens.applicationid": "$_id"}},
                 {$replaceRoot: { newRoot: "$screens" } }
@@ -192,6 +223,7 @@ const access_db_factory = ({makeDB, ID, autoID}) => {
         UpdateAccess,
         RemoveAppAccess,
         GetAllAppAccess, 
+        FindAccessByName,
         CheckAccessRoleConstraint,
         GetNextCode: autoID
     })

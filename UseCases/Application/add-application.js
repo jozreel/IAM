@@ -31,6 +31,7 @@ const add_application = ({app_db}) => {
                 const approles = [];
                 for(let role of roles) {
                     role.applicationid =  app_id;
+                    role.id =  crypto.randomUUID();
                     if(!role.roleid) {
                         role.roleid = crypto.randomUUID();
                     }
