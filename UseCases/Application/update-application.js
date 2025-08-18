@@ -50,6 +50,33 @@ const update_app = ({app_db, user_db, role_db, access_db, generate_unique_key}) 
                 throw new RangeError('Application does not exist');
             }
 
+            if(changes.screens) {
+                const accrob = [];
+                 const accessupd = [];
+                 const accessnew = [];
+                for(let acc of changes.screens) {
+                    if(acc.id) {
+                        const ae =  await access_db.FindAccessById(acc.id);
+                        if(!ae) {
+                            throw new Error('Access with id '+ acc.id+ " does not exist");
+                        }
+                        //remove last modified date from object
+                        const na =  make_access({...ae.ToJson(), acc});
+                        accessupd.push(na);
+                        accrob.push(na);
+                    } else {
+                        acc.id = crypto.randomUUID();
+                        acc.applicationid =  id;
+                        acc.code = app_db.autoID("accesscodes", {appid: app_id},"counters"); 
+                        const naa = make_access(acc);
+                         accessnew.push(naa);
+                        accrob.push(naa);
+                    }
+                }
+                changes.screens =  accrob;
+                 updatedata.roles.push({id, updatedaccess: accessupd, newaccess: accessnew});
+            }
+
             if(changes.roles) {
                 for(let role of changes.roles) {
                     role.applicationid = id;
@@ -61,35 +88,17 @@ const update_app = ({app_db, user_db, role_db, access_db, generate_unique_key}) 
                         role.id = crypto.randomUUID();
                     } 
                   
-
-                    if(changes.access) {
-
-                        const accessupd = [];
-                        const accessnew = [];
-                        for (let acc of changes.access) {
-                            if(!acc.id) {
-                                const ae =  await access_db.FindAccessByName(acc.name);
-                                if(ae) {
-                                    throw new Error(`An access with the name ${acc.name} already exist`);
-                                }
-                                acc.applicationid = id;
-                                acc.code = await app_db.autoID("accesscodes", {appid: app_id},"counters");
-                                const access_new =  make_access(acc);
-                                accessnew.push(access_new);
-                            } else {
-                                 const upd_access =  make_access(acc);
-                                 accessupd.push(upd_access);
+                    let ro = [];
+                    if(role.id) {
+                        const rex =  role_db.GetRoleById(role.id);
+                            if(!rex) {
+                                throw new Error('A role with id '+id+" does not exist");
                             }
-                           
-                           
-
-                        }
-                        role.access = [...accessnew, ...accessupd];
-                        updatedata.roles.push({id, updatedaccess: accessupd, newaccess: accessnew});
-                      
+                          ro = make_role({...role, ...rex.ToJson()});
+                        
+                    } else {
+                        ro = make_role(role);
                     }
-
-                    const ro = make_role(role);
                     changes.roles = ro;
 
                 }
