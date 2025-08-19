@@ -26,14 +26,15 @@ const role_db_factory = ({makeDB, ID}) => {
 
     }
 
-    const GetRoleById = async (roleid) => {
+    const GetRoleById = async (roleid, appid='') => {
         try {
             
                     
             const db = await makeDB();
+            const match = appid ?  {_id: ID(appid), "roles.id": roleid} :  {"roles.id": roleid}
            
-            const accs =  db.collection(strings.APP_COLLECTON).aggregate([{
-                $match: {"roles.id": roleid}}, 
+            const accs =  db.collection(strings.APP_COLLECTON).aggregate([
+                {$match:match},
                 {$project: {roles: {$filter: {
                     input: "$roles",
                     as: "role",
@@ -43,7 +44,8 @@ const role_db_factory = ({makeDB, ID}) => {
             const arr =  await accs.toArray();
             const rl = arr[0];
             if(rl) {
-                const acclst = await db.collection(strings.APP_COLLECTON).findOne({_id: ID(rl.applicationid)}, {projection: {screens: 1}});
+                const app_id = typeof rl._applicationid ==['string'] ? rl._id: ID(rl.applicationid);
+                const acclst = await db.collection(strings.APP_COLLECTON).findOne({_id: app_id}, {projection: {screens: 1}});
                 if(acclst && rl.access) {
                     if(acclst.screens) {
                         const acc_list = [];
@@ -53,6 +55,7 @@ const role_db_factory = ({makeDB, ID}) => {
                         }
                         for(let a of rl.access) {
                             const full_access =  access_mapp.get(a);
+                           
                             access_obj =  access_model(full_access)
                             acc_list.push(access_obj);
                         }
@@ -70,14 +73,15 @@ const role_db_factory = ({makeDB, ID}) => {
         }
     }
 
-    const GetRoleByName = async (rolename) => {
+    const GetRoleByName = async (rolename, appid='') => {
         try {
             
                     
             const db = await makeDB();
              const regex = new RegExp(rolename, "ig");
-            const accs =  db.collection(strings.APP_COLLECTON).aggregate([{
-                $match: {"roles.name": {$regex: regex}}}, 
+             const match = appid ?  {_id: ID(appid), "roles.name": {$regex: regex}}: {"roles.name": {$regex: regex}};
+            const accs =  db.collection(strings.APP_COLLECTON).aggregate([
+                {$match:match}, 
                 {$project: {roles: {$filter: {
                     input: "$roles",
                     as: "role",
@@ -87,8 +91,8 @@ const role_db_factory = ({makeDB, ID}) => {
             const arr =  await accs.toArray();
             const rl = arr[0];
             if(rl) {
-               
-                const acclst = await db.collection(strings.APP_COLLECTON).findOne({_id: ID(rl.applicationid)}, {projection: {screens: 1}});
+               const app_id = typeof rl._applicationid ==['string'] ? rl._id: ID(rl.applicationid);
+                const acclst = await db.collection(strings.APP_COLLECTON).findOne({_id: app_id}, {projection: {screens: 1}});
                 if(acclst && rl.access) {
                     if(acclst.screens) {
                         const acc_list = [];
@@ -138,7 +142,7 @@ const role_db_factory = ({makeDB, ID}) => {
     const RemoveAppRole = async(roleid, appid) => {
         try {
             const db = await makeDB();
-            const _id =  ID(appid);
+            const _id = appid.length === 24 ?  ID(appid) : appid;
             const rem =  await db.collection(strings.APP_COLLECTON).updateOne({_id, "roles.id": roleid}, {
                 $pull: {roles:  {id: roleid}}
             });
@@ -158,7 +162,7 @@ const role_db_factory = ({makeDB, ID}) => {
         try {
             const db = await makeDB();
             const roles = [];
-            const _id =  ID(appid);
+            const _id =  appid.length === 24 ? ID(appid) : appid;
 
             const res =  await db.collection(strings.APP_COLLECTON).findOne({_id}, {projection: {roles: 1, screens: 1}});
             const accessMap = new Map();
@@ -235,7 +239,7 @@ const role_db_factory = ({makeDB, ID}) => {
             if(typeof access === 'object' && typeof access.push !== undefined) {
                 md = {$pull: {"roles.$.access": {$in: access}}};
             }
-            console.log(md, access);
+          
             const upd = await db.collection(strings.APP_COLLECTON).updateOne({_id, "roles.id": roleid}, 
                 md
             );

@@ -50,17 +50,21 @@ const access_db_factory = ({makeDB, ID, autoID}) => {
     }
 
 
-    const FindAccessByName = async (name) => {
+    const FindAccessByName = async (name, appid = '') => {
         try {
+           
             const db = await makeDB();
-            //const _id =  ID(appid);
+            const _id =  ID(appid);
             const regex = new RegExp(name, "ig");
-            const accs =  db.collection(strings.APP_COLLECTON).aggregate([{
-                $match: {"screen.accessname": {$regex: regex}}}, 
+            
+            const match = appid ? {_id, "screens.accessname": {$regex: regex}} : {"screens.accessname": {$regex: regex}};
+           
+            const accs =  db.collection(strings.APP_COLLECTON).aggregate([
+                {$match: match}, 
                 {$project: {screens: {$filter: {
                     input: "$screens",
                     as: "screen",
-                    consd: {$regexMatch: {input: "$$screen.accessname", regex}}}}}},
+                    cond: {$regexMatch: {input: "$$screen.accessname", regex}}}}}},
                 {$unwind: "$screens"},
                 {$addFields: {"screens.applicationid": "$_id"}},
                 {$replaceRoot: { newRoot: "$screens" } }
@@ -187,7 +191,7 @@ const access_db_factory = ({makeDB, ID, autoID}) => {
                 _id,
                 "roles.access": id
             }, {projection: {roles: 1}});
-             console.log(crs);
+             
             if(crs) {
                
                 const roe =  crs.roles[0];

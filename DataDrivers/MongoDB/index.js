@@ -20,15 +20,23 @@ const makeDB = async () => {
     }
 }
 const ID = (id) => {
+    
     if(typeof id !== 'string') {
+        if(id.length !== 24) {
+        return;
+      }
         id =  id.toString();
+        return new ObjectID(id);
+    } else {
+        return id;
     }
-    return new ObjectID(id);
+    
 }
 
 const autoID = async (sequence, filter, collection='counters', start=1) => {
     try {
         const db =  await makeDB();
+        
         let query = {_id: sequence};
         if(filter) {
             filter.counterid = sequence;

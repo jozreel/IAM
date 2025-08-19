@@ -25,7 +25,7 @@ const application_db_factory = ({makeDB, ID, autoID}) => {
         const cursor =  db.collection(strings.APP_COLLECTON).find(query).skip(skip).limit(limit);
         const result =  await cursor.toArray();
         const res = result.map(re => build_application(re));
-        console.log(res);
+        
         return res;
     }
     const get_application =  async (id) => {
