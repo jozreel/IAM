@@ -9,6 +9,7 @@ const update_app = require('./update-application');
 const get_app =  require('./get-application');
 const list_apps =  require('./list-applications');
 const delete_app =  require('./delete-application');
+const create_api_key = require('./create-api-key');
 
 
 module.exports = {
@@ -17,6 +18,7 @@ module.exports = {
     get_app: get_app({app_db}),
     list_apps: list_apps({app_db, verify_token, generate_unique_key}),
     delete_app: delete_app({app_db}),
+    create_api_key: create_api_key({app_db})
 
   
 };

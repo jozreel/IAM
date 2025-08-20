@@ -1,10 +1,13 @@
 const secret = require('../../KEYS').app_secret;
 const make_screen =  require('../Access');
+const bcrypt =  require('bcrypt');
 
 const make_role =  require('../Role');
-const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyToken}) => {
+const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyKey, hashKey}) => {
     const MaxAppNmameLength = 120;
     const MaxDomainLength = 120;
+    const MaxKeyLength = 64;
+    const SaltRounds = 10;
     return ({
         id,
         applicationname,
@@ -54,7 +57,7 @@ const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyToken})
                 j++;
             }
         }
-
+     
 
         
         return Object.freeze({
@@ -70,10 +73,11 @@ const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyToken})
             getScreens: () => screens,
             getCreatedDate: () =>createddate ? createddate : createUTCDate(),
             getLastModifiedDate: () => lastmodifieddate ? lastmodifieddate : createUTCDate(),
-            generateKey: (payload)=>generateAPIKey(payload, secret),
+            generateKey: ()=>generateAPIKey(),
             setClientId: (cid) => clientid =  cid,
             setApiKey: (val) => apikey =  val,
-            verufyToken: (token) => verifyToken(token),
+            verifyKey: (key, hashed) => verifyKey(key, hashed),
+            hashKey: (key) => hashKey(key),
             setRoles: (val) => roles =  val,
             ToJson: () => ({
                 id,

@@ -33,8 +33,12 @@ const application_db_factory = ({makeDB, ID, autoID}) => {
             const _id = id;
             const db =  await makeDB();
             const result = await db.collection(strings.APP_COLLECTON).findOne({_id});
-            const res =  build_application(result);
-            return res;
+            
+            console.log(result, "result", id);
+            if(result) {
+              const res =  build_application(result);
+              return res;
+            }
 
         } catch (ex) {
             throw ex;

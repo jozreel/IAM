@@ -2,6 +2,9 @@ const crypto = require('crypto');
 const secret =  require('../KEYS').secret;
 const login_secret =  require('../KEYS').login_secret;
 const app_secret =  require('../KEYS').app_secret;
+const bcrypt =  require('bcrypt');
+const MaxKeyLength =  64;
+const SaltRounds = 10;
 const access_utils_factory = () => {
     const jwt = (payload, secreto) => {
         try {
@@ -240,6 +243,38 @@ const access_utils_factory = () => {
         }
     }
 
+    
+    const generate_apikey = () => {
+        const buffer =  crypto.randomBytes(Math.ceil(MaxKeyLength / 2));
+        return buffer.toString('hex').slice(0, MaxKeyLength);
+    }
+
+
+    const hash_string = async (string) => {
+        try {
+        
+        const salt = await bcrypt.genSalt(SaltRounds);
+        
+        const hashed_key =  await bcrypt.hash(string, salt);
+        return hashed_key;
+        } catch (ex) {
+            console.error("Could not hash key")
+            throw ex;
+        }
+    }
+
+    const verify_string = async (plain_string, hash_string) => {
+        try {
+            const res = await bcrypt.compare(plain_string, hash_string);
+            return res;
+
+        } catch(ex) {
+            console.error('unable to decrypt key');
+            return false;
+        }
+    }
+
+
 
     return Object.freeze({
         jwt,
@@ -248,7 +283,12 @@ const access_utils_factory = () => {
         auth_midleware,
         app_key_check,
         cross_origin,
-        generate_unique_key
+        generate_unique_key,
+        generate_apikey,
+        hash_string,
+        verify_string
     });
 }
+
+
 module.exports =  access_utils_factory;
