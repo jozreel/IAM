@@ -7,11 +7,12 @@ const file_request_handler = require('./file-request-handler');
 const sms_util = require('./sms-util');
 
 module.exports =  Object.freeze({
-    access_utils: access_utils(),
+    access_utils: access_utils({}),
     date_utils: date_utils(),
     request_handler,
     raw_request_handler,
     file_request_handler,
     ad_utils: ad_utils(),
-    sms_util: new sms_util()
+    sms_util: new sms_util(),
+    
 });

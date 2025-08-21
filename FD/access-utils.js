@@ -2,9 +2,12 @@ const crypto = require('crypto');
 const secret =  require('../KEYS').secret;
 const login_secret =  require('../KEYS').login_secret;
 const app_secret =  require('../KEYS').app_secret;
+const {makeDB} =  require('../DataDrivers/MongoDB/standalone');
 const bcrypt =  require('bcrypt');
+const strings = require('../strings');
 const MaxKeyLength =  64;
 const SaltRounds = 10;
+
 const access_utils_factory = () => {
     const jwt = (payload, secreto) => {
         try {
@@ -119,7 +122,7 @@ const access_utils_factory = () => {
         }
     }
 
-    const app_api_auth_midleware = (req, res, next) => {
+    const app_api_auth_midleware =  async(req, res, next) => {
         try {
             
             const referer = req.get('referer');
@@ -137,8 +140,9 @@ const access_utils_factory = () => {
             }
             if(token !== '') {
                     let domain;
+                    console.log(token)
                     //possibly check in database to see registered apps and api keys
-                    const has_access = verify_token(secret, token);
+                    const has_access = await verify_api_key({apikey: token}) //verify_token(secret, token);
                   
                     if(referer) {
                         const refurl = new URL(referer);
@@ -146,11 +150,11 @@ const access_utils_factory = () => {
                     } else {
                         domain =  hostname //`${req.protocol}://${hostname}`
                     }
-                    has_access.payload.domain = 'localhost'; // for dev remove on deployment
-                    const keydomain = has_access.payload.domain || ['http://localhost','http://localhost:3000',  'http://192.168.1.110', 'http://localhost:3001','https://veppz.com']; //remove this
+                    has_access.domain = 'localhost'; // for dev remove on deployment
+                    const keydomain = has_access.domain || ['http://localhost','http://localhost:3000',  'http://192.168.1.110', 'http://localhost:3001','https://veppz.com']; //remove this
                     console.log(keydomain, domain);
                     if(has_access && keydomain.indexOf(domain) >=0)  {
-                        req.appid =  has_access.payload.app
+                        req.appid =  has_access.app
                     next();
                     } else {
                        
@@ -274,6 +278,30 @@ const access_utils_factory = () => {
         }
     }
 
+
+    const verify_api_key =  async (req)  => {
+        console.log(req, 'the request')
+        const apikey = req.apikey;
+        const parts = apikey.split('.');
+        if(parts.length  !== 2) {
+            throw new Error('Invalid api key');
+        }
+        const [app, key] =  parts;
+        
+        const db =  await makeDB();
+        const exist =  await db.collection(strings.APP_COLLECTON).findOne({_id: app});
+        if(!exist) {
+            throw  new Error(`Unable to find the application for this key`);
+        }
+        const saved_key = exist.apikey;
+        const valid =  verify_string(apikey, saved_key);
+        if(!valid) {
+            throw new Error('Invalid key');
+        } else {
+            return {app, key, domain: exist.domain};
+        }
+    
+};
 
 
     return Object.freeze({

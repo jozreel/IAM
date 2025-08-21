@@ -1,6 +1,5 @@
 const secret = require('../../KEYS').app_secret;
 const make_screen =  require('../Access');
-const bcrypt =  require('bcrypt');
 
 const make_role =  require('../Role');
 const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyKey, hashKey}) => {
