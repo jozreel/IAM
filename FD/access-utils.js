@@ -15,12 +15,17 @@ const access_utils_factory = () => {
                 alg: 'HS256',
                 typ: 'JWT'
             }
-            const encoded_header = encodeURIComponent(Buffer.from(JSON.stringify(header)).toString('base64'));
-            const encoded_payload = encodeURIComponent(Buffer.from(JSON.stringify(payload)).toString('base64'));
+           // const encoded_header = encodeURIComponent(Buffer.from(JSON.stringify(header)).toString('base64'));
+            let encoded_header = Buffer.from(JSON.stringify(header)).toString('base64');
+            encoded_header = url_encode(encoded_header); //encoded_header.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+            let encoded_payload = Buffer.from(JSON.stringify(payload)).toString('base64');
+            encoded_payload = url_encode(encoded_payload); //encoded_payload.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+           // const encoded_payload = encodeURIComponent(Buffer.from(JSON.stringify(payload)).toString('base64'));
             const data = `${encoded_header}.${encoded_payload}`;
             const hmac = crypto.createHmac('sha256', secreto);
             hmac.update(data);
-            const signature = encodeURIComponent(hmac.digest('base64'));
+            let signature  = hmac.digest('base64');
+            signature = url_encode(signature); //signature.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
             return `${data}.${signature}`;
         } catch (ex) {
             throw ex;
@@ -31,6 +36,7 @@ const access_utils_factory = () => {
 
         try {
             const token_parts = token.split('.');
+           
             if(token_parts.length === 3) {
                 const header =  token_parts[0];
                 const payload = token_parts[1];
@@ -38,16 +44,29 @@ const access_utils_factory = () => {
                 const data = `${header}.${payload}`;
                 const hmac =  crypto.createHmac('sha256', secreto);
                 hmac.update(data);
-                const calculated_signature = encodeURIComponent(hmac.digest('base64'));
+                //const calculated_signature = encodeURIComponent(hmac.digest('base64'));
+                let calculated_signature = hmac.digest('base64')
+               
+                calculated_signature = url_encode(calculated_signature);
+                 console.log(signature, calculated_signature);
                 if(calculated_signature !== signature) {
                     throw new Error('Invalid access token');
                 }
-                const headdata = JSON.parse(Buffer.from(decodeURIComponent(header), 'base64').toString('ascii'));
-                const payloaddata =  JSON.parse(Buffer.from(decodeURIComponent(payload), 'base64').toString('ascii'));
+                //const headdata = JSON.parse(Buffer.from(decodeURIComponent(header), 'base64').toString('ascii'));
+                let header_decoded =  url_decode(header);
+                console.log(header_decoded, "MY HEADER")
+                const b64bfr =  Buffer.from(header_decoded, 'base64').toString();
+                const headdata = JSON.parse(b64bfr);
+
+                let payload_decoded = url_decode(payload);
+                const ploadstr =  Buffer.from(payload_decoded, 'base64').toString();
+                const payloaddata =  JSON.parse(ploadstr);
+                //const payloaddata =  JSON.parse(Buffer.from(decodeURIComponent(payload), 'base64').toString('ascii'));
                 return ({payload: payloaddata, header: headdata, signature});
             }
 
         } catch (ex) {
+            console.log(ex)
             throw ex;
         }
 
@@ -81,9 +100,37 @@ const access_utils_factory = () => {
     }
 
 
+    const url_decode = (str, base64=true) => {
+        let rstr = str.replace(/-/g, '+').replace(/_/g, '/');
+       
+        if(base64) {
+            while(rstr.length % 4) {
+                rstr+='='
+            }
+        }
+        return rstr;
+    }
+
+
+    const url_encode = (str, base64Safe=true) => {
+        console.log('ENCODING')
+        let resstr = str.replace(/\+/g, '-').replace(/\//g, '_');
+
+        
+        if(base64Safe) {
+            resstr =  resstr.replace(/=/g, '');
+        }
+
+        return resstr;
+    }
+
     const auth_midleware = (req, res, next) => {
         try {
             if(req.method === 'OPTIONS') {
+                next();
+                return;
+            }
+             if(req.path === '/api/login') {
                 next();
                 return;
             }
@@ -124,7 +171,8 @@ const access_utils_factory = () => {
 
     const app_api_auth_midleware =  async(req, res, next) => {
         try {
-            
+           
+           
             const referer = req.get('referer');
             const hostname =  req.hostname;
             if(req.method === 'OPTIONS') {

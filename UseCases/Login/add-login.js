@@ -20,6 +20,7 @@ const add_login_usecase  =  ({login_db, user_db, ad_utils}) => {
             const user =  make_user({...exist, password: data.password});
             const apps =  user.getApplications();
             const access =  apps.find(a => a.appid === data.appid);
+           
             if(!access) {
                 throw new Error('You are not authaurised to access this application');
             }
