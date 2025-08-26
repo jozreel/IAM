@@ -38,9 +38,9 @@ const add_login_usecase  =  ({login_db, user_db, ad_utils}) => {
                     uid: exist._id.toString(),
                     success: true
                 });
-                const payload = {iat: new Date().valueOf(), uid: login.getUID(), appid: login.getAppID};
+                const payload = {iat: new Date().valueOf(), sub: login.getUID(), appid: login.getAppID()};
                 if(!data.remember) {
-                    payload.exp = new Date().valueOf() + 4320000;
+                    payload.exp = Date.now() /1000 + (60*60);
                 }
                 const token =  login.createToken(payload);
 

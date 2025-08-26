@@ -5,6 +5,7 @@ const app_secret =  require('../KEYS').app_secret;
 const {makeDB} =  require('../DataDrivers/MongoDB/standalone');
 const bcrypt =  require('bcrypt');
 const strings = require('../strings');
+const fs =  require('fs');
 const MaxKeyLength =  64;
 const SaltRounds = 10;
 
@@ -30,6 +31,72 @@ const access_utils_factory = () => {
         } catch (ex) {
             throw ex;
         }
+    }
+
+
+    const jwt_asymetric =  (pload, key='') => {
+        try {
+            const pkey_file =  process.env.PRIVATE_KEY;
+
+            const private_key =   fs.readFileSync(pkey_file);
+            const header = {
+                alg: "RS256",
+                typ: "JWT"
+            };
+            pload.exp =  Math.floor(Date.now() / 1000) + (60 * 60) // in 1 hr ot process.env.tokenexpirytime 
+            pload.iat =  Date.now() / 1000;
+            console.log(pload);
+            const payload = JSON.stringify(pload);
+            const bs4Header =  base64_Url_encode(JSON.stringify(header));
+            const bs4pload =  base64_Url_encode(payload);
+            const sig_data =  `${bs4Header}.${bs4pload}`;
+            const signer =  crypto.createSign('RSA-SHA256');
+            signer.update(sig_data);
+            const sig = signer.sign(private_key, 'base64');
+            const b64sig =  url_encode(sig);
+            const jwt =  `${sig_data}.${b64sig}`;
+            console.log(jwt);
+            return jwt;
+
+
+        } catch (ex) {
+          throw ex;
+        }
+    }
+
+
+    const verify_toket_asymetric = (jwt) => {
+        const pub_key_file =  process.env.PUBLIC_KEY;
+        const pub_key =  fs.readFileSync(pub_key_file);
+        const parts = jwt.split('.');
+        if(parts.length !== 3) {
+            throw new Error("Invalid JWT format");
+        }
+        
+        const [enc_header, enc_payload, enc_signature] =  parts;
+        const enc_data = `${enc_header}.${enc_payload}`;
+        const sigbuffer = Buffer.from(enc_signature, 'base64');
+        const verifier =  crypto.createVerify('RSA-SHA256');
+        verifier.update(enc_data);
+        const verified =  verifier.verify(pub_key, sigbuffer);
+
+        if(verified) {
+            const pload = JSON.parse(Buffer.from(enc_payload, 'base64').toString('utf-8'));
+            const now =  Math.floor(Date.now() / 1000) 
+            if(pload.exp && pload.exp < now) {
+                throw new Error('Token has expired');
+            }
+            return pload;
+        }
+    }
+
+
+    const base64_Url_encode = (data) => {
+        return url_encode(Buffer.from(data).toString('base64'));
+    }
+
+    const base64_URL_decode = (b64str) => {
+        return Buffer.from(url_decode(b64str), 'base64').toString();
     }
 
     const verify_token = (secreto, token) => {
@@ -130,7 +197,7 @@ const access_utils_factory = () => {
                 next();
                 return;
             }
-             if(req.path === '/api/login') {
+             if(req.path === '/api/login' || req.path === '/api/authorize') {
                 next();
                 return;
             }
@@ -172,6 +239,10 @@ const access_utils_factory = () => {
     const app_api_auth_midleware =  async(req, res, next) => {
         try {
            
+             if(req.path === '/api/authorize') {
+                next();
+                return;
+            }
            
             const referer = req.get('referer');
             const hostname =  req.hostname;
@@ -355,6 +426,8 @@ const access_utils_factory = () => {
     return Object.freeze({
         jwt,
         verify_token,
+        jwt_asymetric,
+        verify_toket_asymetric,
         app_api_auth_midleware,
         auth_midleware,
         app_key_check,

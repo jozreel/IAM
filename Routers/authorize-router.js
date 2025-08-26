@@ -1,9 +1,9 @@
 const {Router, json} =  require('express');
-const http_request_handler = require('../FD/request-handler');
-const oauth_controller = require('../Controllers/Oauth');
+const mixed_request_handler = require('../FD/mixed-request-handler');
+const auth_controller = require('../Controllers/Authorize');
 
-const oauth_router =  Router();
+const authorize_router =  Router();
 
-oauth_router.get('/', http_request_handler(oauth_controller.get_o_auth_code_controller));
+authorize_router.get('/', mixed_request_handler(auth_controller.AuthorizeController));
 
-module.exports = oauth_router;
+module.exports = authorize_router;
