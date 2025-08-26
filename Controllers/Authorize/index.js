@@ -1,6 +1,8 @@
 const AuthorizeController = require('./authorize-controller');
-const {Authorize} =  require('../../UseCases/Authorize');
+const {Authorize, AuthorizePost} =  require('../../UseCases/Authorize');
+const PostAuthorizeController = require('./popst-authorize-controller');
 
 module.exports = Object.freeze({
-    AuthorizeController: AuthorizeController({Authorize})
+    AuthorizeController: AuthorizeController({Authorize}),
+    AuthorizePostController: PostAuthorizeController({AuthorizePost})
 });

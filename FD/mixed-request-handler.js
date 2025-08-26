@@ -26,9 +26,14 @@ const MixedRequestHandler = (controller) => {
                 res.set(result.headers)
             }
 
+            if(result.cookie) {
+                res.cookie(result.cookiename, result.cookeievalue, result.options);
+            }
+
             if(result.redirect || result.statusCode === 302 || res.statusCode === 301) {
                 res.status(result.statusCode).redirect(result.redirect);
             } 
+            
 
             const type = result.type;
             console.log(type)
