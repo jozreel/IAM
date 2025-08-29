@@ -2,10 +2,11 @@ const {Router, json, urlencoded} =  require('express');
 const mixed_request_handler = require('../FD/mixed-request-handler');
 const auth_controller = require('../Controllers/Authorize');
 const cookieParser = require('cookie-parser');
+const { request_handler } = require('../FD');
 
 const authorize_router =  Router();
 
 authorize_router.get('/', [cookieParser()], mixed_request_handler(auth_controller.AuthorizeController));
 authorize_router.post('/', [cookieParser(), urlencoded({extended: true})], mixed_request_handler(auth_controller.AuthorizePostController))
-
+authorize_router.post('/login', [cookieParser(), json()], request_handler(auth_controller.LoginController))
 module.exports = authorize_router;

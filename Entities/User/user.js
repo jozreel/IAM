@@ -8,7 +8,9 @@ const createUserFactory = ({ createUTCDate, verify_token}) => {
     const maxpassword =  16;
     const max_tel = 11;
     return ({
+        id,
         email,
+        username,
         firstname,
         lastname,
         password,
@@ -61,6 +63,16 @@ const createUserFactory = ({ createUTCDate, verify_token}) => {
         if(telephone && telephone.length > max_tel) {
             throw new Error(`Telephone has a max length of ${max_tel}`);
         }
+
+        if(!username) {
+            throw  new Error("Please provide a username")
+        }
+
+        //do regex to validate username
+
+        if(username && username.length < 8) {
+            throw new Error('Username must be a min length of 8 characters');
+        }
  
         const encrypt_password = (text) => {
             const cypher = crypto.createCipheriv('aes-256-cbc', Buffer.from(encryption_key), Buffer.from(initialization_vector));
@@ -83,6 +95,7 @@ const createUserFactory = ({ createUTCDate, verify_token}) => {
             getFirstName: ()=>firstname,
             getLastName: () => lastname,
             getPassword: ()=> password,
+            getUsername: () => username,
             getLastPasswords: () =>lastpasswords,
             getLastPasswordChangeDate:() => lastpasswordchangedate ? createUTCDate(lastpasswordchangedate) : null,
             getPhoto: () => photo,
@@ -106,6 +119,7 @@ const createUserFactory = ({ createUTCDate, verify_token}) => {
             getResetCodeCreationTime: () => resetcodecreationtime = createUTCDate(),
             ToJson: ()=>({
                 email,
+                username,
                 firstname,
                 lastname,
                 password: encrypt_password(password),

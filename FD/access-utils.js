@@ -197,8 +197,9 @@ const access_utils_factory = () => {
                 next();
                 return;
             }
-             if(req.path === '/api/login' || req.path === '/api/authorize') {
+             if(req.path === '/api/login' || req.path === '/api/authorize' ||req.path === '/api/authorize/login') {
                 next();
+              
                 return;
             }
             const auth_header =  req.headers.authorization;
@@ -239,7 +240,7 @@ const access_utils_factory = () => {
     const app_api_auth_midleware =  async(req, res, next) => {
         try {
            
-             if(req.path === '/api/authorize') {
+             if(req.path === '/api/authorize' || req.path === '/api/authorize/login') {
                 next();
                 return;
             }

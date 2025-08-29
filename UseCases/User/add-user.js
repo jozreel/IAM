@@ -47,6 +47,10 @@ const add_user_use_case = ({user_db, ad_utils, sms_utils}) => {
             if(exist) {
                 throw new Error('A user with this email already exist');
             }
+            const existuname =  await user_db.find_by_username({username: data.username});
+            if(existuname) {
+                throw new Error("A user with this username already exist");
+            }
             const randcode = Math.floor(100000 + Math.random() * 900000);
             data.lastcode =  randcode;
             const user = make_user(data);
@@ -54,6 +58,7 @@ const add_user_use_case = ({user_db, ad_utils, sms_utils}) => {
             user.encryptPassword(user.getPassword());
             const result = await user_db.insert_user({
                 email: user.getEmail(),
+                username: user.getUsername(),
                 firstname: user.getFirstName(),
                 lastname: user.getLastName(),
                 password: user.getPassword(),

@@ -5,6 +5,9 @@ const createLoginFactory = ({createUTCDate, createToken}) => {
         createddate=createUTCDate(),
         appid,
         ip,
+        code,
+        responsetype='code',
+        state,
         success = false        
     } = {}) => {
         if(!uid) {
@@ -13,12 +16,20 @@ const createLoginFactory = ({createUTCDate, createToken}) => {
         if(!appid) {
             throw new Error('iInvalid Application. Contact administrator')
         }
+
+        if(responsetype === 'code' && !code) {
+            throw new Error('No code supplied');
+        }
+
         return Object.freeze({
             getUID: () => uid,
             getAppID:() => appid,
             getCreatedDate: () => createddate,
             getIP: () => ip,
             isSuccessfull: () =>success,
+            getResponseType: () => responsetype,
+            getState: () => state,
+            getCode: () => code,
             setSuccess: (val) => success =  val,
             createToken: (payload)=> createToken(payload, secret)
         });

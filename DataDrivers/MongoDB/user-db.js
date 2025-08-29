@@ -64,6 +64,39 @@ const user_db_factory =  ({makeDB, ID}) => {
             throw ex;
         }
     }
+
+
+     const find_by_username =  async ({username, password = false}={}) => {
+        try {
+            const db = await makeDB();
+            let options ={};
+            if(password = false) {
+                options.projection = {password:false};
+            }
+            const result =  await db.collection(string.USER_COLLECTION).findOne({username},options);
+            return result;
+
+
+        } catch (ex) {
+            throw ex;
+        }
+    }
+
+       const find_by_username_or_email =  async ({username, password = false}={}) => {
+        try {
+            const db = await makeDB();
+            let options ={};
+            if(password = false) {
+                options.projection = {password:false};
+            }
+            const result =  await db.collection(string.USER_COLLECTION).findOne({$or:[{username},{email:username}]},options);
+            return result;
+
+
+        } catch (ex) {
+            throw ex;
+        }
+    }
     const list_users = async ({skip=0, limit=0, appid, q, password=false}={}) => {
         try {
             const db =  await makeDB();
@@ -114,7 +147,9 @@ const user_db_factory =  ({makeDB, ID}) => {
         find_by_email,
         get_user,
         list_users,
-        find_with_role
+        find_with_role,
+        find_by_username,
+        find_by_username_or_email
     });
 }
 module.exports = user_db_factory;

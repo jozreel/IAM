@@ -91,7 +91,7 @@ const LoginPage = (data) => {
                     <svg width="52" height="52" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><defs><style>.cls-1{fill:#606161;}</style></defs><title/><g data-name="Layer 7" id="Layer_7"><path class="cls-1" d="M19.75,15.67a6,6,0,1,0-7.51,0A11,11,0,0,0,5,26v1H27V26A11,11,0,0,0,19.75,15.67ZM12,11a4,4,0,1,1,4,4A4,4,0,0,1,12,11ZM7.06,25a9,9,0,0,1,17.89,0Z"/></g></svg>
                     </div>
                       <div class="header">
-                      <h1>Kwapo Autentication</h1>
+                      <h1>Kwapo Autentications</h1>
                       <p>Please login to use kwapo services</h1>
                       </div>
                       <div class="form-field">
@@ -100,10 +100,10 @@ const LoginPage = (data) => {
                       </div>
                       <div class="form-field">
                         <label>Password</label>
-                        <input required type="password" name="username" id="username">
+                        <input required type="password" name="username" id="password">
                       </div>
                       <div class="form-button">
-                        <button class="glass" id="submit_btn" type="submit">LOGIN</button>
+                        <button onclick="javascript:void()" class="glass" id="submit_btn" type="submit">LOGIN</button>
                       </div>
                       <div>
                         <p id="message" class="message"></p>
@@ -126,8 +126,22 @@ const LoginPage = (data) => {
                    console.log(sbtn);
                    function execute_login_user() {
                        try {
-                           const formdata = {"username": "hello", "password": "massword"};
-                           const API="http://localhost:3367/api/login";
+                           
+                           
+                            const unamefield =  document.getElementById('username');
+                            const  pwdfield =  document.getElementById('password');
+                            let username;
+                            let password;
+                            if(unamefield) {
+                                console.log(unamefield.value)
+                                username =  unamefield.value;
+                            }
+                            if(pwdfield) {
+                               password =  pwdfield.value;
+                            }
+                           const formdata = {username, password};
+                           console.log(formdata);
+                           const API="http://localhost:3392/api/authorize/login";
                            const res = fetch(API, {method: "POST",  body: JSON.stringify(formdata), headers: {"content-type": "application/json"}}).then(r => r.json());
                            res.then(d => {
                                if (!res.ok) {
@@ -144,7 +158,7 @@ const LoginPage = (data) => {
                        }
                    }
                    sbtn.onclick = (e) => {
-                       alert('hey');
+                       
                        e.preventDefault();
                        execute_login_user();
                    }

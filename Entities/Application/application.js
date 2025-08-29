@@ -16,6 +16,7 @@ const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyKey, ha
         screens= [],
         domain,
         clientid,
+        loginprovider = 'openid',
         createddate,
         lastmodifieddate = createUTCDate()
     }={}) => {
@@ -74,6 +75,7 @@ const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyKey, ha
             getLastModifiedDate: () => lastmodifieddate ? lastmodifieddate : createUTCDate(),
             generateKey: ()=>generateAPIKey(),
             setClientId: (cid) => clientid =  cid,
+            getLoginProvider: () => loginprovider,
             setApiKey: (val) => apikey =  val,
             verifyKey: (key, hashed) => verifyKey(key, hashed),
             hashKey: (key) => hashKey(key),
@@ -87,6 +89,7 @@ const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyKey, ha
                 screens: screens.length > 0 && screens[0].GetId !== 'undefined' ? screens.map(s => s.ToJson()) :screens,
                 domain,
                 clientid,
+                loginprovider,
                 createddate,
                 lastmodifieddate
             })
