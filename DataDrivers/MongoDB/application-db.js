@@ -5,7 +5,7 @@ const make_access =  require('../../Entities/Access');
 const application_db_factory = ({makeDB, ID, autoID}) => {
     const insert_application = async (data) => {
         try {
-            console.log(data)
+            
             const db =  await makeDB();
             data._id = data.id;
             const result = await db.collection(strings.APP_COLLECTON).insertOne(data);
@@ -34,7 +34,7 @@ const application_db_factory = ({makeDB, ID, autoID}) => {
             const db =  await makeDB();
             const result = await db.collection(strings.APP_COLLECTON).findOne({_id});
             
-            console.log(result, "result", id);
+           
             if(result) {
               const res =  build_application(result);
               return res;

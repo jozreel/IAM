@@ -1,12 +1,5 @@
-const factorPage = require('./2-factor-page');
-const LoginPage = (data) => {
-
-    let factorPart;
-    if(data.hasMultiFactor) {
-        factorPart = factorPage({channel: 'email'});
-    }
-     return `
-           <html>
+const TwoFactorPage = (data) => {
+        return `<html>
                <head>
                <title>Kwapo OAuth Login</title>
                <link rel="stylesheet"href="https://fonts.googleapis.com/css?family=Google+Sans:400,500|Roboto:400,400italic,500,500italic,700,700italic|Roboto+Mono:400,500,700&display=swap">
@@ -97,36 +90,24 @@ const LoginPage = (data) => {
                     <svg width="52" height="52" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><defs><style>.cls-1{fill:#606161;}</style></defs><title/><g data-name="Layer 7" id="Layer_7"><path class="cls-1" d="M19.75,15.67a6,6,0,1,0-7.51,0A11,11,0,0,0,5,26v1H27V26A11,11,0,0,0,19.75,15.67ZM12,11a4,4,0,1,1,4,4A4,4,0,0,1,12,11ZM7.06,25a9,9,0,0,1,17.89,0Z"/></g></svg>
                     </div>
                       <div class="header">
-                      <h1>Kwapo Autentications</h1>
-                      <p>Please login to use kwapo services</h1>
+                      <h1>2 Factor Auth</h1>
+                      <p>Please enter the code received by ${data?.channel} </h1>
                       </div>
                       <div class="form-field">
                         <label>Username</label>
-                        <input type="text" required name="username" id="username">
-                      </div>
-                      <div class="form-field">
-                        <label>Password</label>
-                        <input required type="password" name="username" id="password">
+                        <input type="text" required name="code" id="code">
                       </div>
                       <div class="form-button">
-                        <button onclick="javascript:void()" class="glass" id="submit_btn" type="submit">LOGIN</button>
+                        <button onclick="javascript:void()" class="glass" id="code_btn" type="submit">SUBMIT CODE</button>
+                        <button onclick="javascript:void()" class="glass" id="resend_btn" type="submit">REESEND CODE</button>
                       </div>
                       <div>
                         <p id="message" class="message"></p>
                       </div>
                       </div>
-                      <div id="req_params>
-                        <input type="hidden" id="client_id" value=${data.client_id} />
-                        <input type="hidden" id="response_id" value=${data.response_type} />
-                        <input type="hidden" id="scope" value=${data.scope} />
-                        <input type="hidden" id="redirect_uri" value=${data.redirect_uri} />
-                        <input type="hidden" id="code_challenge" value=${data.codechallenge} />
-                      </div>
+
                     </form>
 
-                 </div>
-                 <div id="factor">
-                    ${factorPart}
                  </div>
 
                  <script type="text/javascript">
@@ -176,7 +157,7 @@ const LoginPage = (data) => {
 
            </html>
         `
+    
 }
 
-
-module.exports=LoginPage;
+module.exports = TwoFactorPage;

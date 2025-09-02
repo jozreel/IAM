@@ -44,6 +44,7 @@ const authorization_code = ({verify_token}) => {
 
             if(!loggedin) {
                 console.log('checking')
+                data.hasMultiFactor = true;
                 return {
                     type: 'page',
                     data: LoginPage(data)
