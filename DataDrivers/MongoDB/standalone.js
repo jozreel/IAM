@@ -2,7 +2,7 @@ const MongoClient =  require('mongodb').MongoClient;
 const ObjectID  =  require('mongodb').ObjectId;
 const url = process.env.DBURL;
 const dbname = process.env.DBNAME;
-const dbclient =  new MongoClient(url, {useNewUrlParser: true, useUnifiedTopology: true});
+const dbclient =  new MongoClient(url);
 let cachedb;
 const makeDB = async () => {
 

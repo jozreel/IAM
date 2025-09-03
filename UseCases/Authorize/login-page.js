@@ -89,7 +89,7 @@ const LoginPage = (data) => {
                </style>
                </head>
                <body>
-                 <div class="login-form">
+                 <div class="login-form" id="lg-form">
                     <form>
                     
                      <div class="glass">
@@ -115,17 +115,19 @@ const LoginPage = (data) => {
                         <p id="message" class="message"></p>
                       </div>
                       </div>
-                      <div id="req_params>
+                      <div id="req_params">
                         <input type="hidden" id="client_id" value=${data.client_id} />
                         <input type="hidden" id="response_id" value=${data.response_type} />
                         <input type="hidden" id="scope" value=${data.scope} />
                         <input type="hidden" id="redirect_uri" value=${data.redirect_uri} />
-                        <input type="hidden" id="code_challenge" value=${data.codechallenge} />
+                        <input type="hidden" id="code_challenge" value=${data.code_challenge} />
+                        <input type="hidden" id="challenge_method" value=${data.code_challenge_method} />
+                          <input type="hidden" id="state" value=${data.state} />
                       </div>
                     </form>
 
                  </div>
-                 <div id="factor">
+                 <div id="factor" style="display: none;">
                     ${factorPart}
                  </div>
 
@@ -148,15 +150,43 @@ const LoginPage = (data) => {
                             if(pwdfield) {
                                password =  pwdfield.value;
                             }
-                           const formdata = {username, password};
+                            const client_inp =  document.getElementById('client_id');
+                            const resp_inp =  document.getElementById('response_id');
+                            const scope_inp =  document.getElementById('scope');
+                            const redir_inp =  document.getElementById('redirect_uri');
+                            const code_inp = document.getElementById('code_challenge');
+                            const state_inp = document.getElementById('state');
+                            const challenge_methode = document.getElementById('challenge_method');
+                            const client_id =  client_inp?.value;
+                            const response_type =  resp_inp?.value;
+                            const scope =  scope_inp?.value;
+                            const redirect_uri = redir_inp?.value;
+                            const code_challenge =  code_inp?.value;
+                            const code_challenge_method =  challenge_method?.value;
+                            const state =  state_inp?.value;
+                            const formdata = {username, password, client_id, response_type, scope, redirect_uri, code_challenge, code_challenge_method, state};
                            console.log(formdata);
-                           const API="http://localhost:3392/api/authorize/login";
+                           const API="http://localhost:3992/api/authorize/login";
                            const res = fetch(API, {method: "POST",  body: JSON.stringify(formdata), headers: {"content-type": "application/json"}}).then(r => r.json());
                            res.then(d => {
+                               console.log(d);
+                               if(d.id && d.code) {
+                                  const lgform = document.getElementById('lg-form');
+                                  if(lgform) {
+                                    const tfac =  document.getElementById('factor');
+                                    if(tfac) {
+                                        lgform.style.display = 'none';
+                                       
+                                        tfac.style.display =  'block'
+                                    }
+                                  }
+                               }
+                               
                                if (!res.ok) {
                                    msg.innerHTML = d ? d.message: 'Oops! There was an error while processing your request';
                                }
                                // console.log(data);
+                               
                            }).catch(e => {
                                console.log(e);
                            })

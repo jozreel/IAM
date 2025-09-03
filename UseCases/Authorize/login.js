@@ -32,7 +32,7 @@ const login =  ({login_db, applicationdb, user_db, ad_utils}) => {
         try {
         
             user.encryptPassword(user.getPassword());
-            console.log(user.getPassword(), " NEW PASSWORD", data.oldpassword)
+           
             if(user.getPassword() === data.oldpassword) {
                
                 if(data.response_type === 'code') {
@@ -59,7 +59,7 @@ const login =  ({login_db, applicationdb, user_db, ad_utils}) => {
           const code = crypto.randomBytes(24).toString('hex');
                      const login =  make_login({
                                     ...data,
-                                    appid: data.clientid,
+                                    appid: data.client_id,
                                     uid: data.uid.toString(),
                                     success: true,
                                     code
@@ -80,7 +80,7 @@ const login =  ({login_db, applicationdb, user_db, ad_utils}) => {
                         id: login_saved._id,
                         code: code,
                         scope: data.scope,
-                        clientid: data.clientid,
+                        client_id: data.client_id,
                         state: login.getState()
                     }
 
@@ -90,19 +90,19 @@ const login =  ({login_db, applicationdb, user_db, ad_utils}) => {
     return async (req) => {
         try {
             
-            const {username, password, code, scope, clientid, code_challenge, challenge_method, response_type, state} =  req.data;
+            const {username, password, code, scope, client_id, code_challenge, code_challenge_method, response_type, state} =  req.data;
 
             if(!username) {
                 throw new Error('Invalid login');
             }
-            if(!clientid) {
+            if(!client_id) {
                 throw new Error('Invalid application');
             }
 
             
             const uname = username.toLowerCase();
             const exist =  await user_db.find_by_username_or_email({username: uname, password: true});
-            
+            console.log(exist);
             //check if userstatus is enabled
             if(!exist) {
                 throw new Error('The user was not found');
@@ -112,7 +112,7 @@ const login =  ({login_db, applicationdb, user_db, ad_utils}) => {
             const user =  make_user({...exist, password});
            
             const apps =  user.getApplications();
-            const access =  apps.find(a => a.appid === clientid);
+            const access =  apps.find(a => a.appid === client_id);
             if(!access) {
                 throw new Error('You are not authaurised to access this application');
             }
@@ -127,7 +127,7 @@ const login =  ({login_db, applicationdb, user_db, ad_utils}) => {
             if(loginType === LoginProviderTypes.AD) {
 
             } else if(loginType === LoginProviderTypes.OPENID) {
-                const res = await OpenIdLogin(user, {code, scope, clientid, code_challenge, challenge_method, response_type, state, uid: exist._id, oldpassword: exist.password});
+                const res = await OpenIdLogin(user, {code, scope, client_id, code_challenge, code_challenge_method, response_type, state, uid: exist._id, oldpassword: exist.password});
                 return res;
             } else throw new Error('Invalid login provider type');
 
