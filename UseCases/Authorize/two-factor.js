@@ -1,10 +1,15 @@
 const make_login =  require('../../Entities/Login');
-const two_factor = ({login_db, user_db}) => {
+const two_factor = ({login_db, app_db}) => {
     return async (req) => {
         try {
-            const multifactor_provider =  'local';
+            const {userid, authcode, loginid, clientid} = req.data;
+            const app =  await app_db.get_application(clientid);
+            if(!app) {
+                throw new Error('Invalid application');
+            }
+            const multifactor_provider =  app.multifactorprovider;
             if(multifactor_provider === 'local') {
-                const {userid, authcode, loginid} = req.data;
+                
                 const login =  await login_db.get_login(loginid);
                 if(!login) {
                     throw new Error('Could not find login');

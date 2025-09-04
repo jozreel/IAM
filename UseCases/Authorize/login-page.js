@@ -170,7 +170,7 @@ const LoginPage = (data) => {
                            const res = fetch(API, {method: "POST",  body: JSON.stringify(formdata), headers: {"content-type": "application/json"}}).then(r => r.json());
                            res.then(d => {
                                console.log(d);
-                               if(d.id && d.code) {
+                               if(d.id) {
                                   const lgform = document.getElementById('lg-form');
                                   if(lgform) {
                                     const tfac =  document.getElementById('factor');

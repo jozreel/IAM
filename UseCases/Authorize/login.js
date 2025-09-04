@@ -42,7 +42,7 @@ const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) =
                        const two_factor_channel =  data.two_factor_channel;
                         const randcode = Math.floor(100000 + Math.random() * 900000);
                         data.multifactorcode = randcode;
-                        res =  await create_code_login(data);
+                        res =  await create_basic_login(data);
                         user.createLastCodeCreatedTime();
                       
                        if(two_factor_channel === multiFactorChannels.EMAIL) {
@@ -85,7 +85,7 @@ const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) =
     const create_code_login = async (data) => {
           console.log(data)
           const code = crypto.randomBytes(24).toString('hex');
-                     const login =  make_login({
+          const login =  make_login({
                                     ...data,
                                     appid: data.client_id,
                                     uid: data.uid.toString(),
@@ -114,6 +114,43 @@ const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) =
                     }
 
                     return res;
+    }
+
+
+    const create_basic_login = async (data) => {
+        try {
+            
+          const login =  make_login({
+                    ...data,
+                    appid: data.client_id,
+                    uid: data.uid.toString(),
+                    success: true,
+                    });
+                    //update login entity to includde these
+                    const login_saved = await login_db.insert_login({
+                        appid: login.getAppID(),
+                        uid: login.getUID(),
+                        ip: login.getIP(),
+                        responsetype: login.getResponseType(),
+                        state: login.getState(),
+                        createddate: login.getCreatedDate(),
+                        success: login.isSuccessfull(),
+                        multifactorcode: login.getMultiFactorCode()
+                    });
+                    const res = {
+                        id: login_saved._id,
+                        scope: data.scope,
+                        client_id: data.client_id,
+                        state: login.getState()
+                    }
+
+                    return res;
+
+        } catch (ex) {
+            throw ex;
+        }
+
+
     }
 
     return async (req) => {

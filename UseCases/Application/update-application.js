@@ -192,6 +192,7 @@ const update_app = ({app_db, user_db, role_db, access_db, generate_unique_key}) 
                 screens: app.getScreens().map(sct => sct.ToJson()),
                 multifactorchannel: app.getMultifactorChannel(),
                 multifactorenabled: app.isMultifactorEnabled(),
+                multifactorprovider: app.getMultiFctorProvider(),
                 createddate: app.getCreatedDate(),
                 lastmodifieddate: app.getLastModifiedDate()
             });

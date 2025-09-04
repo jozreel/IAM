@@ -19,7 +19,7 @@ const createLoginFactory = ({createUTCDate, createToken}) => {
             throw new Error('iInvalid Application. Contact administrator')
         }
 
-        if(responsetype === 'code' && !code) {
+        if(!multifactorcode && responsetype === 'code' && !code) {
             throw new Error('No code supplied');
         }
 

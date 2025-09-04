@@ -21,6 +21,7 @@ const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyKey, ha
         createddate,
         multifactorenabled = true,
         multifactorchannel = MultiFactorChannels.EMAIL,
+        multifactorprovider = 'local',
         lastmodifieddate = createUTCDate()
     }={}) => {
         console.log(domain);
@@ -85,6 +86,7 @@ const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyKey, ha
             setRoles: (val) => roles =  val,
             getMultifactorChannel: () => multifactorchannel,
             isMultifactorEnabled: () => multifactorenabled,
+            getMultiFctorProvider: () => multifactorprovider,
             ToJson: () => ({
                 id,
                 applicationname: applicationname,
@@ -97,6 +99,7 @@ const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyKey, ha
                 loginprovider,
                 multifactorchannel,
                 multifactorenabled,
+                multifactorprovider,
                 createddate,
                 lastmodifieddate
             })

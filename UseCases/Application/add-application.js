@@ -64,6 +64,7 @@ const add_application = ({app_db}) => {
                 roles: app.getRoles().map(r => r.ToJson()),
                 multifactorenabled: app.isMultifactorEnabled(),
                 multifactorchannel: app.getMultifactorChannel(),
+                multifactorprovider: app.getMultiFctorProvider(),
                 createddate: app.getCreatedDate(),
                 lastmodifieddate: app.getLastModifiedDate()
             });
