@@ -9,7 +9,8 @@ const createLoginFactory = ({createUTCDate, createToken}) => {
         responsetype='code',
         state,
         success = false,
-        multifactorcode     
+        multifactorcode,
+        multifactorcodetime     
     } = {}) => {
         if(!uid) {
             throw new Error('Invalid user. Trya again');
@@ -34,6 +35,7 @@ const createLoginFactory = ({createUTCDate, createToken}) => {
             getCode: () => code,
             setSuccess: (val) => success =  val,
             getMultiFactorCode: () => multifactorcode,
+            getMultifactorCodeTime: () => multifactorcodetime ? createUTCDate(multifactorcodetime) : createUTCDate(),
             createToken: (payload)=> createToken(payload, secret)
         });
     }
