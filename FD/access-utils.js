@@ -84,9 +84,12 @@ const access_utils_factory = () => {
             const pload = JSON.parse(Buffer.from(enc_payload, 'base64').toString('utf-8'));
             const now =  Math.floor(Date.now() / 1000) 
             if(pload.exp && pload.exp < now) {
+                console.log('expired');
                 throw new Error('Token has expired');
             }
             return pload;
+        } else {
+            throw new Error("Invalid token");
         }
     }
 
@@ -217,7 +220,7 @@ const access_utils_factory = () => {
                 const token = auth_header_parts[1].trim();
                 if(token !== '') {
                    
-                    const has_access = verify_token(login_secret, token);
+                    const has_access = verify_toket_asymetric(token);
                     
                     req.access = has_access.payload;
                     next();

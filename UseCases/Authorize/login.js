@@ -2,7 +2,8 @@ const { default: LoginProviderTypes } = require('../../Entities/Application/logi
 const make_user = require('../../Entities/User');
 const make_login =  require('../../Entities/Login');
 const crypto = require('crypto');
-const login =  ({login_db, applicationdb, user_db, ad_utils}) => {
+const multiFactorChannels = require('../../Entities/Application/multi-factor-channels');
+const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) => {
      
 
     const AdLogin = async (user, data) => {
@@ -36,7 +37,33 @@ const login =  ({login_db, applicationdb, user_db, ad_utils}) => {
             if(user.getPassword() === data.oldpassword) {
                
                 if(data.response_type === 'code') {
-                   const res =  await create_code_login(data);  
+                   let res;
+                   if(data.multifactor_enabled) {
+                       const two_factor_channel =  data.two_factor_channel;
+                        const randcode = Math.floor(100000 + Math.random() * 900000);
+                        data.multifactorcode = randcode;
+                        res =  await create_code_login(data);
+                        user.createLastCodeCreatedTime();
+                      
+                       if(two_factor_channel === multiFactorChannels.EMAIL) {
+                         const mail = {
+                            subject: "AUthorization code",
+                            html: `<p>Your authentication code id ${randcode} </p>`,
+                            to: 'jozreellaurent@outlook.com',
+                            from: "support@veppz.com"
+                         }
+                         console.log(mail)
+                         await message_service.email_util.SendEmail(mail);
+
+                       } else if (two_factor_channel === multiFactorChannels.SMS) {
+                         const msg = 'Your one time use code is '+randcode;
+                         await  message_service.sms_util.SendSmsLocal('12843452904', msg)
+                       }
+                   } else {
+                       res =  await create_code_login(data);
+                   
+                   }
+                   
                    return res;
                   
                 } else {
@@ -48,6 +75,7 @@ const login =  ({login_db, applicationdb, user_db, ad_utils}) => {
 
 
         } catch (ex) {
+            console.log(ex);
             throw ex;
         }
 
@@ -74,7 +102,8 @@ const login =  ({login_db, applicationdb, user_db, ad_utils}) => {
                         responsetype: login.getResponseType(),
                         state: login.getState(),
                         createddate: login.getCreatedDate(),
-                        success: login.isSuccessfull()
+                        success: login.isSuccessfull(),
+                        multifactorcode: login.getMultiFactorCode()
                     });
                     const res = {
                         id: login_saved._id,
@@ -127,7 +156,10 @@ const login =  ({login_db, applicationdb, user_db, ad_utils}) => {
             if(loginType === LoginProviderTypes.AD) {
 
             } else if(loginType === LoginProviderTypes.OPENID) {
-                const res = await OpenIdLogin(user, {code, scope, client_id, code_challenge, code_challenge_method, response_type, state, uid: exist._id, oldpassword: exist.password});
+                const res = await OpenIdLogin(user, {code, scope, client_id, code_challenge, code_challenge_method, response_type, state, uid: exist._id, oldpassword: exist.password,
+                    two_factor_channel: app.getMultifactorChannel(),
+                    multifactor_enabled: app.isMultifactorEnabled()
+                });
                 return res;
             } else throw new Error('Invalid login provider type');
 

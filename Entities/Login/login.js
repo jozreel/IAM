@@ -8,7 +8,8 @@ const createLoginFactory = ({createUTCDate, createToken}) => {
         code,
         responsetype='code',
         state,
-        success = false        
+        success = false,
+        multifactorcode     
     } = {}) => {
         if(!uid) {
             throw new Error('Invalid user. Trya again');
@@ -21,6 +22,7 @@ const createLoginFactory = ({createUTCDate, createToken}) => {
             throw new Error('No code supplied');
         }
 
+
         return Object.freeze({
             getUID: () => uid,
             getAppID:() => appid,
@@ -31,6 +33,7 @@ const createLoginFactory = ({createUTCDate, createToken}) => {
             getState: () => state,
             getCode: () => code,
             setSuccess: (val) => success =  val,
+            getMultiFactorCode: () => multifactorcode,
             createToken: (payload)=> createToken(payload, secret)
         });
     }

@@ -62,6 +62,8 @@ const add_application = ({app_db}) => {
                 domain: app.getDomain(),
                 screens: app.getScreens().map(s => s.ToJson()),
                 roles: app.getRoles().map(r => r.ToJson()),
+                multifactorenabled: app.isMultifactorEnabled(),
+                multifactorchannel: app.getMultifactorChannel(),
                 createddate: app.getCreatedDate(),
                 lastmodifieddate: app.getLastModifiedDate()
             });

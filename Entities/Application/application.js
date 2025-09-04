@@ -2,6 +2,7 @@ const secret = require('../../KEYS').app_secret;
 const make_screen =  require('../Access');
 
 const make_role =  require('../Role');
+const MultiFactorChannels = require('./multi-factor-channels');
 const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyKey, hashKey}) => {
     const MaxAppNmameLength = 120;
     const MaxDomainLength = 120;
@@ -18,6 +19,8 @@ const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyKey, ha
         clientid,
         loginprovider = 'openid',
         createddate,
+        multifactorenabled = true,
+        multifactorchannel = MultiFactorChannels.EMAIL,
         lastmodifieddate = createUTCDate()
     }={}) => {
         console.log(domain);
@@ -80,6 +83,8 @@ const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyKey, ha
             verifyKey: (key, hashed) => verifyKey(key, hashed),
             hashKey: (key) => hashKey(key),
             setRoles: (val) => roles =  val,
+            getMultifactorChannel: () => multifactorchannel,
+            isMultifactorEnabled: () => multifactorenabled,
             ToJson: () => ({
                 id,
                 applicationname: applicationname,
@@ -90,6 +95,8 @@ const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyKey, ha
                 domain,
                 clientid,
                 loginprovider,
+                multifactorchannel,
+                multifactorenabled,
                 createddate,
                 lastmodifieddate
             })

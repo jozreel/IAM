@@ -190,6 +190,8 @@ const update_app = ({app_db, user_db, role_db, access_db, generate_unique_key}) 
                 domain: app.getDomain(),
                 roles: app.getRoles().map(r => ({...r.ToJson(), access: r.GetAccess().map(a => a.GetId())})),
                 screens: app.getScreens().map(sct => sct.ToJson()),
+                multifactorchannel: app.getMultifactorChannel(),
+                multifactorenabled: app.isMultifactorEnabled(),
                 createddate: app.getCreatedDate(),
                 lastmodifieddate: app.getLastModifiedDate()
             });

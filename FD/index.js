@@ -4,6 +4,7 @@ const request_handler =  require('./request-handler');
 const raw_request_handler =  require('./raw-request-handler');
 const ad_utils =  require('./active-directory-utils');
 const file_request_handler = require('./file-request-handler');
+const email_util = require('./email-util');
 const sms_util = require('./sms-util');
 
 module.exports =  Object.freeze({
@@ -14,5 +15,7 @@ module.exports =  Object.freeze({
     file_request_handler,
     ad_utils: ad_utils(),
     sms_util: new sms_util(),
+    email_util,
+    message_util: {email_util,  sms_util: new sms_util()}
     
 });
