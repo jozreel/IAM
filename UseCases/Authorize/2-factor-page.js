@@ -12,7 +12,7 @@ const TwoFactorPage = (data) => {
                       <p>Please enter the code received by ${data?.channel} </h1>
                       </div>
                       <div class="form-field">
-                        <input type="text" required name="code" id="code">
+                        <input type="text" required name="code" id="authcode">
                       </div>
                       <div class="form-button" style="display: flex; align items: cemter; gap: .75rem;">
                         <button onclick="javascript:void()" class="glass" id="code_btn" type="submit">SUBMIT CODE</button>

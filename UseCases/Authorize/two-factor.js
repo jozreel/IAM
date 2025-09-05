@@ -24,6 +24,8 @@ const two_factor = ({login_db, app_db}) => {
                                 multifactorcodetime: null
                                 
                             });
+
+                    //check the code challenge again.
                     const upd =  await login_db.update_login({
                         id: loginid,
                         code,

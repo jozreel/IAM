@@ -1,6 +1,9 @@
 const factorPage = require('./2-factor-page');
 const LoginPage = (data) => {
 
+
+
+
     let factorPart;
     if(data.hasMultiFactor) {
         factorPart = factorPage({channel: 'email'});
@@ -201,11 +204,58 @@ const LoginPage = (data) => {
                        e.preventDefault();
                        execute_login_user();
                    }
+                   const codebtn =  document.getElementById('code_btn');
+                   if(codebtn) {
+                      coodebtn.onclick = (e) => {
+                            e.preventDefault();
+                            TwoFactor();
+                        }
+                   }
+                
+                const TwoFactor = async () => {
+                       try {
+                           const API = 'http://localhost:3992/api/authoroize/twofactor';
+                           const authcode_inp =  document.getElementById('authcode');
+                           const resp_inp =  document.getElementById('response_id');
+                           const scope_inp =  document.getElementById('scope');
+                           const client_inp =  document.getElementById('client_id');
+                           const redir_inp =  document.getElementById('redirect_uri');
+                            const code_inp = document.getElementById('code_challenge');
+                            const state_inp = document.getElementById('state');
+                            const challenge_methode = document.getElementById('challenge_method');
+                            const client_id =  client_inp?.value;
+                            const response_type =  resp_inp?.value;
+                            const scope =  scope_inp?.value;
+                            const redirect_uri = redir_inp?.value;
+                            const code_challenge =  code_inp?.value;
+                            const code_challenge_method =  challenge_method?.value;
+                            const state =  state_inp?.value;
+                           const authcode =  authcode_inp.value;
+                           const data = {authcode, client_id, scope, redirect_uri, code_challenge, code_challenge_method, state}
+                          const res = await fetch(API, {
+                             method: 'POST',
+                             body: JSON.stringify(data),
+                             headers: {
+                                'Content-Type': 'application/json'
+                             }
+                          });
+                          if(!res.ok) {
+                              console.log('Incorrect code');
+                          }
+
+                          //migh not be needed as will be redirected to the client cb but for testing purposes
+                          const resdata =  await res.json();
+                          // send code for token;
+                       } catch(ex) {
+                           console.log(ex); 
+                       }
+                    }
                  </script>
                </body>
 
            </html>
         `
+
 }
 
 
