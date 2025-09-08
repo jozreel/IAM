@@ -9,5 +9,5 @@ const authorize_router =  Router();
 authorize_router.get('/', [cookieParser()], mixed_request_handler(auth_controller.AuthorizeController));
 authorize_router.post('/', [cookieParser(), urlencoded({extended: true})], mixed_request_handler(auth_controller.AuthorizePostController))
 authorize_router.post('/login', [cookieParser(), json()], request_handler(auth_controller.LoginController))
-authorize_router.post('/twofactor', json(), request_handler(auth_controller.TwoFactorController))
+authorize_router.post('/twofactor', json(), mixed_request_handler(auth_controller.TwoFactorController))
 module.exports = authorize_router;

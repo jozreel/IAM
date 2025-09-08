@@ -1,7 +1,7 @@
 const make_application =  require('../../Entities/Application');
 const make_role = require('../../Entities/Role');
 const make_access = require('../../Entities/Access');
-const update_app = ({app_db, user_db, role_db, access_db, generate_unique_key}) => {
+const update_app = ({app_db, user_db, role_db, access_db, generate_unique_key, encrypt_string}) => {
     const check_roles = async (oldroles, newroles, appscreens) => {
         const nrmap =  new Map(newroles.map(r => [r.GetId(), true]));
        
@@ -142,7 +142,11 @@ const update_app = ({app_db, user_db, role_db, access_db, generate_unique_key}) 
                 changes.roles = ro;
             }
 
-           
+            if(changes.adminpassword) {
+
+                changes.adminpassword =  await encrypt_string(changes.adminpassword); 
+
+            }
             
             const app =  make_application({...exist.ToJson(), ...changes});
            
@@ -180,6 +184,10 @@ const update_app = ({app_db, user_db, role_db, access_db, generate_unique_key}) 
                 app.setApiKey(key);
             }
 
+            
+
+           
+
           // console.log(app.getRoles().map(r => r.ToJson()));
             const result =  await app_db.update_application({
                 id,
@@ -193,6 +201,8 @@ const update_app = ({app_db, user_db, role_db, access_db, generate_unique_key}) 
                 multifactorchannel: app.getMultifactorChannel(),
                 multifactorenabled: app.isMultifactorEnabled(),
                 multifactorprovider: app.getMultiFctorProvider(),
+                adminpassword: app.getAdminPassword(),
+                adminusername: app.getAdminUsername(),
                 createddate: app.getCreatedDate(),
                 lastmodifieddate: app.getLastModifiedDate()
             });

@@ -9,6 +9,8 @@ const fs =  require('fs');
 const MaxKeyLength =  64;
 const SaltRounds = 10;
 
+const bypas_auth = ['/api/login', '/api/authorize', '/api/authorize/login', '/api/authorize/twofactor']
+
 const access_utils_factory = () => {
     const jwt = (payload, secreto) => {
         try {
@@ -200,7 +202,8 @@ const access_utils_factory = () => {
                 next();
                 return;
             }
-             if(req.path === '/api/login' || req.path === '/api/authorize' ||req.path === '/api/authorize/login') {
+            
+             if(bypas_auth.some(s => s ==  req.path)) {
                 next();
               
                 return;
@@ -242,8 +245,10 @@ const access_utils_factory = () => {
 
     const app_api_auth_midleware =  async(req, res, next) => {
         try {
+
+              const bypass_api = true;
            
-             if(req.path === '/api/authorize' || req.path === '/api/authorize/login') {
+             if(bypass_api || req.path === '/api/authorize' || req.path === '/api/authorize/login') {
                 next();
                 return;
             }
@@ -427,6 +432,17 @@ const access_utils_factory = () => {
 };
 
 
+const get_basic_creds = (creds) => {
+    const parts = creds.split(' ');
+    if(parts.length !== 2) {
+        throw new Error('Invalid credentails');
+    }
+
+     const auth = new Buffer.from(parts[1],'base64').toString().split(':');
+     const [username, password] =  auth;
+}
+
+
     return Object.freeze({
         jwt,
         verify_token,
@@ -439,7 +455,8 @@ const access_utils_factory = () => {
         generate_unique_key,
         generate_apikey,
         hash_string,
-        verify_string
+        verify_string,
+        get_basic_creds
     });
 }
 

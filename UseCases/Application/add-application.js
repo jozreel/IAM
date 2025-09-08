@@ -1,7 +1,7 @@
 const make_application = require('../../Entities/Application');
 const make_role =  require('../../Entities/Role');
 const make_access =  require('../../Entities/Access');
-const add_application = ({app_db}) => {
+const add_application = ({app_db, encrypt_string}) => {
     return async (data) => {
         try {
             const scrnobjmap = new Map();
@@ -53,6 +53,13 @@ const add_application = ({app_db}) => {
                 }
                 data.roles = approles;
             };
+
+             if(data.adminpassword) {
+
+                data.adminpassword =  await encrypt_string(data.adminpassword); 
+
+            }
+
             const app =  make_application(data);
             const result =  await app_db.insert_application({
                 id: app.getId(),
@@ -65,6 +72,8 @@ const add_application = ({app_db}) => {
                 multifactorenabled: app.isMultifactorEnabled(),
                 multifactorchannel: app.getMultifactorChannel(),
                 multifactorprovider: app.getMultiFctorProvider(),
+                adminpassword: app.getAdminPassword(),
+                adminusername: app.getAdminUsername(),
                 createddate: app.getCreatedDate(),
                 lastmodifieddate: app.getLastModifiedDate()
             });

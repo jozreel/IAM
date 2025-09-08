@@ -6,7 +6,7 @@ const post_login_controller = ({add_login}) => {
             // get apid from api token
             const data =  request.body;
             data.serverip =  request.ip;
-            data.appid = request.appid;
+            if(!data.appid) data.appid = request.appid;
             const referer = request.headers["Referer"];
             console.log(referer);
             const result =  await add_login(data);

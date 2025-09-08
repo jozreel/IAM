@@ -21,11 +21,11 @@ const makeDB = async () => {
 }
 const ID = (id) => {
     
-    if(typeof id !== 'string') {
+    if(typeof id === 'string') {
         if(id.length !== 24) {
         return;
       }
-        id =  id.toString();
+       // id =  id.toString();
         return new ObjectID(id);
     } else {
         return id;
@@ -69,6 +69,7 @@ const app_db =  require('./application-db');
 const login_db =  require('./login-db');
 const role_db_factory = require('./role-db');
 const access_db_factory  = require('./access-db');
+const token_db = require('./token-db');
 
 
 module.exports =  Object.freeze({
@@ -78,6 +79,7 @@ module.exports =  Object.freeze({
     login_db: login_db({makeDB, ID}),
     role_db: role_db_factory({makeDB, ID}),
     access_db: access_db_factory({makeDB, ID, autoID}),
+    token_db: token_db({makeDB, ID}),
     ID,
     autoID
 });

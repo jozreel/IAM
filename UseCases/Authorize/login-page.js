@@ -100,7 +100,7 @@ const LoginPage = (data) => {
                     <svg width="52" height="52" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><defs><style>.cls-1{fill:#606161;}</style></defs><title/><g data-name="Layer 7" id="Layer_7"><path class="cls-1" d="M19.75,15.67a6,6,0,1,0-7.51,0A11,11,0,0,0,5,26v1H27V26A11,11,0,0,0,19.75,15.67ZM12,11a4,4,0,1,1,4,4A4,4,0,0,1,12,11ZM7.06,25a9,9,0,0,1,17.89,0Z"/></g></svg>
                     </div>
                       <div class="header">
-                      <h1>Kwapo Autentications</h1>
+                      <h1>Kwapo Autentication</h1>
                       <p>Please login to use kwapo services</h1>
                       </div>
                       <div class="form-field">
@@ -173,6 +173,10 @@ const LoginPage = (data) => {
                            const res = fetch(API, {method: "POST",  body: JSON.stringify(formdata), headers: {"content-type": "application/json"}}).then(r => r.json());
                            res.then(d => {
                                console.log(d);
+                               const login_id_inp =  document.getElementById('loginid');
+                               if(login_id_inp) {
+                                  login_id_inp.value = d.id;
+                               }
                                if(d.id) {
                                   const lgform = document.getElementById('lg-form');
                                   if(lgform) {
@@ -206,7 +210,9 @@ const LoginPage = (data) => {
                    }
                    const codebtn =  document.getElementById('code_btn');
                    if(codebtn) {
-                      coodebtn.onclick = (e) => {
+                     
+                      codebtn.onclick = (e) => {
+                           
                             e.preventDefault();
                             TwoFactor();
                         }
@@ -214,7 +220,7 @@ const LoginPage = (data) => {
                 
                 const TwoFactor = async () => {
                        try {
-                           const API = 'http://localhost:3992/api/authoroize/twofactor';
+                           const API = 'http://localhost:3992/api/authorize/twofactor';
                            const authcode_inp =  document.getElementById('authcode');
                            const resp_inp =  document.getElementById('response_id');
                            const scope_inp =  document.getElementById('scope');
@@ -222,6 +228,7 @@ const LoginPage = (data) => {
                            const redir_inp =  document.getElementById('redirect_uri');
                             const code_inp = document.getElementById('code_challenge');
                             const state_inp = document.getElementById('state');
+                             const login_id_inp =  document.getElementById('loginid');
                             const challenge_methode = document.getElementById('challenge_method');
                             const client_id =  client_inp?.value;
                             const response_type =  resp_inp?.value;
@@ -231,7 +238,8 @@ const LoginPage = (data) => {
                             const code_challenge_method =  challenge_method?.value;
                             const state =  state_inp?.value;
                            const authcode =  authcode_inp.value;
-                           const data = {authcode, client_id, scope, redirect_uri, code_challenge, code_challenge_method, state}
+                           const loginid = login_id_inp?.value;
+                           const data = {authcode, client_id, scope, redirect_uri, code_challenge, code_challenge_method, state, loginid}
                           const res = await fetch(API, {
                              method: 'POST',
                              body: JSON.stringify(data),
@@ -242,12 +250,14 @@ const LoginPage = (data) => {
                           if(!res.ok) {
                               console.log('Incorrect code');
                           }
+                        console.log(res);
+                          if(res.redirected) {
+                             window.location =  res.url;
+                          }
 
-                          //migh not be needed as will be redirected to the client cb but for testing purposes
-                          const resdata =  await res.json();
-                          // send code for token;
+                         
                        } catch(ex) {
-                           console.log(ex); 
+                           console.log(ex, 'error'); 
                        }
                     }
                  </script>

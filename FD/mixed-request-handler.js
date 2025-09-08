@@ -10,6 +10,7 @@ const MixedRequestHandler = (controller) => {
                 ip: req.ip,
                 method: req.method,
                 access: req.access,
+                credentials: req.headers.authorization,
                 path: req.path,
                 appid: req.appid,
                 headers: {
@@ -26,8 +27,8 @@ const MixedRequestHandler = (controller) => {
                 res.set(result.headers)
             }
 
-            if(result.cookie) {
-                res.cookie(result.cookiename, result.cookeievalue, result.options);
+            if(result.cookies) {
+                result.cookies.forEach(c => res.cookie(result.name, result.value, result.options));
             }
 
             if(result.redirect || result.statusCode === 302 || res.statusCode === 301) {
@@ -42,10 +43,12 @@ const MixedRequestHandler = (controller) => {
                 res.set('Content-Type', 'text/html');
                 res.status(result.statusCode)
                 .send(Buffer.from(result.body));
-            } else if(res.type === 'file') {
+            } else if(type === 'file') {
                 res.type('application/octet-stream');
                 res.status(result.statusCode)
                 result.body.pipe(res);
+            } else if(type === 'redirect') {
+                res.redirect(result.body.url);
             } else {
                   res.type('json');
                   res.status(result.statusCode)

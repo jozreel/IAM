@@ -2,6 +2,7 @@
 const http_request_handler = (controller) => {
     return  async (req, res) => {
         try {
+            
             const httpPayload = {
                 body: req.body,
                 data: req.body,
@@ -13,6 +14,7 @@ const http_request_handler = (controller) => {
                 access: req.access,
                 path: req.path,
                 appid: req.appid,
+                credentials: req.headers.authorization,
                 headers: {
                     'Content-Type': req.get('Content-Type'),
                     'Referer': req.get('referer'),
@@ -20,10 +22,14 @@ const http_request_handler = (controller) => {
                 }
                
             };
+           
             const result = await controller(httpPayload);
              
             if(result.headers) {
                 res.set(result.headers)
+            }
+            if(result.cookies) {
+                result.cookies.forEach(c => res.cookie(result.name, result.value, result.options));
             }
             if(result.redirect || result.statusCode === 301) {
                 res.status(result.statusCode).redirect(result.redirect);

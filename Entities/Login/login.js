@@ -6,6 +6,7 @@ const createLoginFactory = ({createUTCDate, createToken}) => {
         appid,
         ip,
         code,
+        codecreationtime,
         responsetype='code',
         state,
         success = false,
@@ -23,6 +24,10 @@ const createLoginFactory = ({createUTCDate, createToken}) => {
             throw new Error('No code supplied');
         }
 
+        if(!codecreationtime) {
+            codecreationtime =  createUTCDate()
+        }
+
 
         return Object.freeze({
             getUID: () => uid,
@@ -33,6 +38,7 @@ const createLoginFactory = ({createUTCDate, createToken}) => {
             getResponseType: () => responsetype,
             getState: () => state,
             getCode: () => code,
+            getCodeCreationTime: () => codecreationtime,
             setSuccess: (val) => success =  val,
             getMultiFactorCode: () => multifactorcode,
             getMultifactorCodeTime: () => multifactorcodetime ? createUTCDate(multifactorcodetime) : createUTCDate(),

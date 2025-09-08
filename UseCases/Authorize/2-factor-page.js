@@ -17,7 +17,8 @@ const TwoFactorPage = (data) => {
                       <div class="form-button" style="display: flex; align items: cemter; gap: .75rem;">
                         <button onclick="javascript:void()" class="glass" id="code_btn" type="submit">SUBMIT CODE</button>
                         <button onclick="javascript:void()" class="glass" id="resend_btn" type="submit">REESEND CODE</button>
-                      </div>
+                        <input type="hidden" id="loginid"  />
+                        </div>
                       <div>
                         <p id="message" class="message"></p>
                       </div>

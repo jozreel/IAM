@@ -4,7 +4,8 @@ const TwoFactorController = ({TwoFactor}) => {
     return async (req) => {
         try {
             const res = await TwoFactor(req);
-            return CreateJsonResponse({bodu: res, statusCode: 200});
+            console.log(res);
+            return {type: res.type, body: res.data};
 
         } catch (ex) {
             return CreateJsonResponse({body: GetErrorBody(ex), statusCode: 400});

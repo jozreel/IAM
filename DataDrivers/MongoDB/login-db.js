@@ -72,6 +72,7 @@ const login_db = ({makeDB, ID}) => {
     const get_login = async (id) => {
         try  {
             const _id =  ID(id);
+            console.log(typeof _id)
             const db =  await makeDB();
             const result = await db.collection(strings.LOGIN_COLLECION).findOne({_id});
             return result;
