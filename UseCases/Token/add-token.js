@@ -101,12 +101,9 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
 
                 const resp =  {
                     data: {
-                    id_token,
-                    access_token,
-                    refresh_token,
-                    at_valid_until: access_expire,
-                    idt_valid_until: id_expire,
-                    rt_valid_until: refresh_expire
+                    id: {token: id_token, valid_until: id_expire},
+                    access: {token: access_token, valid_until: access_expire},
+                    refresh: {token: refresh_token, valid_until: refresh_expire}
                     },
                     cookies
                 };

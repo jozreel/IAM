@@ -1,6 +1,6 @@
 const token_factory = ({CreateUtcDate}) => {
 
-     return ({id, token, validuntil, createddate}) => {
+     return ({id, token, validuntil, loginid, createddate}) => {
         if(!token) {
             throw new Error('Token required');
         }
@@ -13,6 +13,10 @@ const token_factory = ({CreateUtcDate}) => {
             throw new Error('Valid until date requred')
         }
 
+        if(!loginid) {
+            throw new Error('Login id needed');
+        }
+
         const lastmodifieddate =  CreateUtcDate();
         createddate =  createddate ? CreateUtcDate(createddate) : CreateUtcDate();
 
@@ -22,10 +26,12 @@ const token_factory = ({CreateUtcDate}) => {
             GetValidUntil: () => validuntil,
             GetCreatedDate: () => createddate,
             GetLastModifiedDate: () => lastmodifieddate,
+            GetLoginId: () =>loginid,
             ToJson: () => {
                 id,
                 token,
                 validuntil,
+                loginid,
                 createddate,
                 lastmodifieddate
             }
