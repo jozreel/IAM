@@ -39,7 +39,7 @@ const two_factor = ({login_db, app_db}) => {
                         multifactorcodetime: null
                     });
                     console.log('return values')
-                    const url =  redirect_uri+'?code='+code+'&state='+login.state
+                    const url =  redirect_uri+'?code='+code+'&state='+login.state+"&session="+loginid
                     return {type: 'redirect', data: {url}}
                 } else {
                     throw new Error('Invalid auth  code');

@@ -20,7 +20,9 @@ const makeDB = async () => {
     }
 }
 const ID = (id) => {
-    
+    if(!id) {
+        return new ObjectID();
+    }
     if(typeof id === 'string') {
         if(id.length !== 24) {
         return;

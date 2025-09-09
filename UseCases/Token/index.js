@@ -10,7 +10,8 @@ module.exports =  Object.freeze({
          user_db, 
          get_creds: access_utils.get_basic_creds, 
          generate_token: access_utils.jwt_asymetric,
-         createUtcDate: date_utils.createUTCDate
+         createUtcDate: date_utils.createUTCDate,
+         verify_string: access_utils.verify_string
         }),
     RefreshToken:  RefreshToken({
         tokendb:token_db,

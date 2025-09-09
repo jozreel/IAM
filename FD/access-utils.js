@@ -9,7 +9,7 @@ const fs =  require('fs');
 const MaxKeyLength =  64;
 const SaltRounds = 10;
 
-const bypas_auth = ['/api/login', '/api/authorize', '/api/authorize/login', '/api/authorize/twofactor']
+const bypas_auth = ['/api/login', '/api/authorize', '/api/authorize/login', '/api/authorize/twofactor', '/api/token']
 
 const access_utils_factory = () => {
     const jwt = (payload, secreto) => {
@@ -440,6 +440,7 @@ const get_basic_creds = (creds) => {
 
      const auth = new Buffer.from(parts[1],'base64').toString().split(':');
      const [username, password] =  auth;
+     return {username, password}
 }
 
 

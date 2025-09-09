@@ -29,7 +29,7 @@ const http_request_handler = (controller) => {
                 res.set(result.headers)
             }
             if(result.cookies) {
-                result.cookies.forEach(c => res.cookie(result.name, result.value, result.options));
+                result.cookies.forEach(c => res.cookie(c.name, c.value, c.options));
             }
             if(result.redirect || result.statusCode === 301) {
                 res.status(result.statusCode).redirect(result.redirect);
