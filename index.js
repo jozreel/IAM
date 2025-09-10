@@ -4,6 +4,7 @@ const routers =  require('./Routers');
 const express = require('express');
 const access_utils =  require('./FD').access_utils;
 const app = express();
+app.use("/public", express.static(__dirname + "/public"));
 app.use(access_utils.cross_origin);
 app.use(access_utils.app_api_auth_midleware);
 app.use(access_utils.auth_midleware);

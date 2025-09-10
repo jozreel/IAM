@@ -1,0 +1,75 @@
+ <div class="login-container">
+
+        <!-- Logo Section -->
+        <div class="logo-section">
+            <!-- Logo Circle with Olive Green -->
+            <div class="logo-circle">
+                <!-- SVG Vector of a Simple Frog -->
+                <img style="width: 6rem; height: 6rem; background: transparent;" src="/public/kwapo-logo.png" />
+            </div>
+           
+        </div>
+
+        <!-- Form Section -->
+        <form class="form-section" id="lg-form">
+             <h1 class="title">Login</h1>
+            <div class="input-group">
+                <label for="username" class="input-label">Username</label>
+                <input id="username" name="username" type="text" autocomplete="username" required class="input-field" placeholder="Enter your username">
+            </div>
+
+            <div class="input-group">
+                <label for="password" class="input-label">Password</label>
+                <input id="password" name="password" type="password" autocomplete="current-password" required class="input-field" placeholder="Enter your password">
+            </div>
+
+            <div style="text-align: right; margin-top: -0.75rem; margin-bottom: 1.5rem;">
+                <a href="#" class="forgot-password">Forgot password?</a>
+            </div>
+
+            <div>
+                <button  onclick="javascript:void(0)" id="submit_btn" type="submit"  class="login-button">
+                    Sign in
+                </button>
+            </div>
+            <div>
+                <p id="message" class="message"></p>
+            </div>
+            
+                <div id="req_params">
+                <input type="hidden" id="client_id" value=${data.client_id} />
+                <input type="hidden" id="response_id" value=${data.response_type} />
+                <input type="hidden" id="scope" value=${data.scope} />
+                <input type="hidden" id="redirect_uri" value=${data.redirect_uri} />
+                <input type="hidden" id="code_challenge" value=${data.code_challenge} />
+                <input type="hidden" id="challenge_method" value=${data.code_challenge_method} />
+                <input type="hidden" id="state" value=${data.state} />
+            </div>
+        </form>
+        <div id="factor" style="display: none;">
+           ${factorPart}
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {})
+
+        document.addEventListener("DOMContentLoaded", (event) => {
+        console.log("DOM fully loaded and parsed");
+        const tfac = document.getElementById('tfac');
+        console.log(tfac);
+         const lgform = document.getElementById('lg-form');
+                    if(lgform) {
+                        lgform.style.display = 'flex';
+                        const tfac =  document.getElementById('tfac');
+                    if(tfac) {
+                       
+                        
+                        tfac.style.display =  'none'
+                    }
+                    }
+        if(tfac) {
+            
+            tfac.reset(); 
+        }
+    });
+    </script>
