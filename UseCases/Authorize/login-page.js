@@ -220,9 +220,7 @@ const LoginPage = (data) => {
                 <input type="hidden" id="state" value=${data.state} />
             </div>
         </form>
-        <div id="factor" style="display: none;">
-           ${factorPart}
-        </div>
+        ${factorPart}
     </div>
    
 
@@ -282,7 +280,7 @@ const LoginPage = (data) => {
                     if(tfac) {
                         lgform.style.display = 'none';
                         
-                        tfac.style.display =  'block'
+                        tfac.style.display =  'flex'
                     }
                     }
                 }

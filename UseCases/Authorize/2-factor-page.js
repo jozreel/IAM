@@ -1,12 +1,10 @@
 const TwoFactorPage = (data) => {
-        return `
-                 <div class="login-form" id="two-factor">
-                    <form id="tfac">
+        return `<form id="factor" class="form-section" style="display:none;">
                     
-                     <div class="form-section">
+                     
                       <div class="header">
-                      <h1 style="text-align: center;">2 Factor Auth</h1>
-                      <p style="text-align: center;>Please enter the code received by ${data?.channel} </h1>
+                      <h1 style="text-align: center;" class="title">Two-Factor Authentication</h1>
+                      <p style="text-align: center;">Please enter the one time code received by ${data?.channel} </h1>
                       </div>
                       <div class="input-group"">
                         <input type="text" required name="code" id="authcode" autocomplete="off" required class="input-field" placeholder="Enter code">
@@ -19,7 +17,7 @@ const TwoFactorPage = (data) => {
                       <div>
                         <p id="message" class="message"></p>
                       </div>
-                      </div>
+                     
 
                     </form>
 
