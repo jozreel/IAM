@@ -4,7 +4,7 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
     return async(req) => {
         try {
             
-             const {client_id, loginid, cred_type} =  req.data;
+             const {client_id, loginid, cred_type, nonce} =  req.data;
             const login = await login_db.get_login(loginid);
             if(!login) {
                 throw new Error("No login found for this user")
@@ -64,14 +64,19 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
             
         const refresh_expire = Math.floor((Date.now() / 1000)) + 31560000; 
         console.log(refresh_expire)
-        const id_token =  generate_token({
+        const id_token_data = {
             username: user.username,
             email: user.password,
             fullname: user.fullname,
             iat: Math.floor(Date.now() / 1000),
             exp: id_expire,
-            sub: user._id.toString()
-        });
+            sub: user._id.toString(),
+    
+        }
+        if(nonce) {
+            id_token_data.nonce = nonce;
+        }
+        const id_token =  generate_token(id_token_data);
 
         const access_token  =  generate_token({
             username: user.username,
