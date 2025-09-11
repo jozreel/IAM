@@ -90,7 +90,8 @@ const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) =
                                     appid: data.client_id,
                                     uid: data.uid.toString(),
                                     success: true,
-                                    code
+                                    code,
+                                    
                                     
                                 });
                     //update login entity to includde these
@@ -102,6 +103,8 @@ const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) =
                         responsetype: login.getResponseType(),
                         state: login.getState(),
                         createddate: login.getCreatedDate(),
+                        codechallenge: login.getCodeChallenge(),
+                        codechallengemethod: login.getCodeChallengeMethod(),
                         success: login.isSuccessfull(),
                         multifactorcode: login.getMultiFactorCode()
                     });

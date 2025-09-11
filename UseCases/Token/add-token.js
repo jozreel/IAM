@@ -1,10 +1,14 @@
 const { CLIENT_CREDENTIALS, PKCE } = require('../../Entities/Application/cred-type');
 const make_token =  require('../../Entities/Token');
+const { authorize_helpers } = require('../Helpers');
+
+
+
 const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_token,  createUtcDate, verify_string}) => {
     return async(req) => {
         try {
             
-             const {client_id, loginid, cred_type, nonce} =  req.data;
+             const {client_id, loginid, cred_type, nonce, code_verifier} =  req.data;
             const login = await login_db.get_login(loginid);
             if(!login) {
                 throw new Error("No login found for this user")
@@ -53,8 +57,13 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
                 if(basic_creds && basic_creds.username == adminUser && !verified) {
                 throw new Error('Invalid client credentials');
                 }
-        } else if(cred_type === PKCE) {
+        } else if(cred_type === PKCE || code_verifier) {
             // validate the code challenge
+            const code_challenge =  login.codechallenge;
+            const code_challenge_method =  login.codechallengemethod;
+            if(!codechallenge || !authorize_helpers.VerifyPkce(code_verifier, code_challenge, code_challenge_method)) {
+                throw new Error('Authentication error');
+            }
         } else {
             throw new Error('Invalid cred type')
         }

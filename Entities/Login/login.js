@@ -9,6 +9,8 @@ const createLoginFactory = ({createUTCDate, createToken}) => {
         codecreationtime,
         responsetype='code',
         state,
+        codechallenge,
+        codechallengemethod,
         success = false,
         multifactorcode,
         multifactorcodetime     
@@ -41,6 +43,8 @@ const createLoginFactory = ({createUTCDate, createToken}) => {
             getCodeCreationTime: () => codecreationtime,
             setSuccess: (val) => success =  val,
             getMultiFactorCode: () => multifactorcode,
+            getCodeChallenge: () => codechallenge,
+            getCodeChallengeMethod: () => codechallengemethod,
             getMultifactorCodeTime: () => multifactorcodetime ? createUTCDate(multifactorcodetime) : createUTCDate(),
             createToken: (payload)=> createToken(payload, secret)
         });

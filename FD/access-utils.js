@@ -457,7 +457,8 @@ const get_basic_creds = (creds) => {
         generate_apikey,
         hash_string,
         verify_string,
-        get_basic_creds
+        get_basic_creds,
+        base64_Url_encode
     });
 }
 
