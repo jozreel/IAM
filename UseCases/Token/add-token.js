@@ -8,8 +8,9 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
     return async(req) => {
         try {
             
-             const {client_id, loginid, cred_type, nonce, code_verifier} =  req.data;
+             const {client_id, loginid, cred_type, code_verifier} =  req.data;
             const login = await login_db.get_login(loginid);
+          
             if(!login) {
                 throw new Error("No login found for this user")
             }
@@ -36,7 +37,7 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
             }
 
                 
-            console.log(cred_type)
+         
             if(cred_type === CLIENT_CREDENTIALS ){
                 if(!req.credentials) {
                     throw new Error('Invalod credentials')
@@ -53,7 +54,7 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
                 const adminPassword =  app.getAdminPassword();
                
                 const verified = await verify_string(basic_creds?.password, adminPassword); 
-                console.log(verified);
+                
                 if(basic_creds && basic_creds.username == adminUser && !verified) {
                 throw new Error('Invalid client credentials');
                 }
@@ -72,7 +73,7 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
         const access_expire =  Math.floor((Date.now() / 1000) + (60 * 30));
             
         const refresh_expire = Math.floor((Date.now() / 1000)) + 31560000; 
-        console.log(refresh_expire)
+       
         const id_token_data = {
             username: user.username,
             email: user.password,
@@ -82,6 +83,7 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
             sub: user._id.toString(),
     
         }
+        const nonce =  login.nonce;
         if(nonce) {
             id_token_data.nonce = nonce;
         }
@@ -141,7 +143,7 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
         
         cookies.push(refresh_session_cookie);
         cookies.push(refresh_exp_cookie);
-        console.log(cookies);
+        
 
 
         const resp =  {

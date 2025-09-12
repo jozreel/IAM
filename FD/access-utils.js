@@ -45,9 +45,9 @@ const access_utils_factory = () => {
                 alg: "RS256",
                 typ: "JWT"
             };
-            pload.exp =  Math.floor(Date.now() / 1000) + (60 * 60) // in 1 hr ot process.env.tokenexpirytime 
-            pload.iat =  Date.now() / 1000;
-            console.log(pload);
+            pload.exp = pload.exp || Math.floor(Date.now() / 1000) + (60 * 60) // in 1 hr ot process.env.tokenexpirytime 
+            pload.iat = pload.iat ||  Math.floor(Date.now() / 1000);
+           
             const payload = JSON.stringify(pload);
             const bs4Header =  base64_Url_encode(JSON.stringify(header));
             const bs4pload =  base64_Url_encode(payload);
@@ -57,7 +57,7 @@ const access_utils_factory = () => {
             const sig = signer.sign(private_key, 'base64');
             const b64sig =  url_encode(sig);
             const jwt =  `${sig_data}.${b64sig}`;
-            console.log(jwt);
+           
             return jwt;
 
 
@@ -120,7 +120,7 @@ const access_utils_factory = () => {
                 let calculated_signature = hmac.digest('base64')
                
                 calculated_signature = url_encode(calculated_signature);
-                 console.log(signature, calculated_signature);
+                
                 if(calculated_signature !== signature) {
                     throw new Error('Invalid access token');
                 }
@@ -185,7 +185,7 @@ const access_utils_factory = () => {
 
 
     const url_encode = (str, base64Safe=true) => {
-        console.log('ENCODING')
+       
         let resstr = str.replace(/\+/g, '-').replace(/\//g, '_');
 
         
@@ -260,7 +260,7 @@ const access_utils_factory = () => {
                 return;
             }
             const token =  req.headers.api;
-            console.log(token, referer, hostname);
+            
             if(!token || (!referer && !hostname)) {
                 res.status(403);
                 res.end('');
@@ -268,7 +268,7 @@ const access_utils_factory = () => {
             }
             if(token !== '') {
                     let domain;
-                    console.log(token)
+                   
                     //possibly check in database to see registered apps and api keys
                     const has_access = await verify_api_key({apikey: token}) //verify_token(secret, token);
                   
@@ -342,7 +342,7 @@ const access_utils_factory = () => {
     }
 
     const cross_origin = (req, res, next) => {
-        const allowed = ['http://localhost:4200', 'http://localhost:3371', 'http://10.10.0.121:3369', 'http://prod.liat.loc'];
+        const allowed = ['http://localhost:4200', 'http://localhost:3371', 'http://10.10.0.121:3369', 'http://prod.liat.loc', 'http://localhost:5173'];
         const origin = req.headers.origin;
        
         if (allowed.indexOf(origin) >= 0) {

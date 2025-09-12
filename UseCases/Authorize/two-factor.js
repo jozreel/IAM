@@ -19,7 +19,7 @@ const two_factor = ({login_db, app_db}) => {
               
                 if(login.multifactorcode && authcode === login.multifactorcode.toString()) {
                     const code = crypto.randomBytes(24).toString('hex');
-                      console.log(authcode,login)
+            
                     const login_obj =  make_login({
                                 ...login,
                                 success: true,
@@ -30,15 +30,15 @@ const two_factor = ({login_db, app_db}) => {
                             });
 
                     //check the code challenge again.
-                    console.log(login)
-                    const upd =  await login_db.update_login({
+                   
+                     await login_db.update_login({
                         id: loginid,
                         code,
                         codecreationtime: login_obj.getCodeCreationTime(),
                         multifactorcode: login_obj.getMultiFactorCode(),
                         multifactorcodetime: null
                     });
-                    console.log('return values')
+                    
                     const url =  redirect_uri+'?code='+code+'&state='+login.state+"&session="+loginid
                     return {type: 'redirect', data: {url}}
                 } else {

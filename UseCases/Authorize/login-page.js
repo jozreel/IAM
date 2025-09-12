@@ -218,6 +218,7 @@ const LoginPage = (data) => {
                 <input type="hidden" id="code_challenge" value=${data.code_challenge} />
                 <input type="hidden" id="challenge_method" value=${data.code_challenge_method} />
                 <input type="hidden" id="state" value=${data.state} />
+                <input type="hidden" id="nonce" value=${data.nonce} />
             </div>
         </form>
         ${factorPart}
@@ -249,6 +250,7 @@ const LoginPage = (data) => {
             const redir_inp =  document.getElementById('redirect_uri');
             const code_inp = document.getElementById('code_challenge');
             const state_inp = document.getElementById('state');
+            const nonce_inp = document.getElementById('nonce');
             const challenge_methode = document.getElementById('challenge_method');
             const client_id =  client_inp?.value;
             const response_type =  resp_inp?.value;
@@ -257,7 +259,8 @@ const LoginPage = (data) => {
             const code_challenge =  code_inp?.value;
             const code_challenge_method =  challenge_method?.value;
             const state =  state_inp?.value;
-            const formdata = {username, password, client_id, response_type, scope, redirect_uri, code_challenge, code_challenge_method, state};
+            const nonce = nonce_inp?.value;
+            const formdata = {username, password, client_id, response_type, scope, redirect_uri, code_challenge, code_challenge_method, state, nonce};
             console.log(formdata);
             const API="http://localhost:3992/api/authorize/login";
             const res = await  fetch(API, {method: "POST",  body: JSON.stringify(formdata), headers: {"content-type": "application/json"}});
@@ -320,6 +323,7 @@ const TwoFactor = async () => {
             const client_inp =  document.getElementById('client_id');
             const redir_inp =  document.getElementById('redirect_uri');
             const code_inp = document.getElementById('code_challenge');
+            const nonce_inp = document.getElementById('nonce');
             const state_inp = document.getElementById('state');
                 const login_id_inp =  document.getElementById('loginid');
             const challenge_methode = document.getElementById('challenge_method');
@@ -329,10 +333,11 @@ const TwoFactor = async () => {
             const redirect_uri = redir_inp?.value;
             const code_challenge =  code_inp?.value;
             const code_challenge_method =  challenge_method?.value;
+            const nonce = nonce_inp?.value;
             const state =  state_inp?.value;
             const authcode =  authcode_inp.value;
             const loginid = login_id_inp?.value;
-            const data = {authcode, client_id, scope, redirect_uri, code_challenge, code_challenge_method, state, loginid}
+            const data = {authcode, client_id, scope, redirect_uri, code_challenge, code_challenge_method, state, loginid, nonce}
             authcode_inp.value = '';
             
         

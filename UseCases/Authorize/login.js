@@ -52,7 +52,7 @@ const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) =
                             to: 'jozreellaurent@outlook.com',
                             from: "support@veppz.com"
                          }
-                         console.log(mail)
+                         
                          await message_service.email_util.SendEmail(mail);
 
                        } else if (two_factor_channel === multiFactorChannels.SMS) {
@@ -83,7 +83,7 @@ const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) =
 
 
     const create_code_login = async (data) => {
-          console.log(data)
+          
           const code = crypto.randomBytes(24).toString('hex');
           const login =  make_login({
                                     ...data,
@@ -102,6 +102,7 @@ const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) =
                         code: login.getCode(),
                         responsetype: login.getResponseType(),
                         state: login.getState(),
+                        nonce: login.getNonce(),
                         createddate: login.getCreatedDate(),
                         codechallenge: login.getCodeChallenge(),
                         codechallengemethod: login.getCodeChallengeMethod(),
@@ -122,7 +123,7 @@ const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) =
 
     const create_basic_login = async (data) => {
         try {
-            
+             console.log(data)
           const login =  make_login({
                     ...data,
                     appid: data.client_id,
@@ -136,8 +137,11 @@ const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) =
                         ip: login.getIP(),
                         responsetype: login.getResponseType(),
                         state: login.getState(),
+                        nonce: login.getNonce(),
                         createddate: login.getCreatedDate(),
                         success: login.isSuccessfull(),
+                        codechallenge: login.getCodeChallenge(),
+                        codechallengemethod: login.getCodeChallengeMethod(),
                         multifactorcode: login.getMultiFactorCode()
                     });
                     const res = {
@@ -159,7 +163,7 @@ const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) =
     return async (req) => {
         try {
             
-            const {username, password, code, scope, client_id, code_challenge, code_challenge_method, response_type, state} =  req.data;
+            const {username, password, code, scope, client_id, code_challenge, code_challenge_method, response_type, state, nonce} =  req.data;
 
             if(!username) {
                 throw new Error('Invalid login');
@@ -171,7 +175,7 @@ const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) =
             
             const uname = username.toLowerCase();
             const exist =  await user_db.find_by_username_or_email({username: uname, password: true});
-            console.log(exist);
+           
             //check if userstatus is enabled
             if(!exist) {
                 throw new Error('The user was not found');
@@ -198,7 +202,8 @@ const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) =
             } else if(loginType === LoginProviderTypes.OPENID) {
                 const res = await OpenIdLogin(user, {code, scope, client_id, code_challenge, code_challenge_method, response_type, state, uid: exist._id, oldpassword: exist.password,
                     two_factor_channel: app.getMultifactorChannel(),
-                    multifactor_enabled: app.isMultifactorEnabled()
+                    multifactor_enabled: app.isMultifactorEnabled(),
+                    nonce
                 });
                 return res;
             } else throw new Error('Invalid login provider type');
