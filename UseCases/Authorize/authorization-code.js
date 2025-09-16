@@ -1,8 +1,9 @@
+const crypto =  require('crypto');
 const LoginPage = require('./login-page'); 
 const authorization_code = ({verify_token}) => {
     return  async (data) => {
         try {
-            const {response_type, scope, client_id,state, redirect_uri, code_challenge, code_challenge_method} =  data;
+            const {response_type, scope, client_id,state, redirect_uri, code_challenge, code_challenge_method, session_cookie} =  data;
             if(response_type !== 'code') {
                 throw new Error('Invalid response type');
             }
@@ -19,40 +20,55 @@ const authorization_code = ({verify_token}) => {
                 throw new Error('If prof of key code challenge is u8sed a code challenge method must be supplied');
             }
 
-            console.log('checking valid')
+          
             const isopenid_scope =  scope.split(',').find(o=> o === 'openid');
             console.log(isopenid_scope);
             if(!isopenid_scope) {
-                throw new Error('Missing opwnid in scope');
+                throw new Error('Missing openid in scope');
+            }
+            const has_offline =  scope.split(',').find(s => s === 'offline_access');
+            if(has_offline) {
+                data.offline_access = true;
             }
             //check validity of parameters.
 
             //check if user is logged in
 
-            const token =  data.token;
+            //possibly check cookies for refresh token if access token is expired;
+
+           
             let loggedin =  false;
-            if(token) {
-                payload = verify_token(token);
-                if(payload && payload.exp < Date.now() / 1000) {
-                    loggedin =  false;
+            let loginid;
+            if(session_cookie) {
+                payload = verify_token(session_cookie);
+                console.log(payload);
+                loginid =  payload.sessionid;
+                if(payload && payload.exp >= Math.floor(Date.now() / 1000)) {
+                   
+                    loggedin = true;
                 } else {
+                   
                     loggedin = false;
                 }
             }
 
-            console.log(loggedin)
+           
 
             if(!loggedin) {
-                
+               
                 data.hasMultiFactor = true;
                 return {
                     type: 'page',
                     data: LoginPage(data)
                 }
             } else {
+                
+                    const code = crypto.randomBytes(24).toString('hex');
+                    const url =  redirect_uri+'?code='+code+'&state='+state+"&session="+loginid
                 return {
-                    type: 'json',
-                    data: {test: "one"}
+                    
+                    type: 'redirect',
+                    data: {url}
                 }
             }
 

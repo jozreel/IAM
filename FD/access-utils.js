@@ -9,7 +9,7 @@ const fs =  require('fs');
 const MaxKeyLength =  64;
 const SaltRounds = 10;
 
-const bypas_auth = ['/api/login', '/api/authorize', '/api/authorize/login', '/api/authorize/twofactor', '/api/token']
+const bypas_auth = ['/api/login', '/api/authorize', '/api/authorize/login', '/api/authorize/twofactor', '/api/token','/api/token/refresh', '/api/authorize/consent','/api/authorize/logout']
 
 const access_utils_factory = () => {
     const jwt = (payload, secreto) => {
@@ -208,6 +208,7 @@ const access_utils_factory = () => {
               
                 return;
             }
+            
             const auth_header =  req.headers.authorization;
            
             const auth_header_parts =  auth_header.split(' ');
@@ -233,6 +234,10 @@ const access_utils_factory = () => {
                     res.end('');
                     return 401;
                 }
+            } else {
+                 res.status(401);
+                res.end('');
+                return 401;
             }
 
 

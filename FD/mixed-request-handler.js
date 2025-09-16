@@ -13,6 +13,7 @@ const MixedRequestHandler = (controller) => {
                 credentials: req.headers.authorization,
                 path: req.path,
                 appid: req.appid,
+                cookies: req.cookies,
                 headers: {
                     'Content-Type': req.get('Content-Type'),
                     'Referer': req.get('referer'),
@@ -28,7 +29,10 @@ const MixedRequestHandler = (controller) => {
             }
 
             if(result.cookies) {
-                result.cookies.forEach(c => res.cookie(result.name, result.value, result.options));
+                result.cookies.forEach(c => res.cookie(c.name, c.value, c.options));
+            }
+            if(result.clearcookies) {
+                 result.clearcookies.forEach(c => res.clearCookie(c.name, c.options));
             }
 
             if(result.redirect || result.statusCode === 302 || res.statusCode === 301) {

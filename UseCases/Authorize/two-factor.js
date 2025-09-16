@@ -40,7 +40,13 @@ const two_factor = ({login_db, app_db}) => {
                     });
                     
                     const url =  redirect_uri+'?code='+code+'&state='+login.state+"&session="+loginid
-                    return {type: 'redirect', data: {url}}
+                    const consentrequired = app.getConsents();
+                    if(consentrequired && consentrequired.length > 0) {
+                         return {type: 'json', data: {consentrequired}}
+                    } else {
+                         return {type: 'redirect', data: {url}}
+                    }
+                   
                 } else {
                     throw new Error('Invalid auth  code');
                 }

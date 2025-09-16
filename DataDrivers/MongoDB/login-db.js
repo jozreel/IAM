@@ -69,6 +69,32 @@ const login_db = ({makeDB, ID}) => {
         }
     }
 
+    const clear_login = async(id, uid) => {
+        try {
+            const db =  await makeDB();
+            const _id =  ID(id);
+            console.log(id, uid);
+            const aggr =  db.collection(strings.LOGIN_COLLECION).aggregate([
+                
+                {$match: {uid}},
+                {$set:{_id: ID()}},
+            
+                {$merge: {
+                     $into: {db: this.DbName, collection: 'loginversions'},
+                     $on: _id,
+                     $whenNotMatched: "insert"
+
+                   }
+                }
+            ]);
+
+            const res = await db.collection(strings.LOGIN_COLLECION).deleteOne({_id});
+            console.log(res);
+        } catch(ex) {
+            throw ex;
+        }
+    }
+
     const get_login = async (id) => {
         try  {
             const _id =  ID(id);
@@ -89,7 +115,8 @@ const login_db = ({makeDB, ID}) => {
         list_logins,
         get_login,
         delete_login,
-        get_last_login
+        get_last_login,
+        clear_login
     });
 }
 module.exports = login_db;

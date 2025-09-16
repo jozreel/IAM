@@ -8,6 +8,7 @@ const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyKey, ha
     const MaxDomainLength = 120;
     const MaxKeyLength = 64;
     const SaltRounds = 10;
+    const LogoutUrlMaxLength =  512;
     return ({
         id,
         applicationname,
@@ -24,6 +25,8 @@ const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyKey, ha
         multifactorprovider = 'local',
         adminusername,
         adminpassword,
+        logouturl,
+        consents = [],
         lastmodifieddate = createUTCDate()
     }={}) => {
         console.log(domain);
@@ -39,6 +42,10 @@ const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyKey, ha
         if(domain && domain.length > MaxDomainLength) {
 
             throw new Error('Dommain has a max length od '+domain);
+        }
+
+        if(logouturl && logouturl.length > LogoutUrlMaxLength) {
+            throw new Error('Logout url has a max length of '+LogoutUrlMaxLength)
         }
 
         if(screens.length > 0) {
@@ -91,6 +98,8 @@ const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyKey, ha
             getMultiFctorProvider: () => multifactorprovider,
             getAdminUsername: () => adminusername,
             getAdminPassword: () => adminpassword,
+            getConsents: () => consents,
+            getLogoutUrl: () => logouturl,
             ToJson: () => ({
                 id,
                 applicationname: applicationname,
@@ -106,6 +115,8 @@ const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyKey, ha
                 multifactorprovider,
                 adminusername,
                 adminpassword,
+                consents,
+                logouturl,
                 createddate,
                 lastmodifieddate
             })

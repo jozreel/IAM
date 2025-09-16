@@ -74,6 +74,8 @@ const add_application = ({app_db, encrypt_string}) => {
                 multifactorprovider: app.getMultiFctorProvider(),
                 adminpassword: app.getAdminPassword(),
                 adminusername: app.getAdminUsername(),
+                consents: app.getConsents(),
+                logouturl: app.getLogoutUrl(),
                 createddate: app.getCreatedDate(),
                 lastmodifieddate: app.getLastModifiedDate()
             });

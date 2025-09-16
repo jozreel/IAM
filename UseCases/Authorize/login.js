@@ -42,6 +42,7 @@ const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) =
                        const two_factor_channel =  data.two_factor_channel;
                         const randcode = Math.floor(100000 + Math.random() * 900000);
                         data.multifactorcode = randcode;
+                        console.log(data.multifactorcode);
                         res =  await create_basic_login(data);
                         user.createLastCodeCreatedTime();
                       
@@ -83,10 +84,13 @@ const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) =
 
 
     const create_code_login = async (data) => {
-          
+        
           const code = crypto.randomBytes(24).toString('hex');
           const login =  make_login({
                                     ...data,
+                                    offlineaccess: data.offline_access,
+                                    codechallenge: data.code_challenge,
+                                    codechallengemethod: data.code_challenge_method,
                                     appid: data.client_id,
                                     uid: data.uid.toString(),
                                     success: true,
@@ -100,6 +104,7 @@ const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) =
                         uid: login.getUID(),
                         ip: login.getIP(),
                         code: login.getCode(),
+                        offlineaccess: login.getOfflineAcces(),
                         responsetype: login.getResponseType(),
                         state: login.getState(),
                         nonce: login.getNonce(),
@@ -114,7 +119,8 @@ const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) =
                         code: code,
                         scope: data.scope,
                         client_id: data.client_id,
-                        state: login.getState()
+                        state: login.getState(),
+                        consentrequired: data.consentrequired && data.consentrequired.length > 0 ? true : false
                     }
 
                     return res;
@@ -123,18 +129,24 @@ const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) =
 
     const create_basic_login = async (data) => {
         try {
-             console.log(data)
+            
           const login =  make_login({
                     ...data,
+                    offlineaccess: data.offline_access,
+                    codechallenge: data.code_challenge,
+                    codechallengemethod: data.code_challenge_method,
                     appid: data.client_id,
                     uid: data.uid.toString(),
                     success: true,
                     });
+
+                    console.log(login.getOfflineAcces());
                     //update login entity to includde these
                     const login_saved = await login_db.insert_login({
                         appid: login.getAppID(),
                         uid: login.getUID(),
                         ip: login.getIP(),
+                        offlineaccess: login.getOfflineAcces(),
                         responsetype: login.getResponseType(),
                         state: login.getState(),
                         nonce: login.getNonce(),
@@ -148,7 +160,8 @@ const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) =
                         id: login_saved._id,
                         scope: data.scope,
                         client_id: data.client_id,
-                        state: login.getState()
+                        state: login.getState(),
+                        consentrequired: data.consentrequired && data.consentrequired.length > 0 ? true : false
                     }
 
                     return res;
@@ -163,7 +176,7 @@ const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) =
     return async (req) => {
         try {
             
-            const {username, password, code, scope, client_id, code_challenge, code_challenge_method, response_type, state, nonce} =  req.data;
+            const {username, password, code, scope, client_id, code_challenge, code_challenge_method, response_type, state, nonce, offline_access} =  req.data;
 
             if(!username) {
                 throw new Error('Invalid login');
@@ -203,7 +216,9 @@ const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) =
                 const res = await OpenIdLogin(user, {code, scope, client_id, code_challenge, code_challenge_method, response_type, state, uid: exist._id, oldpassword: exist.password,
                     two_factor_channel: app.getMultifactorChannel(),
                     multifactor_enabled: app.isMultifactorEnabled(),
-                    nonce
+                    nonce,
+                    offline_access,
+                    consentrequired: app.getConsents()
                 });
                 return res;
             } else throw new Error('Invalid login provider type');

@@ -1,4 +1,5 @@
 const factorPage = require('./2-factor-page');
+const ConsentPage = require('./consent-page');
 const LoginPage = (data) => {
 
 
@@ -7,6 +8,11 @@ const LoginPage = (data) => {
     let factorPart;
     if(data.hasMultiFactor) {
         factorPart = factorPage({channel: 'email'});
+    }
+
+    let consent;
+    if(data.consentrequired) {
+        consent =  ConsentPage(data);
     }
     return `<!DOCTYPE html>
 <html lang="en">
@@ -17,7 +23,7 @@ const LoginPage = (data) => {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
             --olive-green: #3f6212;
@@ -185,7 +191,8 @@ const LoginPage = (data) => {
         </div>
 
         <!-- Form Section -->
-        <form class="form-section" id="lg-form">
+        <form id="app-lg-form" method="POST" action="/api/authorize/consent">
+         <div  class="form-section" id="lg-form">
              <h1 class="title">Login</h1>
             <div class="input-group">
                 <label for="username" class="input-label">Username</label>
@@ -202,7 +209,7 @@ const LoginPage = (data) => {
             </div>
 
             <div>
-                <button  onclick="javascript:void()" id="submit_btn" type="submit"  class="login-button">
+                <button  onclick="javascript:void(0)" id="submit_btn" type="submit"  class="login-button">
                     Sign in
                 </button>
             </div>
@@ -211,17 +218,23 @@ const LoginPage = (data) => {
             </div>
                 
             <div id="req_params">
-                <input type="hidden" id="client_id" value=${data.client_id} />
-                <input type="hidden" id="response_id" value=${data.response_type} />
-                <input type="hidden" id="scope" value=${data.scope} />
-                <input type="hidden" id="redirect_uri" value=${data.redirect_uri} />
-                <input type="hidden" id="code_challenge" value=${data.code_challenge} />
-                <input type="hidden" id="challenge_method" value=${data.code_challenge_method} />
-                <input type="hidden" id="state" value=${data.state} />
-                <input type="hidden" id="nonce" value=${data.nonce} />
+                <input name="client_id" type="hidden" id="client_id" value=${data.client_id} />
+                <input name="response_type" type="hidden" id="response_id" value=${data.response_type} />
+                <input name="scope" type="hidden" id="scope" value=${data.scope} />
+                <input name="redirect_uri" type="hidden" id="redirect_uri" value=${data.redirect_uri} />
+                <input name="code_challenge" type="hidden" id="code_challenge" value=${data.code_challenge} />
+                <input name="code_challenge_method" type="hidden" id="challenge_method" value=${data.code_challenge_method} />
+                <input name="state" type="hidden" id="state" value=${data.state} />
+                <input name="nonce" type="hidden" id="nonce" value=${data.nonce} />
+                <input name="offline_access" type="hidden" id="offline_access" value= ${data.offline_access ? 'yes':'no'} />
+                <input name="accepted" type="hidden" id="accepted"  />
+                <input name="loginid" type="hidden" id="loginid"  />
             </div>
+            </div>
+              ${factorPart}
+             ${consent || ''}
         </form>
-        ${factorPart}
+      
     </div>
    
 
@@ -250,6 +263,7 @@ const LoginPage = (data) => {
             const redir_inp =  document.getElementById('redirect_uri');
             const code_inp = document.getElementById('code_challenge');
             const state_inp = document.getElementById('state');
+            const offline_access_inp = document.getElementById('offline_access');
             const nonce_inp = document.getElementById('nonce');
             const challenge_methode = document.getElementById('challenge_method');
             const client_id =  client_inp?.value;
@@ -260,7 +274,9 @@ const LoginPage = (data) => {
             const code_challenge_method =  challenge_method?.value;
             const state =  state_inp?.value;
             const nonce = nonce_inp?.value;
-            const formdata = {username, password, client_id, response_type, scope, redirect_uri, code_challenge, code_challenge_method, state, nonce};
+            const offline_access = offline_access_inp?.value === 'yes' ? true : false;
+            const formdata = {username, password, client_id, response_type, scope, redirect_uri, code_challenge, code_challenge_method, state, nonce, offline_access};
+            console.log(offline_access_inp?.value)
             console.log(formdata);
             const API="http://localhost:3992/api/authorize/login";
             const res = await  fetch(API, {method: "POST",  body: JSON.stringify(formdata), headers: {"content-type": "application/json"}});
@@ -271,7 +287,7 @@ const LoginPage = (data) => {
             pwdfield.value = '';
             const d =  await res.json();        
             
-                console.log(d);
+                
                 const login_id_inp =  document.getElementById('loginid');
                 if(login_id_inp) {
                     login_id_inp.value = d.id;
@@ -280,6 +296,8 @@ const LoginPage = (data) => {
                     const lgform = document.getElementById('lg-form');
                     if(lgform) {
                     const tfac =  document.getElementById('factor');
+                    
+                
                     if(tfac) {
                         lgform.style.display = 'none';
                         
@@ -325,8 +343,9 @@ const TwoFactor = async () => {
             const code_inp = document.getElementById('code_challenge');
             const nonce_inp = document.getElementById('nonce');
             const state_inp = document.getElementById('state');
-                const login_id_inp =  document.getElementById('loginid');
+            const login_id_inp =  document.getElementById('loginid');
             const challenge_methode = document.getElementById('challenge_method');
+            const offline_access_inp = document.getElementById('offline_access');
             const client_id =  client_inp?.value;
             const response_type =  resp_inp?.value;
             const scope =  scope_inp?.value;
@@ -337,7 +356,8 @@ const TwoFactor = async () => {
             const state =  state_inp?.value;
             const authcode =  authcode_inp.value;
             const loginid = login_id_inp?.value;
-            const data = {authcode, client_id, scope, redirect_uri, code_challenge, code_challenge_method, state, loginid, nonce}
+            const offline_access =  offline_access_inp?.value === 'yes' ? true : false;
+            const data = {authcode, client_id, scope, redirect_uri, code_challenge, code_challenge_method, state, loginid, nonce, offline_access}
             authcode_inp.value = '';
             
         
@@ -355,11 +375,22 @@ const TwoFactor = async () => {
         console.log(res);
            const tfac =   document.getElementById('factor');
            if(tfac) {
-           tfac.style.display = 'none'
+              tfac.style.display = 'none'
            }
+          
+          
+            
            
             if(res.redirected) {
-                window.location =  res.url;
+                window.location.href =  res.url;
+            } else {
+
+                const data =  await res.json();
+                if(data.consentrequired) {
+                const cst =  document.getElementById('consent-section');
+                cst.style.display = 'flex'
+                }
+                
             }
             
 
@@ -368,9 +399,75 @@ const TwoFactor = async () => {
             console.log(ex, 'error'); 
         }
     }
+
+
+    const get_consent = async(accepted) => {
+       try {
+        const API = 'http://localhost:3992/api/authorize/consent';
+       
+        const resp_inp =  document.getElementById('response_id');
+        const scope_inp =  document.getElementById('scope');
+        const client_inp =  document.getElementById('client_id');
+        const redir_inp =  document.getElementById('redirect_uri');
+        const code_inp = document.getElementById('code_challenge');
+        const nonce_inp = document.getElementById('nonce');
+        const state_inp = document.getElementById('state');
+        const login_id_inp =  document.getElementById('loginid');
+        const challenge_methode = document.getElementById('challenge_method');
+        const offline_access_inp = document.getElementById('offline_access');
+        const client_id =  client_inp?.value;
+        const response_type =  resp_inp?.value;
+        const scope =  scope_inp?.value;
+        const redirect_uri = redir_inp?.value;
+        const code_challenge =  code_inp?.value;
+        const code_challenge_method =  challenge_method?.value;
+        const nonce = nonce_inp?.value;
+        const state =  state_inp?.value;
+       
+        const loginid = login_id_inp?.value;
+        const offline_access =  offline_access_inp?.value === 'yes' ? true : false;
+        const data = {client_id,redirect_uri, accepted, code_challenge, code_challenge_method, state, loginid, nonce, offline_access}
+       
+         const acc =  document.getElementById("accepted");
+         if(acc) {
+            
+             acc.value =  accepted;
+         }
+         const lgf =  document.getElementById("app-lg-form");
+
+         /*const res = await fetch(API, {
+                method: 'POST',
+                redirect: 'follow',
+                body: new URLSearchParams(data),
+                headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            });
+        if(!res.ok) {
+            throw new Error('Domething went wrong.')
+            
+        } 
+        if(res.redirected) {
+            window.location.href =  res.url;
+        }*/
+       if(lgf) {
+          const cst =  document.getElementById('consent-section');
+          cst.style.display = 'none'
+     
+         lgf.elements.accepted.value = accepted;
+         lgf.submit();
+       }
+        
+    } catch(ex) {
+        msg.innerHtml = "Something Went Wrong"; 
+        console.log(ex);
+    }
+    }
+
     window.addEventListener("pageshow" , () => {
            const lgform = document.getElementById('lg-form');
            const tfac =  document.getElementById('factor');
+          
            console.log(tfac.style)
            if(tfac && tfac.style.display === 'block') {
            
@@ -383,7 +480,20 @@ const TwoFactor = async () => {
         }
 );
 
-    
+const cstabtn =  document.getElementById('accept-consent');
+const cstrbtn = document.getElementById('reject-consent');
+cstabtn.onclick = (e) => {
+   e.preventDefault();
+ 
+   get_consent(true);    
+}
+
+cstrbtn.onclick = (e) => {
+   
+   e.preventDefault();
+  
+   get_consent(false);    
+}
     
  </script>
 

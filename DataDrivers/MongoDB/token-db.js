@@ -36,9 +36,26 @@ const token_db = ({makeDB, ID}) => {
         }
     }
 
+    const GetTokenForSession  = async (sessionid) => {
+        try  {
+            const db = await makeDB();
+            const _id =  ID(sessionid);
+            const res =  await db.collection(strings.LOGIN_COLLECION).findOne({_id}, {projection: {token: true, uid: true, offlineaccess: true}});
+
+            return res;
+            
+        } catch(ex) {
+            throw ex;
+        }
+    }
+
+
+
+
      return Object.freeze({
             AddToken,
-            GetToken
+            GetToken,
+            GetTokenForSession
         });
 
 }

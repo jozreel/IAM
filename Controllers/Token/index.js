@@ -4,5 +4,5 @@ const RefreshTokenController = require('./refresh-token-controller');
 
 module.exports =  Object.freeze({
     AddTokenCOntrooller: AddTokenController({TokenService}),
-    RefreshTokenContriller: RefreshTokenController({TokenService})
+    RefreshTokenController: RefreshTokenController({TokenService})
 });

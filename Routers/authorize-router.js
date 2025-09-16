@@ -10,4 +10,6 @@ authorize_router.get('/', [cookieParser()], mixed_request_handler(auth_controlle
 authorize_router.post('/', [cookieParser(), urlencoded({extended: true})], mixed_request_handler(auth_controller.AuthorizePostController))
 authorize_router.post('/login', [cookieParser(), json()], request_handler(auth_controller.LoginController))
 authorize_router.post('/twofactor', json(), mixed_request_handler(auth_controller.TwoFactorController))
+authorize_router.post('/consent', [urlencoded({extended: true})],  mixed_request_handler(auth_controller.ConsentController))
+authorize_router.post('/logout', [cookieParser(), urlencoded({extended: true})], mixed_request_handler(auth_controller.LogoutController))
 module.exports = authorize_router;

@@ -14,6 +14,7 @@ const http_request_handler = (controller) => {
                 access: req.access,
                 path: req.path,
                 appid: req.appid,
+                cookies: req.cookies,
                 credentials: req.headers.authorization,
                 headers: {
                     'Content-Type': req.get('Content-Type'),
@@ -30,6 +31,9 @@ const http_request_handler = (controller) => {
             }
             if(result.cookies) {
                 result.cookies.forEach(c => res.cookie(c.name, c.value, c.options));
+            }
+            if(result.clearcookies) {
+                 result.clearcookies.forEach(c => res.clearCookie(c.name, c.options));
             }
             if(result.redirect || result.statusCode === 301) {
                 res.status(result.statusCode).redirect(result.redirect);

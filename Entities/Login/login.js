@@ -13,8 +13,10 @@ const createLoginFactory = ({createUTCDate, createToken}) => {
         codechallengemethod,
         success = false,
         nonce,
+        consent,
         multifactorcode,
-        multifactorcodetime     
+        multifactorcodetime,
+        offlineaccess     
     } = {}) => {
         if(!uid) {
             throw new Error('Invalid user. Trya again');
@@ -29,6 +31,10 @@ const createLoginFactory = ({createUTCDate, createToken}) => {
 
         if(!codecreationtime) {
             codecreationtime =  createUTCDate()
+        }
+
+        if(typeof offlineaccess === undefined) {
+            throw new Error("Offline access required");
         }
 
 
@@ -46,7 +52,9 @@ const createLoginFactory = ({createUTCDate, createToken}) => {
             getMultiFactorCode: () => multifactorcode,
             getCodeChallenge: () => codechallenge,
             getNonce: () => nonce,
+            getOfflineAcces: ()=> offlineaccess,
             getCodeChallengeMethod: () => codechallengemethod,
+            getConsent: () => consent,
             getMultifactorCodeTime: () => multifactorcodetime ? createUTCDate(multifactorcodetime) : createUTCDate(),
             createToken: (payload)=> createToken(payload, secret)
         });

@@ -81,6 +81,7 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
             iat: Math.floor(Date.now() / 1000),
             exp: id_expire,
             sub: user._id.toString(),
+            session: login._id,
     
         }
         const nonce =  login.nonce;
@@ -99,25 +100,34 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
             sub: user._id.toString()
         });
 
-        const refresh_token  =  generate_token({
+        let refresh_token;
+        const cookies = [];
+        if(login.offlineaccess) {
+            refresh_token  =  generate_token({
             username: user.username,
             email: user.password,
             fullname: user.fullname,
+            session: login._id,
             iat: Math.floor(Date.now() / 1000),
             exp: refresh_expire,
             sub: user._id.toString()
         });
+            const tk =  make_token({
+                id: crypto.randomUUID(),
+                loginid,
+                token: refresh_token,
+                validuntil: refresh_expire
+            });
 
-        const tk =  make_token({
-            id: crypto.randomUUID(),
-            loginid,
-            token: refresh_token,
-            validuntil: refresh_expire
-        });
-
-        const token_save = await token_db.AddToken({token: refresh_token, loginid});
-        const cookies = [];
-        const refresh_session_cookie = {
+            await token_db.AddToken({
+                    id: tk.GetId(),
+                    token: tk.GetToken(),
+                    validuntil: tk.GetValidUntil(),
+                    loginid: tk.GetLoginId(),
+                    createddate: tk.GetCreatedDate(),
+                    lastmodifieddate: tk.GetLastModifiedDate()
+            });
+            const refresh_session_cookie = {
             name: "refresh_session_cookie", 
             value: refresh_token,
             options: {
@@ -138,11 +148,17 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
                 maxAge: refresh_expire * 1000,
                 sameSite: 'Lax', 
                 path: '/' 
+                }
             }
-        }
         
-        cookies.push(refresh_session_cookie);
-        cookies.push(refresh_exp_cookie);
+            cookies.push(refresh_session_cookie);
+            cookies.push(refresh_exp_cookie);
+       }
+       
+
+       
+       
+        
         
 
 
@@ -150,7 +166,7 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
             data: {
             id: {token: id_token, valid_until: id_expire},
             access: {token: access_token, valid_until: access_expire},
-            refresh: {token: refresh_token, valid_until: refresh_expire}
+            refresh: login.offlineaccess ? {token: refresh_token, valid_until: refresh_expire} : null
             },
             cookies
         };

@@ -1,20 +1,30 @@
 const make_token = require('../../Entities/Token');
+const crypto = require('crypto');
 const refresh_token = ({tokendb,userdb, decode_token, verify_token, generate_token, createUTCDate}) => {
     return async (req)=> {
         try {
-            const id_expire =  (Date.now() / 1000) + (60 * 5);
-            const access_expire =  (Date.now() / 1000) + (60 * 30);
+            const id_expire =  Math.floor((Date.now() / 1000)) + (60 * 5);
+            const access_expire = Math.floor((Date.now() / 1000)) + (60 * 30);
 
-            const refresh_expire = (Date.now() / 1000) + (60 * 1440); 
-            const loginid =  req.sessionid;
-            const userid =  req.userid;
+            const refresh_expire = Math.floor((Date.now() / 1000)) + (60 * 1440); 
+            const loginid =  req.data.sessionid;
+           
+           
             //const ref_token = req.credentials;
-            const session_token = req.cookies.refresh_session;
+            
+            const session_token = req.cookies.refresh_session_cookie;
+
             if(!session_token) {
                 throw new Error('Invalid session');
             }
            
             const token =  await tokendb.GetTokenForSession(loginid);
+            
+            if(!token.offlineaccess) {
+                throw new Error("No offline access scope enabled");
+            }
+            const userid =  token.uid;
+            
             if(!token) {
                 throw new Error('Invalid session');
             }
@@ -22,7 +32,10 @@ const refresh_token = ({tokendb,userdb, decode_token, verify_token, generate_tok
             if(!user) {
                 throw new Error('user does not exist');
             }
-            if(token === session_token) {
+
+            
+
+            if(token?.token?.token === session_token) {
                  const token_data = verify_token(session_token);
                
                  if(!token_data) {
@@ -37,9 +50,10 @@ const refresh_token = ({tokendb,userdb, decode_token, verify_token, generate_tok
                     username: user.username,
                     email: user.email,
                     fullname: user.fullname,
-                    iat: Date.now() / 1000,
+                    iat: Math.floor(Date.now() / 1000),
                     exp: id_expire,
-                    sub: user._id
+                    sub: user._id,
+                    session: loginid,
                 });
 
                 const access_token  =  generate_token({
@@ -47,7 +61,7 @@ const refresh_token = ({tokendb,userdb, decode_token, verify_token, generate_tok
                     email: user.email,
                     fullname: user.fullname,
                     role: user.role,
-                    iat: Date.now() / 1000,
+                    iat: Math.floor(Date.now() / 1000),
                     exp: access_expire,
                     sub: user._id
                 });
@@ -55,8 +69,9 @@ const refresh_token = ({tokendb,userdb, decode_token, verify_token, generate_tok
                 const refresh_token  =  generate_token({
                     username: user.username,
                     email: user.email,
+                    session: loginid,
                     fullname: user.fullname,
-                    iat: Date.now() / 1000,
+                    iat: Math.floor(Date.now() / 1000),
                     exp: refresh_expire,
                     sub: user._id
                 });
@@ -68,7 +83,7 @@ const refresh_token = ({tokendb,userdb, decode_token, verify_token, generate_tok
                     loginid,
                 });
 
-                const token_save = await token_db.AddToken({
+                   await tokendb.AddToken({
                     id: tk.GetId(),
                     token: tk.GetToken(),
                     validuntil: tk.GetValidUntil(),
@@ -84,7 +99,7 @@ const refresh_token = ({tokendb,userdb, decode_token, verify_token, generate_tok
                     options: {
                         httpOnly: true, // This is the crucial part
                         secure: process.env.NODE_ENV === 'production', 
-                        maxAge: 31556953,
+                        maxAge: refresh_expire * 1000,
                         sameSite: 'Lax', 
                         path: '/' 
                     }
@@ -96,7 +111,7 @@ const refresh_token = ({tokendb,userdb, decode_token, verify_token, generate_tok
                     options: {
                         httpOnly: true, // This is the crucial part
                         secure: process.env.NODE_ENV === 'production', 
-                        maxAge: 31556953,
+                        maxAge: refresh_expire * 1000,
                         sameSite: 'Lax', 
                         path: '/' 
                     }
@@ -108,7 +123,7 @@ const refresh_token = ({tokendb,userdb, decode_token, verify_token, generate_tok
                     cookies,
                     data: {
                         id: {
-                            token: id_tokenm,
+                            token: id_token,
                             valid_until: id_expire
                         },
                         refresh: {
@@ -130,6 +145,7 @@ const refresh_token = ({tokendb,userdb, decode_token, verify_token, generate_tok
             }
 
         } catch (ex) {
+            console.log(ex);
             throw ex;
         }
     }
