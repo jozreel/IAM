@@ -80,13 +80,15 @@ const login_db = ({makeDB, ID}) => {
                 {$set:{_id: ID()}},
             
                 {$merge: {
-                     $into: {db: this.DbName, collection: 'loginversions'},
-                     $on: _id,
-                     $whenNotMatched: "insert"
+                     into: {db: this.DbName, coll: 'loginversions'},
+                     on: "_id",
+                     whenNotMatched: "insert"
 
                    }
                 }
             ]);
+
+            await aggr.toArray();
 
             const res = await db.collection(strings.LOGIN_COLLECION).deleteOne({_id});
             console.log(res);
