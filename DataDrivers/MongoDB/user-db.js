@@ -1,4 +1,5 @@
 const string =  require('../../strings');
+const user_model =  require('../../Entities/User');
 const user_db_factory =  ({makeDB, ID}) => {
     const insert_user = async (data) => {
         try {
@@ -43,7 +44,7 @@ const user_db_factory =  ({makeDB, ID}) => {
                 options.projection = {password:false};
             }
             const result =  await db.collection(string.USER_COLLECTION).findOne({_id}, options);
-            return result;
+            return result ? make_user(result) : null;
             
         } catch (ex) {
             throw ex;
@@ -57,7 +58,7 @@ const user_db_factory =  ({makeDB, ID}) => {
                 options.projection = {password:false};
             }
             const result =  await db.collection(string.USER_COLLECTION).findOne({email},options);
-            return result;
+            return result ? make_user(result) : null;
 
 
         } catch (ex) {
@@ -74,7 +75,7 @@ const user_db_factory =  ({makeDB, ID}) => {
                 options.projection = {password:false};
             }
             const result =  await db.collection(string.USER_COLLECTION).findOne({username},options);
-            return result;
+            return result ? make_user(result) : null;
 
 
         } catch (ex) {
@@ -90,7 +91,8 @@ const user_db_factory =  ({makeDB, ID}) => {
                 options.projection = {password:false};
             }
             const result =  await db.collection(string.USER_COLLECTION).findOne({$or:[{username},{email:username}]},options);
-            return result;
+            
+            return result ? make_user(result) : null;
 
 
         } catch (ex) {
@@ -114,7 +116,7 @@ const user_db_factory =  ({makeDB, ID}) => {
             }
             const cursor =  await db.collection(string.USER_COLLECTION).find(query, options).skip(skip).limit(limit);
             const result =  await cursor.toArray();
-            return result;
+            return result.map(r => make_user(r));
 
         } catch (ex) {
             throw ex;
@@ -124,7 +126,8 @@ const user_db_factory =  ({makeDB, ID}) => {
         try {
             const db = await makeDB();
             const cursor =  await db.collection(string.USER_COLLECTION).find({"applications.appid": appid, "applications.role": roleid});
-            return await cursor.toArray();
+            const r =  await cursor.toArray();
+            return r.map(u => make_user(u));
 
         } catch (ex) {
             throw ex
@@ -140,6 +143,14 @@ const user_db_factory =  ({makeDB, ID}) => {
             throw ex;
         }
     }
+    
+    const make_user = (data) => {
+        return user_model({
+            id: data._id,
+            ...data
+        })
+    }
+
     return Object.freeze({
         insert_user,
         update_user,

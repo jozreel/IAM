@@ -1,3 +1,4 @@
+const login_model =  require('../../Entities/Login');
 const strings = require('../../strings');
 const login_db = ({makeDB, ID}) => {
     const insert_login = async (data) => {
@@ -25,8 +26,8 @@ const login_db = ({makeDB, ID}) => {
             const db = await makeDB();
             const cursor = db.collection(strings.LOGIN_COLLECION).find(query).skip(skip).limit(limit);
             const result = await cursor.toArray();
-            console.log(query, result);
-            return result;
+            
+            return result.map(l => make_login(l));
 
         } catch (ex) {
             throw ex;
@@ -51,7 +52,7 @@ const login_db = ({makeDB, ID}) => {
         const cursor = db.collection(strings.LOGIN_COLLECION).find({uid: user}).sort({createddate: -1}).limit(1);
         const logins = await cursor.toArray();
         if(logins.length > 0) {
-            return logins[0];
+            return make_login(logins[0]);
         } else {
             return null;
         }
@@ -103,12 +104,19 @@ const login_db = ({makeDB, ID}) => {
             console.log(typeof _id)
             const db =  await makeDB();
             const result = await db.collection(strings.LOGIN_COLLECION).findOne({_id});
-            return result;
+            return result ?  make_login(result) : null;
 
 
         } catch (ex) {
             throw ex;
         }
+    }
+
+    const make_login = (data) => {
+        return login_model({
+            ...data,
+            id: data._id
+        })
     }
 
     return Object.freeze({

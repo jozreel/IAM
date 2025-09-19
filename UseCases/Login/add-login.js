@@ -11,12 +11,14 @@ const add_login_usecase  =  ({login_db, user_db, ad_utils}) => {
                 throw new Error('Invalid application');
             }
             const email = data.email.toLowerCase();
-            const exist =  await user_db.find_by_email({email, password: true});
+            const exist_user =  await user_db.find_by_email({email, password: true});
+            
             console.log(exist);
             //check if userstatus is enabled
             if(!exist) {
                 throw new Error('The user was not found');
             }
+            const exist =  exist_user.ToJson()
             const user =  make_user({...exist, password: data.password});
             const apps =  user.getApplications();
             const access =  apps.find(a => a.appid === data.appid);
@@ -35,7 +37,7 @@ const add_login_usecase  =  ({login_db, user_db, ad_utils}) => {
             if ((user.isAdUser() && adauth) || (password === exist.password)) {
                 const login =  make_login({
                     ...data,
-                    uid: exist._id.toString(),
+                    uid: exist.id.toString(),
                     success: true
                 });
                 const payload = {iat: new Date().valueOf(), sub: login.getUID(), appid: login.getAppID()};
@@ -55,7 +57,7 @@ const add_login_usecase  =  ({login_db, user_db, ad_utils}) => {
             } else {
                 const login =  make_login({
                     ...data,
-                    uid: exist._id.toString(),
+                    uid: exist.id.toString(),
                     success: false
                 });
                await login_db.insert_login({

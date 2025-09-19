@@ -1,6 +1,7 @@
 const secret = require('../../KEYS').login_secret;
 const createLoginFactory = ({createUTCDate, createToken}) => {
     return ({
+        id,
         uid, 
         createddate=createUTCDate(),
         appid,
@@ -14,6 +15,7 @@ const createLoginFactory = ({createUTCDate, createToken}) => {
         success = false,
         nonce,
         consent,
+        codeused = true,
         multifactorcode,
         multifactorcodetime,
         offlineaccess     
@@ -39,6 +41,7 @@ const createLoginFactory = ({createUTCDate, createToken}) => {
 
 
         return Object.freeze({
+            getId: () => id,
             getUID: () => uid,
             getAppID:() => appid,
             getCreatedDate: () => createddate,
@@ -55,8 +58,29 @@ const createLoginFactory = ({createUTCDate, createToken}) => {
             getOfflineAcces: ()=> offlineaccess,
             getCodeChallengeMethod: () => codechallengemethod,
             getConsent: () => consent,
+            isCodeUsed: () => codeused,
             getMultifactorCodeTime: () => multifactorcodetime ? createUTCDate(multifactorcodetime) : createUTCDate(),
-            createToken: (payload)=> createToken(payload, secret)
+            createToken: (payload)=> createToken(payload, secret),
+            ToJson: () => ({
+                id,
+                uid,
+                createddate,
+                appid,
+                ip,
+                code,
+                codecreationtime,
+                responsetype,
+                state,
+                codechallenge,
+                codechallengemethod,
+                success,
+                nonce,
+                consent,
+                codeused,
+                multifactorcode,
+                multifactorcodetime,
+                offlineaccess 
+            })
         });
     }
 }

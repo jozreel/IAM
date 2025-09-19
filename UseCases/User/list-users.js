@@ -2,7 +2,7 @@ const list_users_usecase = ({user_db, login_db}) => {
     const get_last_activity = async(users) => {
         try {
             for (let user of users) {
-                const lastauth =  await login_db.get_last_login(user._id.toString());
+                const lastauth =  await login_db.get_last_login(user.getId().toString());
                 user.lastauth = lastauth;
             }
 

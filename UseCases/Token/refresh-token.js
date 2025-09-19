@@ -52,7 +52,7 @@ const refresh_token = ({tokendb,userdb, decode_token, verify_token, generate_tok
                     fullname: user.fullname,
                     iat: Math.floor(Date.now() / 1000),
                     exp: id_expire,
-                    sub: user._id,
+                    sub: user.id,
                     session: loginid,
                 });
 
@@ -63,7 +63,7 @@ const refresh_token = ({tokendb,userdb, decode_token, verify_token, generate_tok
                     role: user.role,
                     iat: Math.floor(Date.now() / 1000),
                     exp: access_expire,
-                    sub: user._id
+                    sub: user.id
                 });
 
                 const refresh_token  =  generate_token({
@@ -73,7 +73,7 @@ const refresh_token = ({tokendb,userdb, decode_token, verify_token, generate_tok
                     fullname: user.fullname,
                     iat: Math.floor(Date.now() / 1000),
                     exp: refresh_expire,
-                    sub: user._id
+                    sub: user.id
                 });
 
                 const tk =  make_token({

@@ -12,10 +12,12 @@ const two_factor = ({login_db, app_db}) => {
            
             if(multifactor_provider === 'local') {
               
-                const login =  await login_db.get_login(loginid);
-                if(!login) {
+                const login_obj =  await login_db.get_login(loginid);
+                
+                if(!login_obj) {
                     throw new Error('Could not find login');
                 }
+                const login =  login_obj.ToJson();
               
                 if(login.multifactorcode && authcode === login.multifactorcode.toString()) {
                     const code = crypto.randomBytes(24).toString('hex');
@@ -24,6 +26,7 @@ const two_factor = ({login_db, app_db}) => {
                                 ...login,
                                 success: true,
                                 code,
+                                codeused: false,
                                 multifactorcode: null,
                                 multifactorcodetime: null
                                 
@@ -34,6 +37,7 @@ const two_factor = ({login_db, app_db}) => {
                      await login_db.update_login({
                         id: loginid,
                         code,
+                        codeused: login_obj.isCodeUsed(),
                         codecreationtime: login_obj.getCodeCreationTime(),
                         multifactorcode: login_obj.getMultiFactorCode(),
                         multifactorcodetime: null

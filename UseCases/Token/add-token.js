@@ -8,20 +8,30 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
     return async(req) => {
         try {
             
-             const {client_id, loginid, cred_type, code_verifier} =  req.data;
-            const login = await login_db.get_login(loginid);
+             const {client_id, loginid, cred_type, code_verifier, code} =  req.data;
+            const login_obj = await login_db.get_login(loginid);
           
-            if(!login) {
+            console.log(code, 'THE CODE');
+            if(!login_obj) {
                 throw new Error("No login found for this user")
             }
 
-         
+             const login =  login_obj.ToJson();
+             if(login.codeused) {
+                throw new Error('Invalid request code used')
+             }
 
+             const stored_code =  login.code;
 
+             console.log(code, 'THE CODE', stored_code);
+
+             if(stored_code !== login.code) {
+                throw new Error('Invalid code exchange');
+             }
            
             const utcnow =  createUtcDate();
             const utccreated =  createUtcDate(login.codecreationtime);
-            if(utccreated.valueOf() + (50 * 5) > utcnow) {
+            if(utccreated.valueOf() + (60 * 5) > utcnow) {
                 throw new Error('Code expired');
             }
             const app =  await app_db.get_application(client_id);
@@ -30,11 +40,13 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
                 throw new Error('Token generation error. Application not found');
             }
             const userid =  login.uid;
-            const user =  await user_db.get_user(userid);
+            const user_obj =  await user_db.get_user(userid);
+         
 
-            if(!user) {
+            if(!user_obj) {
                 throw new Error('Authentication error');
             }
+            const user =  user_obj.ToJson();
 
                 
          
@@ -80,8 +92,8 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
             fullname: user.fullname,
             iat: Math.floor(Date.now() / 1000),
             exp: id_expire,
-            sub: user._id.toString(),
-            session: login._id,
+            sub: user.id.toString(),
+            session: login.id,
     
         }
         const nonce =  login.nonce;
@@ -97,7 +109,7 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
             role: user.role,
             iat: Math.floor(Date.now() / 1000),
             exp: access_expire,
-            sub: user._id.toString()
+            sub: user.id.toString()
         });
 
         let refresh_token;
@@ -107,10 +119,10 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
             username: user.username,
             email: user.password,
             fullname: user.fullname,
-            session: login._id,
+            session: login.id,
             iat: Math.floor(Date.now() / 1000),
             exp: refresh_expire,
-            sub: user._id.toString()
+            sub: user.id.toString()
         });
             const tk =  make_token({
                 id: crypto.randomUUID(),

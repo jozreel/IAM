@@ -28,6 +28,7 @@ const createUserFactory = ({ createUTCDate, verify_token}) => {
         createddate =createUTCDate(),
         lastmodifieddate
     } = {}) => {
+        
         if (!email) {
             throw new Error('Please provide an email')
 
@@ -56,7 +57,7 @@ const createUserFactory = ({ createUTCDate, verify_token}) => {
             throw new Error(`Lastname has a max length of ${max_lastname}`)
         }
 
-        if(password && password.length >   maxpassword) {
+        if(!id && password && password.length >   maxpassword) {
             throw new Error(`Password has a max length of ${maxpassword}`);
         }
 
@@ -91,6 +92,7 @@ const createUserFactory = ({ createUTCDate, verify_token}) => {
         
        
         return Object.freeze({
+            getId: ()=> id,
             getEmail: () =>email,
             getFirstName: ()=>firstname,
             getLastName: () => lastname,
@@ -118,12 +120,14 @@ const createUserFactory = ({ createUTCDate, verify_token}) => {
             getResetCode: ()=> resetcode,
             getResetCodeCreationTime: () => resetcodecreationtime = createUTCDate(),
             ToJson: ()=>({
+                id,
                 email,
+                telephone,
                 username,
                 firstname,
                 lastname,
-                password: encrypt_password(password),
-                lastpasswords: lastpasswords.map(o => encrypt_password(p)),
+                password,
+                lastpasswords: lastpasswords,
                 lastpasswordchangedate,
                 photo,
                 applications,

@@ -27,6 +27,9 @@ const MixedRequestHandler = (controller) => {
             if(result.headers) {
                 res.set(result.headers)
             }
+            if(result.statusCode) {
+                res.status(res.statusCode);
+            }
 
             if(result.cookies) {
                 result.cookies.forEach(c => res.cookie(c.name, c.value, c.options));
@@ -35,7 +38,7 @@ const MixedRequestHandler = (controller) => {
                  result.clearcookies.forEach(c => res.clearCookie(c.name, c.options));
             }
 
-            if(result.redirect || result.statusCode === 302 || res.statusCode === 301) {
+            if(result.redirect && (result.statusCode === 302 || res.statusCode === 301)) {
                 res.status(result.statusCode).redirect(result.redirect);
             } 
             

@@ -19,10 +19,12 @@ const Consent = ({login_db, app_db}) => {
 
               
 
-               const login = await login_db.get_login(loginid);
-               if(!login) {
+               const login_inst = await login_db.get_login(loginid);
+             
+               if(!login_inst) {
                 throw new Error("Invalid login");
                }
+                 const login =  login_inst.ToJson();
                const code = crypto.randomBytes(24).toString('hex');
                 const login_obj =  make_login({
                     ...login,

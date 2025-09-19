@@ -12,7 +12,7 @@ const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) =
             if(adauth) {
                 const login =  make_login({
                     ...data,
-                    uid: user._id.toString(),
+                    uid: user.id.toString(),
                     success: true
                 });
                 if(data.responsse_type === 'code') {
@@ -31,9 +31,9 @@ const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) =
 
     const OpenIdLogin = async (user, data) => {
         try {
-        
-            user.encryptPassword(user.getPassword());
            
+            user.encryptPassword(user.getPassword());
+              console.log(user.getPassword(), data.oldpassword);
             if(user.getPassword() === data.oldpassword) {
                
                 if(data.response_type === 'code') {
@@ -95,6 +95,7 @@ const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) =
                                     uid: data.uid.toString(),
                                     success: true,
                                     code,
+                                    codeused: false
                                     
                                     
                                 });
@@ -117,6 +118,7 @@ const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) =
                     const res = {
                         id: login_saved._id,
                         code: code,
+                        codeused: login.isCodeUsed(),
                         scope: data.scope,
                         client_id: data.client_id,
                         state: login.getState(),
@@ -187,14 +189,15 @@ const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) =
 
             
             const uname = username.toLowerCase();
-            const exist =  await user_db.find_by_username_or_email({username: uname, password: true});
-           
+            const exist_obj =  await user_db.find_by_username_or_email({username: uname, password: true});
+            
             //check if userstatus is enabled
-            if(!exist) {
+            if(!exist_obj) {
                 throw new Error('The user was not found');
             }
+            const exist = exist_obj.ToJson();
 
-           
+             console.log(exist);           
             const user =  make_user({...exist, password});
            
             const apps =  user.getApplications();
@@ -213,7 +216,7 @@ const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) =
             if(loginType === LoginProviderTypes.AD) {
 
             } else if(loginType === LoginProviderTypes.OPENID) {
-                const res = await OpenIdLogin(user, {code, scope, client_id, code_challenge, code_challenge_method, response_type, state, uid: exist._id, oldpassword: exist.password,
+                const res = await OpenIdLogin(user, {code, scope, client_id, code_challenge, code_challenge_method, response_type, state, uid: exist.id, oldpassword: exist.password,
                     two_factor_channel: app.getMultifactorChannel(),
                     multifactor_enabled: app.isMultifactorEnabled(),
                     nonce,

@@ -58,7 +58,7 @@ const LoginPage = (data) => {
             border-radius: 1.5rem;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
             width: 100%;
-            max-width: 24rem;
+            max-width: 32rem;
         }
 
         .logo-section {
@@ -107,6 +107,16 @@ const LoginPage = (data) => {
             font-weight: 500;
             color: #e5e7eb;
             text-align: center; /* Centering the label text */
+        }
+        .consent-card {
+           display: flex;
+           align-items: center;
+           gap: 1.5rem;
+        }
+        
+        consent-card svg {
+           width: 6rem;
+           height: 5rem;
         }
 
         .input-field {
