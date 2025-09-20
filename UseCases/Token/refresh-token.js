@@ -9,11 +9,11 @@ const refresh_token = ({tokendb,userdb, decode_token, verify_token, generate_tok
             const refresh_expire = Math.floor((Date.now() / 1000)) + (60 * 1440); 
             const loginid =  req.data.sessionid;
            
-           
+            
             //const ref_token = req.credentials;
             
             const session_token = req.cookies.refresh_session_cookie;
-
+          
             if(!session_token) {
                 throw new Error('Invalid session');
             }
@@ -24,14 +24,15 @@ const refresh_token = ({tokendb,userdb, decode_token, verify_token, generate_tok
                 throw new Error("No offline access scope enabled");
             }
             const userid =  token.uid;
-            
+          
             if(!token) {
                 throw new Error('Invalid session');
             }
-            const user =  await userdb.get_user(userid);
-            if(!user) {
+            const user_obj =  await userdb.get_user(userid);
+            if(!user_obj) {
                 throw new Error('user does not exist');
             }
+            const user = user_obj.ToJson();
 
             
 
@@ -47,9 +48,12 @@ const refresh_token = ({tokendb,userdb, decode_token, verify_token, generate_tok
                  }
                   
                 const id_token =  generate_token({
-                    username: user.username,
+                   /* username: user.username,
                     email: user.email,
-                    fullname: user.fullname,
+                    name: `${user.firstname} ${user.lastname}`,
+                    firstname: user.firstname,
+                    lastname: user.lastname,
+                    photo: user.photo,*/
                     iat: Math.floor(Date.now() / 1000),
                     exp: id_expire,
                     sub: user.id,
@@ -57,20 +61,17 @@ const refresh_token = ({tokendb,userdb, decode_token, verify_token, generate_tok
                 });
 
                 const access_token  =  generate_token({
-                    username: user.username,
-                    email: user.email,
-                    fullname: user.fullname,
                     role: user.role,
                     iat: Math.floor(Date.now() / 1000),
                     exp: access_expire,
                     sub: user.id
                 });
 
+
+                
+
                 const refresh_token  =  generate_token({
-                    username: user.username,
-                    email: user.email,
                     session: loginid,
-                    fullname: user.fullname,
                     iat: Math.floor(Date.now() / 1000),
                     exp: refresh_expire,
                     sub: user.id

@@ -87,9 +87,12 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
         const refresh_expire = Math.floor((Date.now() / 1000)) + 31560000; 
        
         const id_token_data = {
-            username: user.username,
-            email: user.password,
-            fullname: user.fullname,
+           /* username: user.username,
+            email: user.email,
+            name: `${user.firstname} ${user.lastname}`,
+            firstname: user.firstname,
+            lastname: user.lastname,
+            photo: user.photo,*/
             iat: Math.floor(Date.now() / 1000),
             exp: id_expire,
             sub: user.id.toString(),
@@ -103,9 +106,6 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
         const id_token =  generate_token(id_token_data);
 
         const access_token  =  generate_token({
-            username: user.username,
-            email: user.password,
-            fullname: user.fullname,
             role: user.role,
             iat: Math.floor(Date.now() / 1000),
             exp: access_expire,
@@ -116,9 +116,6 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
         const cookies = [];
         if(login.offlineaccess) {
             refresh_token  =  generate_token({
-            username: user.username,
-            email: user.password,
-            fullname: user.fullname,
             session: login.id,
             iat: Math.floor(Date.now() / 1000),
             exp: refresh_expire,

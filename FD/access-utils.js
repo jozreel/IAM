@@ -47,7 +47,7 @@ const access_utils_factory = () => {
             };
             pload.exp = pload.exp || Math.floor(Date.now() / 1000) + (60 * 60) // in 1 hr ot process.env.tokenexpirytime 
             pload.iat = pload.iat ||  Math.floor(Date.now() / 1000);
-           
+            console.log(pload);
             const payload = JSON.stringify(pload);
             const bs4Header =  base64_Url_encode(JSON.stringify(header));
             const bs4pload =  base64_Url_encode(payload);
