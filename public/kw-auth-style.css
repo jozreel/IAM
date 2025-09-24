@@ -1,0 +1,156 @@
+:root {
+            --olive-green: #3f6212;
+            --dark-background: #1a202c;
+            --white-opacity-10: rgba(255, 255, 255, 0.1);
+            --white-opacity-5: rgba(255, 255, 255, 0.05);
+            --white-opacity-20: rgba(255, 255, 255, 0.2);
+            --white-opacity-30: rgba(255, 255, 255, 0.3);
+            --placeholder-color: #d1d5db;
+}
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--dark-background);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    color: #ffffff;
+    margin: 0;
+    box-sizing: border-box;
+    /* Radial gradient for a modern feel */
+    background-image: radial-gradient(at 27% 92%, hsla(88, 60%, 78%, 0.1) 0px, transparent 50%), radial-gradient(at 89% 10%, hsla(88, 60%, 78%, 0.1) 0px, transparent 50%), radial-gradient(at 50% 50%, hsla(110, 60%, 70%, 0.2) 0px, transparent 50%);
+    padding: 1rem;
+}
+
+.login-container {
+    background-color: var(--white-opacity-5);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--white-opacity-20);
+    padding: 2rem;
+    border-radius: 1.5rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    width: 100%;
+    max-width: 32rem;
+}
+
+.logo-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.logo-circle {
+    width: 6rem;
+    height: 6rem;
+    background-color: var(--olive-green);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.logo-icon {
+    width: 3rem;
+    height: 3rem;
+}
+
+.title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    text-align: center;
+}
+
+.form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.input-group {
+    margin-bottom: 1.5rem;
+}
+
+.input-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #e5e7eb;
+    text-align: center; /* Centering the label text */
+}
+.consent-card {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+consent-card svg {
+    width: 6rem;
+    height: 5rem;
+}
+
+.input-field {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 1rem;
+    margin-top: 0.25rem;
+    background-color: var(--white-opacity-10);
+    border: 1px solid var(--white-opacity-30);
+    border-radius: 9999px;
+    color: #ffffff;
+    transition: all 0.3s ease;
+    text-align: center; /* Centering the input text */
+    box-sizing: border-box;
+}
+
+.input-field::placeholder {
+    color: var(--placeholder-color);
+}
+
+.input-field:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #34d399, 0 0 0 4px rgba(52, 211, 153, 0.5); /* Use a more subtle focus ring */
+}
+
+.forgot-password {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #4ade80;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.forgot-password:hover {
+    color: #86efac;
+}
+
+.login-button {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    border: 1px solid transparent;
+    border-radius: 9999px;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #ffffff;
+    cursor: pointer;
+    background-color: var(--olive-green);
+    transition: background-color 0.3s ease;
+}
+
+.login-button:hover {
+    background-color: #4d7c0f;
+}
+
+.login-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #34d399, 0 0 0 4px rgba(52, 211, 153, 0.5);
+}
+
+.message {
+    text-align: center;
+}

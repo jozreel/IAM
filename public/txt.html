@@ -1,24 +1,4 @@
-const factorPage = require('./2-factor-page');
-const ConsentPage = require('./consent-page');
-const RegisterPage = (data) => {
-
-
-    
-
-    let factorPart;
-    if(data.hasMultiFactor) {
-        factorPart = factorPage({channel: 'email'});
-    }
-
-    let consent;
-    if(data.consentrequired) {
-        consent =  ConsentPage(data);
-    }
-    const telephone_input =  ` <div class="input-group">
-                <label for="password-repeat" class="input-label">Telephone</label>
-                <input id="telephone" name="telephone" type="telephone" autocomplete="telephone" required class="input-field" placeholder="Enter your phone number">
-            </div>`;
-    return `<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -29,7 +9,7 @@ const RegisterPage = (data) => {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="/public/kw-authscripts.js" defer></script>
+    <script src="/public/kw-authscripts.js"></script>
     
 </head>
 <body>
@@ -60,7 +40,7 @@ const RegisterPage = (data) => {
                 <label for="email" class="input-label">Email</label>
                 <input id="email" name="email" type="text" autocomplete="email" required class="input-field" placeholder="Enter your email">
             </div>
-            ${data.showphone ? telephone_input : ''}
+           
             <div style="display: flex; align-items: center; gap: 8px;">
             <div class="input-group">
                 <label for="firstname" class="input-label">First Name</label>
@@ -112,11 +92,11 @@ const RegisterPage = (data) => {
 
 
 </body>
-</html>`
-
-}
+</html>
 
 
-module.exports=RegisterPage;
+
+
+
 
 
