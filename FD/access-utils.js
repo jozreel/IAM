@@ -18,7 +18,8 @@ const bypas_auth = [
     '/api/authorize/consent',
     '/api/authorize/logout', 
     '/api/authorize/register',
-    '/api/authorize/resendcode'
+    '/api/authorize/resendcode',
+    '/api/authorize/resetpassword'
     ]
 
 const access_utils_factory = () => {

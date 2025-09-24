@@ -289,6 +289,8 @@ const request_new_code = async() => {
 const cstabtn =  document.getElementById('accept-consent');
 const cstrbtn = document.getElementById('reject-consent');
 const rsbtn =  document.getElementById('resend_btn');
+const reset_btn =  document.getElementById('reset-btn');
+const cancel_reset_btn =  document.getElementById('cancel-reset-btn');
 if(cstabtn) {
 cstabtn.onclick = (e) => {
     e.preventDefault();
@@ -321,6 +323,16 @@ if(rsbtn) {
        request_new_code();
     }
 }
+
+if(reset_btn) {
+    reset_btn.onclick = (e) => {
+        e.preventDefault();
+        
+    }
+}
+
+
+
 
 const rg_sbtn = document.getElementById('reg_submit_btn');
     
@@ -443,11 +455,36 @@ const rg_sbtn = document.getElementById('reg_submit_btn');
             
         }
     }
-    console.log(rg_sbtn)
+    
     if(rg_sbtn) {
         rg_sbtn.onclick = (e) => {
             alert('hey')
             e.preventDefault();
             execute_register_user();
         }
+  }
+
+  const submit_reset_password = async () => {
+    try {
+        const emailinp =  document.getElementById('email');
+        const email =  emailinp.value;
+        const API = 'http://localhost:3992/api/auth/resetpassword';
+        const res =  await fetch(API, {
+            data: JSON.stringify({email}),
+            headers: {
+                "Content-Type": 'application/json'
+            }
+        });
+
+        if(!res.ok) {
+            throw new Error('could not reset');
+        }
+
+        
+
+
+    } catch(ex) {
+        console.log(ex);
+        msg.innerHTML = 'Could not complete this action';
+    }
   }

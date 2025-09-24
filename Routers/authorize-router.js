@@ -3,6 +3,7 @@ const mixed_request_handler = require('../FD/mixed-request-handler');
 const auth_controller = require('../Controllers/Authorize');
 const cookieParser = require('cookie-parser');
 const { request_handler } = require('../FD');
+const MixedRequestHandler = require('../FD/mixed-request-handler');
 
 const authorize_router =  Router();
 
@@ -14,4 +15,5 @@ authorize_router.post('/consent', [urlencoded({extended: true})],  mixed_request
 authorize_router.post('/logout', [cookieParser(), urlencoded({extended: true})], mixed_request_handler(auth_controller.LogoutController))
 authorize_router.post('/register', [json()], mixed_request_handler(auth_controller.RegisterController));
 authorize_router.post('/resendcode', [json()], request_handler(auth_controller.ResendCodeController));
+authorize_router.get('/resetpassword', MixedRequestHandler(auth_controller.ResetPasswordPageController))
 module.exports = authorize_router;

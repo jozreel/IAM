@@ -154,3 +154,7 @@ consent-card svg {
 .message {
     text-align: center;
 }
+
+#reset-message {
+    display: none;
+}
