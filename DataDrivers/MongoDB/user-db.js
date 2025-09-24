@@ -5,7 +5,9 @@ const user_db_factory =  ({makeDB, ID}) => {
         try {
         const db = await makeDB();
         const result = await db.collection(string.USER_COLLECTION).insertOne(data);
-        return result.ops[0];
+        console.log(result);
+        data.id =  result.insertedId;
+        return data;
         } catch (ex) {
             throw ex;
         }

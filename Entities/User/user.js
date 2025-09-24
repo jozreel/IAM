@@ -45,7 +45,7 @@ const createUserFactory = ({ createUTCDate, verify_token}) => {
             throw new Error('Please provide the user\'s last name');
         }
         const telre = /^\+?1?([0-9]{3})?\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/
-        if (!telre.test(telephone)) {
+        if (telephone && !telre.test(telephone)) {
             throw new Error('Invalid telephone number');
         }
         if(email && email.length > maxemail) {

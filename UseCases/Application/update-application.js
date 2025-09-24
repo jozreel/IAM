@@ -205,6 +205,8 @@ const update_app = ({app_db, user_db, role_db, access_db, generate_unique_key, e
                 adminusername: app.getAdminUsername(),
                 consents: app.getConsents(),
                 logouturl: app.getLogoutUrl(),
+                telephonerequired: app.isTelephoneRequired(),
+                selfregistration: app.canSelfRegister(),
                 createddate: app.getCreatedDate(),
                 lastmodifieddate: app.getLastModifiedDate()
             });

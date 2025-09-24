@@ -2,7 +2,7 @@ const {app_secret} = require('../../KEYS');
 const get_oauth_usecase = ({jwt}) => {
     return async (query) => {
         try {
-            console.log(query)
+          
             const {
                 response_type,
                 client_id,

@@ -9,7 +9,17 @@ const fs =  require('fs');
 const MaxKeyLength =  64;
 const SaltRounds = 10;
 
-const bypas_auth = ['/api/login', '/api/authorize', '/api/authorize/login', '/api/authorize/twofactor', '/api/token','/api/token/refresh', '/api/authorize/consent','/api/authorize/logout']
+const bypas_auth = [
+    '/api/login', 
+    '/api/authorize',
+    '/api/authorize/login', 
+    '/api/authorize/twofactor', 
+    '/api/token','/api/token/refresh',
+    '/api/authorize/consent',
+    '/api/authorize/logout', 
+    '/api/authorize/register',
+    '/api/authorize/resendcode'
+    ]
 
 const access_utils_factory = () => {
     const jwt = (payload, secreto) => {

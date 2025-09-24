@@ -5,7 +5,7 @@ const authorize_factory = ({verify_token, app_db}) => {
 
     return async (req) => {
         try {
-           
+         
             const {client_id} =  req.query;
            
             if(!client_id) {
@@ -17,13 +17,15 @@ const authorize_factory = ({verify_token, app_db}) => {
                 throw new Error('Client not registered');
             }
             if(req.query && req.query.response_type === 'code') {
+              
                 const auth_code =  authorization_code({verify_token});
                 const hasMultiFactor =  app.isMultifactorEnabled();
                 const consentrequired = app.getConsents();
                 const appname =  app.getApplicationName();
+                const telephone_required = app.isTelephoneRequired();
                 const session_cookie = req.cookies?.refresh_session_cookie;
-            
-                return await auth_code({...req.query, hasMultiFactor, consentrequired: consentrequired && consentrequired.length > 0 ? consentrequired : null, appname, session_cookie});
+                const selfregistration =  app.canSelfRegister();            
+                return await auth_code({...req.query, hasMultiFactor, consentrequired: consentrequired && consentrequired.length > 0 ? consentrequired : null, appname, session_cookie, showphone: telephone_required, selfregistration});
             }
 
         } catch (ex) {

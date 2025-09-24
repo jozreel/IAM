@@ -76,6 +76,8 @@ const add_application = ({app_db, encrypt_string}) => {
                 adminusername: app.getAdminUsername(),
                 consents: app.getConsents(),
                 logouturl: app.getLogoutUrl(),
+                selfregistration: app.canSelfRegister(),
+                telephonerequired: app.isTelephoneRequired(),
                 createddate: app.getCreatedDate(),
                 lastmodifieddate: app.getLastModifiedDate()
             });

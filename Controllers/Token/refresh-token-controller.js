@@ -3,7 +3,7 @@ const { CreateJsonResponse, GetErrorBody } = require("../helpers")
 const RefreshTokenController = ({TokenService}) => {
     return async (req) => {
         try {
-            console.log("get refresh token");
+           
             const res =  await TokenService.RefreshToken(req);
             return {
                 statusCode: 200,

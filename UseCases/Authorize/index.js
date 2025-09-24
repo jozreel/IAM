@@ -6,6 +6,8 @@ const {login_db, app_db, user_db} =  require('../../DataDrivers/MongoDB');
 const two_factor =  require('./two-factor');
 const Consent = require("./consent");
 const Logout = require("./logout");
+const Register = require("./register");
+const ResendCode = require("./resend-code");
 
 
 
@@ -15,5 +17,7 @@ module.exports =  Object.freeze({
     TwoFactor: two_factor({login_db, app_db}),
     Login: login({login_db, applicationdb: app_db, ad_utils: fd.ad_utils, user_db, message_service: fd.message_util}),
     Consent: Consent({login_db, app_db}),
-    Logout: Logout({login_db, app_db})
+    Logout: Logout({login_db, app_db}),
+    Register: Register({user_db, app_db, login_db, message_service: fd.message_util}),
+    ResendCode: ResendCode({login_db})
 })

@@ -10,15 +10,39 @@ const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) =
         try {
             const adauth =  user.isAdUser() ? await ad_utils.authenticate_user({username: user.getUsername(), password: user.getPassword()}) : null;
             if(adauth) {
-                const login =  make_login({
-                    ...data,
-                    uid: user.id.toString(),
-                    success: true
-                });
+                let res;
                 if(data.responsse_type === 'code') {
+                    if(data.multifactor_enabled) {
+                        let two_factor_channel =  data.two_factor_channel;
+                        const randcode = Math.floor(100000 + Math.random() * 900000);
+                        data.multifactorcode = randcode;
+                        res =  await create_basic_login(data);
+                        user.createLastCodeCreatedTime();
+                        const tel =  user.getTelephone();
+                        if(!tel) {
+                            two_factor_channel =  multiFactorChannels.EMAIL;
+                        }
+                        if(two_factor_channel === multiFactorChannels.EMAIL) {
+                         const mail = {
+                            subject: "AUthorization code",
+                            html: `<p>Your authentication code id ${randcode} </p>`,
+                            to: 'jozreellaurent@outlook.com',
+                            from: "support@veppz.com"
+                         }
+                         
+                         await message_service.email_util.SendEmail(mail);
+
+                       } else if (two_factor_channel === multiFactorChannels.SMS) {
+                         const msg = 'Your one time use code is '+randcode;
+                         await  message_service.sms_util.SendSmsLocal(tel, msg)
+                       }
+                    } else {
+                       res =  await create_code_login(data);
+                   
+                   }
 
                 }
-                return login
+                return res;
             } else {
                 throw new Error("Invalid login");
             }
@@ -31,20 +55,28 @@ const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) =
 
     const OpenIdLogin = async (user, data) => {
         try {
+
+           
            
             user.encryptPassword(user.getPassword());
-              console.log(user.getPassword(), data.oldpassword);
+           
             if(user.getPassword() === data.oldpassword) {
                
                 if(data.response_type === 'code') {
                    let res;
                    if(data.multifactor_enabled) {
-                       const two_factor_channel =  data.two_factor_channel;
+                        let two_factor_channel =  data.two_factor_channel;
                         const randcode = Math.floor(100000 + Math.random() * 900000);
                         data.multifactorcode = randcode;
+                        data.multifactorcodetime = new Date();
                         console.log(data.multifactorcode);
                         res =  await create_basic_login(data);
                         user.createLastCodeCreatedTime();
+                        const tel =  user.getTelephone();
+                        console.log(tel)
+                        if(!tel) {
+                            two_factor_channel =  multiFactorChannels.EMAIL;
+                        }
                       
                        if(two_factor_channel === multiFactorChannels.EMAIL) {
                          const mail = {
@@ -58,7 +90,7 @@ const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) =
 
                        } else if (two_factor_channel === multiFactorChannels.SMS) {
                          const msg = 'Your one time use code is '+randcode;
-                         await  message_service.sms_util.SendSmsLocal('12843452904', msg)
+                         await  message_service.sms_util.SendSmsLocal(tel, msg)
                        }
                    } else {
                        res =  await create_code_login(data);
@@ -113,7 +145,8 @@ const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) =
                         codechallenge: login.getCodeChallenge(),
                         codechallengemethod: login.getCodeChallengeMethod(),
                         success: login.isSuccessfull(),
-                        multifactorcode: login.getMultiFactorCode()
+                        multifactorcode: login.getMultiFactorCode(),
+                        multifactorcodetime : login.getMultifactorCodeTime()
                     });
                     const res = {
                         id: login_saved._id,
@@ -142,7 +175,7 @@ const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) =
                     success: true,
                     });
 
-                    console.log(login.getOfflineAcces());
+                  
                     //update login entity to includde these
                     const login_saved = await login_db.insert_login({
                         appid: login.getAppID(),
@@ -156,7 +189,8 @@ const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) =
                         success: login.isSuccessfull(),
                         codechallenge: login.getCodeChallenge(),
                         codechallengemethod: login.getCodeChallengeMethod(),
-                        multifactorcode: login.getMultiFactorCode()
+                        multifactorcode: login.getMultiFactorCode(),
+                        multifactorcodetime : login.getMultifactorCodeTime()
                     });
                     const res = {
                         id: login_saved._id,
@@ -197,16 +231,16 @@ const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) =
             }
             const exist = exist_obj.ToJson();
 
-             console.log(exist);           
+                      
             const user =  make_user({...exist, password});
            
             const apps =  user.getApplications();
-            const access =  apps.find(a => a.appid === client_id);
-            if(!access) {
-                throw new Error('You are not authaurised to access this application');
-            }
+          //  const access =  apps.find(a => a.appid === client_id);
+           // if(!access) {
+             //   throw new Error('You are not authaurised to access this application');
+           // }
 
-            const app =  await applicationdb.get_application(access.appid);
+            const app =  await applicationdb.get_application(client_id);
             if(!app) {
                 throw new Error('Invalid application');
             }
@@ -216,6 +250,17 @@ const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) =
             if(loginType === LoginProviderTypes.AD) {
 
             } else if(loginType === LoginProviderTypes.OPENID) {
+              
+                if(exist.ADUser) {
+               const res = await AdLogin(user, {code, scope, client_id, code_challenge, code_challenge_method, response_type, state, uid: exist.id, oldpassword: exist.password,
+                    two_factor_channel: app.getMultifactorChannel(),
+                    multifactor_enabled: app.isMultifactorEnabled(),
+                    nonce,
+                    offline_access,
+                    consentrequired: app.getConsents()
+                });
+                return res;
+                } else {
                 const res = await OpenIdLogin(user, {code, scope, client_id, code_challenge, code_challenge_method, response_type, state, uid: exist.id, oldpassword: exist.password,
                     two_factor_channel: app.getMultifactorChannel(),
                     multifactor_enabled: app.isMultifactorEnabled(),
@@ -224,11 +269,10 @@ const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) =
                     consentrequired: app.getConsents()
                 });
                 return res;
+            }
             } else throw new Error('Invalid login provider type');
 
-            if(!exist.ADUser) {
-               user.encryptPassword(user.getPassword())
-            } 
+            
           
             
             

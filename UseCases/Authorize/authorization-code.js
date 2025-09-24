@@ -1,9 +1,10 @@
 const crypto =  require('crypto');
 const LoginPage = require('./login-page'); 
+const RegisterPage = require('./register-page');
 const authorization_code = ({verify_token}) => {
     return  async (data) => {
         try {
-            const {response_type, scope, client_id,state, redirect_uri, code_challenge, code_challenge_method, session_cookie} =  data;
+            const {response_type, scope, client_id,state, redirect_uri, code_challenge, code_challenge_method, session_cookie, promt} =  data;
             if(response_type !== 'code') {
                 throw new Error('Invalid response type');
             }
@@ -22,7 +23,7 @@ const authorization_code = ({verify_token}) => {
 
           
             const isopenid_scope =  scope.split(',').find(o=> o === 'openid');
-            console.log(isopenid_scope);
+           
             if(!isopenid_scope) {
                 throw new Error('Missing openid in scope');
             }
@@ -41,7 +42,7 @@ const authorization_code = ({verify_token}) => {
             let loginid;
             if(session_cookie) {
                 payload = verify_token(session_cookie);
-                console.log(payload);
+            
                 loginid =  payload.sessionid;
                 if(payload && payload.exp >= Math.floor(Date.now() / 1000)) {
                    
@@ -49,6 +50,14 @@ const authorization_code = ({verify_token}) => {
                 } else {
                    
                     loggedin = false;
+                }
+            }
+           
+            if(promt && promt === 'create') {
+                data.hasMultiFactor = true;
+                return {
+                    type: 'page',
+                    data: RegisterPage(data)
                 }
             }
 

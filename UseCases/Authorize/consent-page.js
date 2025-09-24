@@ -1,7 +1,7 @@
 const consentTypes = require("../../Entities/Application/consent-types");
 
 const ConsentPage = (data) => {
-    console.log(data);
+   
     return `<div class="form-section"  id="consent-section" style="display: none;">
            <div class="text-center mb-8">
                 <p class="text-whitw-600 text-lg">

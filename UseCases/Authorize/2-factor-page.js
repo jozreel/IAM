@@ -15,7 +15,7 @@ const TwoFactorPage = (data) => {
                        
                         </div>
                       <div>
-                        <p id="message" class="message"></p>
+                        <p id="tfa-message" class="message"></p>
                       </div>
                      
 

@@ -4,9 +4,9 @@ const save_profile_pic_controller = ({save_profile_pic}) => {
         try {
 
             const id = request.params.id;
-            console.log(request);
+           
             const data = request.file;
-            console.log(data);
+            
             const res = await save_profile_pic(id, data);
 
             return {

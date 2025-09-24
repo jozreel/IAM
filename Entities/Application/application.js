@@ -27,9 +27,11 @@ const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyKey, ha
         adminpassword,
         logouturl,
         consents = [],
+        telephonerequired=false,
+        selfregistration = false,
         lastmodifieddate = createUTCDate()
     }={}) => {
-        console.log(domain);
+       
         if(!applicationname) {
             throw new Error('Invalid application please provide a name');
         }
@@ -100,6 +102,8 @@ const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyKey, ha
             getAdminPassword: () => adminpassword,
             getConsents: () => consents,
             getLogoutUrl: () => logouturl,
+            isTelephoneRequired: () => telephonerequired,
+            canSelfRegister: () => selfregistration,
             ToJson: () => ({
                 id,
                 applicationname: applicationname,
@@ -117,8 +121,10 @@ const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyKey, ha
                 adminpassword,
                 consents,
                 logouturl,
+                telephonerequired,
                 createddate,
-                lastmodifieddate
+                lastmodifieddate,
+                selfregistration
             })
         });
     }

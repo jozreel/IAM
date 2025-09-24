@@ -49,7 +49,7 @@ const Consent = ({login_db, app_db}) => {
                const url =  redirect_uri+'?code='+code+'&state='+login.state+"&session="+loginid;
                return {type: 'redirect', data: {url}}
             } else {
-            console.log(domain + 'MY DOMAIN')
+            
                return {type: 'redirect', data: {url: 'https://'+domain}}
             }
 

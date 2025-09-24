@@ -44,7 +44,7 @@ const MixedRequestHandler = (controller) => {
             
 
             const type = result.type;
-            console.log(type)
+          
             if(type === 'page') {
                 res.type('html');
                 res.set('Content-Type', 'text/html');

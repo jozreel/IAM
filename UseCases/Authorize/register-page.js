@@ -1,9 +1,9 @@
 const factorPage = require('./2-factor-page');
 const ConsentPage = require('./consent-page');
-const LoginPage = (data) => {
+const RegisterPage = (data) => {
 
 
-
+    
 
     let factorPart;
     if(data.hasMultiFactor) {
@@ -14,12 +14,16 @@ const LoginPage = (data) => {
     if(data.consentrequired) {
         consent =  ConsentPage(data);
     }
+    const telephone_input =  ` <div class="input-group">
+                <label for="password-repeat" class="input-label">Telephone</label>
+                <input id="telephone" name="telephone" type="telephone" autocomplete="telephone" required class="input-field" placeholder="Enter your phone number">
+            </div>`;
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kwapo Login</title>
+    <title>Kwapo Registration</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -203,25 +207,40 @@ const LoginPage = (data) => {
         <!-- Form Section -->
         <form id="app-lg-form" method="POST" action="/api/authorize/consent">
          <div  class="form-section" id="lg-form">
-             <h1 class="title">Login</h1>
+             <h1 class="title">Register User</h1>
             <div class="input-group">
                 <label for="username" class="input-label">Username</label>
                 <input id="username" name="username" type="text" autocomplete="username" required class="input-field" placeholder="Enter your username">
             </div>
 
+             <div class="input-group">
+                <label for="email" class="input-label">Email</label>
+                <input id="email" name="email" type="text" autocomplete="email" required class="input-field" placeholder="Enter your email">
+            </div>
+            ${data.showphone ? telephone_input : ''}
+            <div style="display: flex; align-items: center; gap: 8px;">
+            <div class="input-group">
+                <label for="firstname" class="input-label">First Name</label>
+                 <input id="firstname" name="firstname" type="text" autocomplete="firstname" required class="input-field" placeholder="Enter your first name">
+            </div>
+            <div class="input-group">
+                <label for="lastname" class="input-label">Last Name</label>
+                 <input id="lastname" name="lastname" type="text" autocomplete="lastname" required class="input-field" placeholder="Enter your Last name">
+            </div>
+            </div>
             <div class="input-group">
                 <label for="password" class="input-label">Password</label>
-                <input id="password" name="password" type="password" autocomplete="current-password" required class="input-field" placeholder="Enter your password">
+                <div style="position: relative;">
+                <input style="padding-right: 32px;" id="password" name="password" type="password" autocomplete="current-password" required class="input-field" placeholder="Enter your password">
+                <svg onclick="toogle_visibilityOn()" id="show-passwd" style="cursor: pointer; position: absolute; right: 8px; top: 8px;" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M480-320q75 0 127.5-52.5T660-500q0-75-52.5-127.5T480-680q-75 0-127.5 52.5T300-500q0 75 52.5 127.5T480-320Zm0-72q-45 0-76.5-31.5T372-500q0-45 31.5-76.5T480-608q45 0 76.5 31.5T588-500q0 45-31.5 76.5T480-392Zm0 192q-146 0-266-81.5T40-500q54-137 174-218.5T480-800q146 0 266 81.5T920-500q-54 137-174 218.5T480-200Zm0-300Zm0 220q113 0 207.5-59.5T832-500q-50-101-144.5-160.5T480-720q-113 0-207.5 59.5T128-500q50 101 144.5 160.5T480-280Z"/></svg>
+                <svg onclick="toogle_visibilityOff()" id="hide-passwd" style="display: none; cursor: pointer;  position: absolute; right: 8px; top: 8px;" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="m644-428-58-58q9-47-27-88t-93-32l-58-58q17-8 34.5-12t37.5-4q75 0 127.5 52.5T660-500q0 20-4 37.5T644-428Zm128 126-58-56q38-29 67.5-63.5T832-500q-50-101-143.5-160.5T480-720q-29 0-57 4t-55 12l-62-62q41-17 84-25.5t90-8.5q151 0 269 83.5T920-500q-23 59-60.5 109.5T772-302Zm20 246L624-222q-35 11-70.5 16.5T480-200q-151 0-269-83.5T40-500q21-53 53-98.5t73-81.5L56-792l56-56 736 736-56 56ZM222-624q-29 26-53 57t-41 67q50 101 143.5 160.5T480-280q20 0 39-2.5t39-5.5l-36-38q-11 3-21 4.5t-21 1.5q-75 0-127.5-52.5T300-500q0-11 1.5-21t4.5-21l-84-82Zm319 93Zm-151 75Z"/></svg>
+                </div>
             </div>
-
-            <div style="text-align: right; display: flex; justify-content: flex-end; align-items: center; gap: 16px; margin-top: -0.75rem; margin-bottom: 1.5rem;">
-                ${data.selfregistration ? '<a id="register-link" href="javascript:;" class="forgot-password">Create Account</a>': ''}
-                <a onclick="javascript:;" class="forgot-password">Forgot password?</a>
-            </div>
+            
 
             <div>
                 <button  onclick="javascript:void(0)" id="submit_btn" type="submit"  class="login-button">
-                    Sign in
+                    Register User
                 </button>
             </div>
             <div>
@@ -252,21 +271,61 @@ const LoginPage = (data) => {
      <script type="text/javascript">
     const sbtn = document.getElementById('submit_btn');
     const msg =  document.getElementById('message')
-    console.log(sbtn);
-    async function execute_login_user() {
+    
+
+    const toogle_visibilityOn = () => {
+          
+           const  pwdfield =  document.getElementById('password');
+            const  onf =  document.getElementById('show-passwd');
+            const  off =  document.getElementById('hide-passwd');
+            onf.style.display='none';
+            off.style.display='block';
+            pwdfield.type =  'text';
+        }
+    const toogle_visibilityOff = () => {
+           
+           const  pwdfield =  document.getElementById('password');
+           const  onf =  document.getElementById('show-passwd');
+            const  off =  document.getElementById('hide-passwd');
+             off.style.display='none';
+             onf.style.display='block';
+           
+           pwdfield.type =  'password';
+        }
+
+    async function execute_register_user() {
         try {
             
             
             const unamefield =  document.getElementById('username');
             const  pwdfield =  document.getElementById('password');
+            const telfield = document.getElementById('telephone');
+            const emailfield =  document.getElementById('email');
+            const fnamefield =  document.getElementById('firstname');
+            const lnamefield =  document.getElementById('lastname');
             let username;
             let password;
+            let telephone;
+            let email;
             if(unamefield) {
                 console.log(unamefield.value)
                 username =  unamefield.value;
             }
             if(pwdfield) {
                 password =  pwdfield.value;
+            }
+            if(telfield) {
+               telephone =  telfield.value;
+            }
+            
+            if(emailfield) {
+              email =  emailfield.value;
+            }
+            if(fnamefield) {
+               firstname =  fnamefield.value;
+            }
+            if(lnamefield) {
+               lastname =  lnamefield.value;
             }
             const client_inp =  document.getElementById('client_id');
             const resp_inp =  document.getElementById('response_id');
@@ -286,16 +345,20 @@ const LoginPage = (data) => {
             const state =  state_inp?.value;
             const nonce = nonce_inp?.value;
             const offline_access = offline_access_inp?.value === 'yes' ? true : false;
-            const formdata = {username, password, client_id, response_type, scope, redirect_uri, code_challenge, code_challenge_method, state, nonce, offline_access};
+            const formdata = {username, password, client_id, response_type, scope, redirect_uri, code_challenge, code_challenge_method, state, nonce, offline_access, email, firstname, lastname, telephone};
             console.log(offline_access_inp?.value)
             console.log(formdata);
-            const API="http://localhost:3992/api/authorize/login";
+            const API="http://localhost:3992/api/authorize/register";
             const res = await  fetch(API, {method: "POST",  body: JSON.stringify(formdata), headers: {"content-type": "application/json"}});
             if(!res.ok) {
                throw new Error('Could not log you in.');
             }
             unamefield.value = '';
             pwdfield.value = '';
+            emailfield.value = '';
+            if(telfield) {
+               telfield.value = '';
+            }
             const d =  await res.json();        
             
                 
@@ -324,14 +387,14 @@ const LoginPage = (data) => {
 
         } catch(ex) {
             console.log(ex);
-            msg.innerHTML = 'Could not log you in. Please try again';
+            msg.innerHTML = 'Something went wrong. Please try again';
             
         }
     }
     sbtn.onclick = (e) => {
-        
+    
         e.preventDefault();
-        execute_login_user();
+        execute_register_user();
     }
     const codebtn =  document.getElementById('code_btn');
     if(codebtn) {
@@ -343,12 +406,9 @@ const LoginPage = (data) => {
         }
     }
 
+
 const TwoFactor = async () => {
-     const tinp = document.getElementById('tfa-message'); 
         try {
-           if(tinp) {
-              tinp.innerHTML = '';
-           }
             const API = 'http://localhost:3992/api/authorize/twofactor';
             const authcode_inp =  document.getElementById('authcode');
             const resp_inp =  document.getElementById('response_id');
@@ -385,9 +445,10 @@ const TwoFactor = async () => {
             });
 
             if(!res.ok) {
-                throw new Error('Incorrect code');
+                console.log('Incorrect code');
+                throw new Error('could not authenticate')
             }
-        console.log(res);
+        
            const tfac =   document.getElementById('factor');
            if(tfac) {
               tfac.style.display = 'none'
@@ -411,10 +472,8 @@ const TwoFactor = async () => {
 
             
         } catch(ex) {
-           
-            if(tinp) {
-               tinp.innerHTML = ex.message;
-            }
+            msg.innerHTML = 'Could not authenticate. Please try again';
+            console.log(ex, 'error'); 
         }
     }
 
@@ -498,47 +557,8 @@ const TwoFactor = async () => {
         }
 );
 
-const register_page = () => {
-   const loc = window.location.href+'&promt=create';
-   console.log(loc);
-   window.location.href = loc;
-}
-
-const request_new_code = async() => {
-    const tfainp =  document.getElementById('tfa-message');
-    try {
-        const API =  'http://localhost:3992/api/authorize/resendcode';
-        const lgidinp = document.getElementById('loginid');
-        let sessionid;
-        if(lgidinp) {
-            sessionid =  lgidinp.value;
-        }
-        const data = {sessionid}
-        const res =  await fetch(API, {
-            method: 'POST',
-            headers: {
-               'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-        if(!res.ok) {
-          throw new Error('Could not get code');
-        }
-        const dt =  await res.json();
-        console.log(dt);
-        if(dt.codesent) {
-            
-           tfainp.innerHTML = "Code sent"
-        }
-    } catch(ex) {
-         tfainp.innerHTML = ex.message;
-    }
-}
-
-
 const cstabtn =  document.getElementById('accept-consent');
 const cstrbtn = document.getElementById('reject-consent');
-const rsbtn =  document.getElementById('resend_btn');
 cstabtn.onclick = (e) => {
    e.preventDefault();
  
@@ -551,23 +571,6 @@ cstrbtn.onclick = (e) => {
   
    get_consent(false);    
 }
-
-const reg_link =  document.getElementById('register-link');
-if(reg_link) {
-  
-
-   reg_link.onclick = () => {
-    
-      register_page();
-    }
-}
-
-if(rsbtn) {
-   rsbtn.onclick = (e) => {
-       e.preventDefault();
-       request_new_code();
-    }
-}
     
  </script>
 
@@ -577,6 +580,6 @@ if(rsbtn) {
 }
 
 
-module.exports=LoginPage;
+module.exports=RegisterPage;
 
 
