@@ -236,7 +236,7 @@ const TwoFactor = async () => {
            const lgform = document.getElementById('lg-form');
            const tfac =  document.getElementById('factor');
           
-           console.log(tfac.style)
+           
            if(tfac && tfac.style.display === 'block') {
            
                window.location.reload();
@@ -289,8 +289,8 @@ const request_new_code = async() => {
 const cstabtn =  document.getElementById('accept-consent');
 const cstrbtn = document.getElementById('reject-consent');
 const rsbtn =  document.getElementById('resend_btn');
-const reset_btn =  document.getElementById('reset-btn');
-const cancel_reset_btn =  document.getElementById('cancel-reset-btn');
+const reset_btn =  document.getElementById('reset_btn');
+const cancel_reset_btn =  document.getElementById('cancel_reset_btn');
 if(cstabtn) {
 cstabtn.onclick = (e) => {
     e.preventDefault();
@@ -324,10 +324,23 @@ if(rsbtn) {
     }
 }
 
+
+
 if(reset_btn) {
     reset_btn.onclick = (e) => {
-        e.preventDefault();
         
+        e.preventDefault();
+        submit_reset_password();
+        
+    }
+}
+
+if(cancel_reset_btn) {
+    cancel_reset_btn.onclick = (e) => {
+        
+        e.preventDefault();
+        //create a client for local admin
+        window.location.h = 'http://localhost:3992/api/authorize'
     }
 }
 
@@ -458,7 +471,7 @@ const rg_sbtn = document.getElementById('reg_submit_btn');
     
     if(rg_sbtn) {
         rg_sbtn.onclick = (e) => {
-            alert('hey')
+          
             e.preventDefault();
             execute_register_user();
         }
@@ -466,11 +479,14 @@ const rg_sbtn = document.getElementById('reg_submit_btn');
 
   const submit_reset_password = async () => {
     try {
+      
         const emailinp =  document.getElementById('email');
+       
         const email =  emailinp.value;
-        const API = 'http://localhost:3992/api/auth/resetpassword';
+        const API = 'http://localhost:3992/api/authorize/resetpasswordlink';
         const res =  await fetch(API, {
-            data: JSON.stringify({email}),
+            body: JSON.stringify({email}),
+            method: 'POST',
             headers: {
                 "Content-Type": 'application/json'
             }
@@ -478,6 +494,14 @@ const rg_sbtn = document.getElementById('reg_submit_btn');
 
         if(!res.ok) {
             throw new Error('could not reset');
+        }
+        const appressetpwd =  document.getElementById('app-reset-pwd');
+        if(appressetpwd) {
+            appressetpwd.style.display =  'none';
+        }
+        const reset_msg =  document.getElementById('reset-message');
+        if(reset_msg) {
+            reset_msg.style.display = 'block';
         }
 
         
@@ -488,3 +512,18 @@ const rg_sbtn = document.getElementById('reg_submit_btn');
         msg.innerHTML = 'Could not complete this action';
     }
   }
+
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const sid =  document.getElementById('sid');
+    const reset_code =  document.getElementById('resetcode')
+    const params = new URLSearchParams(window.location.search);
+    if(sid) {
+        sid.value = params.get('sid');
+    }
+    if(reset_code) {
+        reset_code.value =  params.get('resetcode');
+    }
+  })
+
+

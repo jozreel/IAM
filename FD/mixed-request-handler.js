@@ -32,6 +32,7 @@ const MixedRequestHandler = (controller) => {
             }
 
             if(result.cookies) {
+                console.log('setting cookie')
                 result.cookies.forEach(c => res.cookie(c.name, c.value, c.options));
             }
             if(result.clearcookies) {
@@ -44,6 +45,7 @@ const MixedRequestHandler = (controller) => {
             
 
             const type = result.type;
+            
           
             if(type === 'page') {
                 res.type('html');
@@ -57,6 +59,7 @@ const MixedRequestHandler = (controller) => {
             } else if(type === 'redirect') {
                 res.redirect(result.body.url);
             } else {
+                
                   res.type('json');
                   res.status(result.statusCode)
                   .send(result.body);

@@ -25,6 +25,7 @@ const createUserFactory = ({ createUTCDate, verify_token}) => {
         lastcodecreationtime,
         resetcode,
         resetcodecreationtime,
+        resetattemts = 0,
         emailverified = false,
         createddate =createUTCDate(),
         lastmodifieddate
@@ -121,6 +122,7 @@ const createUserFactory = ({ createUTCDate, verify_token}) => {
             getResetCode: ()=> resetcode,
             getEmailVerified: () => emailverified,
             getResetCodeCreationTime: () => resetcodecreationtime = createUTCDate(),
+            getResetAttemts: () => resetattemts,
             ToJson: ()=>({
                 id,
                 email,
@@ -139,7 +141,10 @@ const createUserFactory = ({ createUTCDate, verify_token}) => {
                 ADUser,
                 lastcode,
                 lastcodecreationtime,
-                emailverified
+                emailverified,
+                resetcode,
+                resetattemts,
+                resetcodecreationtime
             })
         });
 

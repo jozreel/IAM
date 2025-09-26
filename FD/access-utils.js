@@ -19,7 +19,11 @@ const bypas_auth = [
     '/api/authorize/logout', 
     '/api/authorize/register',
     '/api/authorize/resendcode',
-    '/api/authorize/resetpassword'
+    '/api/authorize/resetpassword',
+    '/api/authorize/resetpasswordlink',
+    '/api/authorize/changepassword',
+    '/api/authorize/changeuserpassword',
+    '/api/authorize/passwordchangemessage'
     ]
 
 const access_utils_factory = () => {

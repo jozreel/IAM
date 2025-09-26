@@ -43,7 +43,8 @@ const Register = ({user_db, app_db, login_db, message_service}) => {
                     applications: user.getApplications(),
                     lastmodifieddate: user.getLastModifiedDate(),
                     telephone: user.getTelephone(),
-                    status: user.getStatus()
+                    status: user.getStatus(),
+                    resetattemts: user.getResetAttemts()
                 });
 
 

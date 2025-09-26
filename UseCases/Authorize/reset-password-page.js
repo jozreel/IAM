@@ -28,26 +28,27 @@ const ResetPasswordPage = ({data}) => `<!DOCTYPE html>
         </div>
 
         <!-- Form Section -->
-        <form id="app-lg-form" method="POST" action="/api/authorize/resetrequest">
+        <form id="app-reset-pwd" method="POST" action="/api/authorize/resetrequest">
          <div  class="form-section" id="lg-form">
              <h1 class="title">Password Reset</h1>
             <div class="input-group">
                 <label for="username" class="input-label">Email</label>
-                <input id="email" name="email" type="text" autocomplete="email" required class="input-field" placeholder="Enter your email">
+                <input id="email" name="email" type="text" autocomplete="off" required class="input-field" placeholder="Enter your email">
             </div>
 
         </div>
          <div class="form-button" style="display: flex; align-items: cemter; gap: .75rem;">
-            <button onclick="javascript:void(0)" class="login-button"   id="reset_btn" type="submit">Submit Code</button>
+            <button onclick="javascript:void(0)" class="login-button"   id="reset_btn" type="submit">Submi</button>
             <button onclick="javascript:void(0)" class="login-button" id="cancel_reset_btn" type="submit">Cancel</button>
             
         </div>
         </form>
+        <div id="reset-message">
+            <p style="text-align: center;">A reset email was sent. If the provided email matches an account in our system you will receive a link.</p>
+        </div>
     </div>
 
-    <div id="reset-message">
-        <p>A reset email was sent. If the provided email matches an account in our system you will rwceive a link.</p>
-    </div>
+    
 
     
 </body>

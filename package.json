@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "export SECRET_KEY=$(openssl rand -hex 32) && node index",
     "test": "mocha --timeout 60000"
   },
   "author": "",

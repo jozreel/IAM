@@ -16,4 +16,8 @@ authorize_router.post('/logout', [cookieParser(), urlencoded({extended: true})],
 authorize_router.post('/register', [json()], mixed_request_handler(auth_controller.RegisterController));
 authorize_router.post('/resendcode', [json()], request_handler(auth_controller.ResendCodeController));
 authorize_router.get('/resetpassword', MixedRequestHandler(auth_controller.ResetPasswordPageController))
+authorize_router.post('/resetpasswordlink', [json()], request_handler(auth_controller.GenerateResetLinkController)),
+authorize_router.get('/changepassword', mixed_request_handler(auth_controller.PasswordInputPageController)),
+authorize_router.post('/changeuserpassword', [urlencoded({extended: true}), cookieParser()], mixed_request_handler(auth_controller.ChangePasswordController))
+authorize_router.get('/passwordchangemessage', [cookieParser()], mixed_request_handler(auth_controller.GetPasswordSuccessPageController))
 module.exports = authorize_router;
