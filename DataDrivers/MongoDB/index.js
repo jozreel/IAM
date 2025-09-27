@@ -72,6 +72,7 @@ const login_db =  require('./login-db');
 const role_db_factory = require('./role-db');
 const access_db_factory  = require('./access-db');
 const token_db = require('./token-db');
+const tenant_db =  require('./tenant-db');
 
 
 module.exports =  Object.freeze({
@@ -82,6 +83,7 @@ module.exports =  Object.freeze({
     role_db: role_db_factory({makeDB, ID}),
     access_db: access_db_factory({makeDB, ID, autoID}),
     token_db: token_db({makeDB, ID}),
+    tenant_db: tenant_db({makeDB, ID}),
     ID,
     autoID
 });

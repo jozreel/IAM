@@ -18,7 +18,9 @@ const createLoginFactory = ({createUTCDate, createToken}) => {
         codeused = true,
         multifactorcode,
         multifactorcodetime,
-        offlineaccess     
+        offlineaccess,
+        token,
+        lasttokenrefresh
     } = {}) => {
         if(!uid) {
             throw new Error('Invalid user. Trya again');
@@ -61,6 +63,8 @@ const createLoginFactory = ({createUTCDate, createToken}) => {
             isCodeUsed: () => codeused,
             getMultifactorCodeTime: () => multifactorcodetime ? createUTCDate(multifactorcodetime) : createUTCDate(),
             createToken: (payload)=> createToken(payload, secret),
+            getLastTokenRefresh: () => lasttokenrefresh,
+            getToken: () => token,
             ToJson: () => ({
                 id,
                 uid,
@@ -79,6 +83,8 @@ const createLoginFactory = ({createUTCDate, createToken}) => {
                 codeused,
                 multifactorcode,
                 multifactorcodetime,
+                lasttokenrefresh,
+                token,
                 offlineaccess 
             })
         });

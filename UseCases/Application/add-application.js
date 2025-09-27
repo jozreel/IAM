@@ -59,6 +59,8 @@ const add_application = ({app_db, encrypt_string}) => {
                 data.adminpassword =  await encrypt_string(data.adminpassword); 
 
             }
+           const secret = crypto.randomBytes(32).toString('hex');
+           data.clientsecret =  secret;
 
             const app =  make_application(data);
             const result =  await app_db.insert_application({
@@ -79,7 +81,13 @@ const add_application = ({app_db, encrypt_string}) => {
                 selfregistration: app.canSelfRegister(),
                 telephonerequired: app.isTelephoneRequired(),
                 createddate: app.getCreatedDate(),
-                lastmodifieddate: app.getLastModifiedDate()
+                lastmodifieddate: app.getLastModifiedDate(),
+                clientid: app.getClientId(),
+                serviceaccountenabled: app.isServiceAccountEnabled(),
+                clientsecret: app.getClientSecret(),
+                tenantid: app.getTenantId(),
+                description: app.getDescription(),
+                refreshtokenrotation: app.getRefreshTokenRotation()
             });
             return result;
         } catch (ex) {

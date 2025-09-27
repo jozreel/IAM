@@ -2,6 +2,7 @@
 const AddTokenController = ({TokenService}) => {
     return async (req) => {
         try {
+           
             const res =  await TokenService.AddToken(req);
               return {statusCode: 200, body: res.data, cookies: res.cookies}
 

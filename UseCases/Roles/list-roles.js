@@ -5,6 +5,9 @@ const list_roles = ({role_db}) => {
             if(!appid) {
                 appid =  req.appid;
             }
+            if(!appid) {
+                throw new Error('Invalid app id');
+            }
             const  res =  await role_db.GetAppRoles(appid);
             return res;
 

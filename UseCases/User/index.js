@@ -20,7 +20,7 @@ const CheckPasswordLinkUsecase = require('./check-password-link-usecase');
 const sms_utils = fd.sms_util;
 
 module.exports = Object.freeze({
-    add_user: add_user({user_db, ad_utils, sms_utils}),
+    add_user: add_user({user_db, ad_utils, sms_utils, verify_token: fd.access_utils.verify_toket_asymetric}),
     update_user: update_user({user_db}),
     get_user: get_user({user_db}),
     list_users: list_users({user_db, login_db}),

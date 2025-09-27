@@ -27,14 +27,14 @@ const token_factory = ({CreateUtcDate}) => {
             GetCreatedDate: () => createddate,
             GetLastModifiedDate: () => lastmodifieddate,
             GetLoginId: () =>loginid,
-            ToJson: () => {
+            ToJson: () => ({
                 id,
                 token,
                 validuntil,
                 loginid,
                 createddate,
                 lastmodifieddate
-            }
+            })
         });
 
 

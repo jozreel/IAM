@@ -5,6 +5,7 @@ const get_app_controller =  require('./get-application-controller');
 const list_app_controller =  require('./list-application-controller');
 const delete_app_controller = require('./delete-application-controller');
 const CreateApiKeyController = require('./create-api-key-controller');
+const GenerateAppSecretController = require('./generate-app-secret-controller');
 
 const add_app =  app_service.add_app;
 const update_app =  app_service.update_app;
@@ -19,5 +20,6 @@ module.exports = Object.freeze({
     get_app: get_app_controller({get_app}),
     list_apps: list_app_controller({list_apps}),
     delete_app: delete_app_controller({delete_app}),
-    create_api_key: CreateApiKeyController({CreateApiKey})
+    create_api_key: CreateApiKeyController({CreateApiKey}),
+    generate_app_secret: GenerateAppSecretController({generate_app_secret: app_service.generate_app_secret})
 });

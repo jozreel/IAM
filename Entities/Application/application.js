@@ -1,7 +1,7 @@
 const secret = require('../../KEYS').app_secret;
 const make_screen =  require('../Access');
 
-const make_role =  require('../Role');
+const {AppRole} =  require('../Role');
 const MultiFactorChannels = require('./multi-factor-channels');
 const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyKey, hashKey}) => {
     const MaxAppNmameLength = 120;
@@ -12,6 +12,7 @@ const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyKey, ha
     return ({
         id,
         applicationname,
+        description,
         apikey,
         disabled = false,
         roles = [],
@@ -25,11 +26,16 @@ const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyKey, ha
         multifactorprovider = 'local',
         adminusername,
         adminpassword,
+        serviceaccountenabled = false,
+        serviceaccountroles = [],
+        clientsecret,
+        tenantid,
         logouturl,
         consents = [],
         telephonerequired=false,
         selfregistration = false,
-        lastmodifieddate = createUTCDate()
+        lastmodifieddate = createUTCDate(),
+        refrestokenrotation = true
     }={}) => {
        
         if(!applicationname) {
@@ -49,6 +55,9 @@ const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyKey, ha
         if(logouturl && logouturl.length > LogoutUrlMaxLength) {
             throw new Error('Logout url has a max length of '+LogoutUrlMaxLength)
         }
+        if(!tenantid) {
+            throw new Error('Application must belong to a tenant')
+        }
 
         if(screens.length > 0) {
         let i=0;
@@ -66,15 +75,15 @@ const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyKey, ha
             let j =  0;
             for(let rl of roles) {
                 if(typeof rl.GetId === 'undefined') {
-                    const tr = make_role(rl);
+                    const tr = AppRole(rl);
                     roles[j] =  tr;
                 }
                 j++;
             }
         }
      
-
-        
+        clientid =  id;
+        clientid
         return Object.freeze({
             getId: () => id,
             getApplicationName: () => applicationname,
@@ -104,6 +113,12 @@ const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyKey, ha
             getLogoutUrl: () => logouturl,
             isTelephoneRequired: () => telephonerequired,
             canSelfRegister: () => selfregistration,
+            isServiceAccountEnabled: () => serviceaccountenabled,
+            getClientSecret: () => clientsecret,
+            getServiceAccountRoles: () => serviceaccountroles,
+            getTenantId: () => tenantid,
+            getDescription: () =>description,
+            getRefreshTokenRotation: () =>refrestokenrotation,
             ToJson: () => ({
                 id,
                 applicationname: applicationname,
@@ -124,7 +139,13 @@ const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyKey, ha
                 telephonerequired,
                 createddate,
                 lastmodifieddate,
-                selfregistration
+                selfregistration,
+                serviceaccountenabled,
+                serviceaccountroles,
+                clientsecret,
+                tenantid,
+                description,
+                getRefreshTokenRotation
             })
         });
     }

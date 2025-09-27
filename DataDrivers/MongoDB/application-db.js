@@ -1,6 +1,6 @@
 const strings = require('../../strings');
 const make_app =  require('../../Entities/Application');
-const mmake_role = require('../../Entities/Role');
+const {AppRole} = require('../../Entities/Role');
 const make_access =  require('../../Entities/Access');
 const application_db_factory = ({makeDB, ID, autoID}) => {
     const insert_application = async (data) => {
@@ -68,6 +68,7 @@ const application_db_factory = ({makeDB, ID, autoID}) => {
         }
     }
 
+
     const build_application = (data) => {
         const roles = [];
       
@@ -87,7 +88,7 @@ const application_db_factory = ({makeDB, ID, autoID}) => {
                 rl.access  = accss;
             }
 
-            const ro =  mmake_role(rl)
+            const ro =  AppRole(rl)
             roles.push(ro);
         }
         data.roles =  roles;

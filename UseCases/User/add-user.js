@@ -1,10 +1,11 @@
 const make_user = require('../../Entities/User');
 //const { config } = require('chai');
-const add_user_use_case = ({user_db, ad_utils, sms_utils}) => {
+const add_user_use_case = ({user_db, ad_utils, sms_utils, verify_token}) => {
 
     const add_ad_user = async (data) => {
         try {
            
+          
            const exist =  await ad_utils.find_user(data.email);
            if(!exist) {
                throw new Error('The user was not found. Make sure the user is part of the DC');
@@ -36,8 +37,37 @@ const add_user_use_case = ({user_db, ad_utils, sms_utils}) => {
         }
     }
 
-    return async (data) => {
+    return async (req) => {
         try {
+            const data = req.data;
+           const token =  req.credentials.split(' ')[1]
+           const tkd =  await verify_token(token);
+           console.log(tkd)
+           let usr;
+           if(tkd.role !== 'appadmin') {
+              usr =  await user_db.get_user(tkd.sub);
+              
+              if(!usr) {
+                throw new Error('you dont have access to this resource');
+              }
+           }
+           if(!tkd.role !== 'appadmin' && !usr) {
+               throw new Error('User not found');
+           }
+           if(usr) {
+                const app =  user.getApplications();
+                const role =  usr.getRole();
+                const aua = role.getAccess();
+                if(aua) {
+                    const can_add = aua.find(a => a.name === 'Admins')  
+                }
+                if(tkd.role === 'appadmin' || can_add) {
+                    console.log('can add');
+                }
+
+                return;
+           }
+           
             if(data.cmd && data.cmd === 'AD') {
                 const res =  await add_ad_user(data);
                 return res;
@@ -70,6 +100,8 @@ const add_user_use_case = ({user_db, ad_utils, sms_utils}) => {
                 lastmodifieddate: user.getLastModifiedDate(),
                 telephone: user.getTelephone(),
                 status: user.getStatus(),
+                roles: user.getRoles(),
+                applications: user.getApplications(),
                 lastcode: user.getLastCode(),
                 lastcodecreationtime: user.getLastCodeCreationTime()
             });

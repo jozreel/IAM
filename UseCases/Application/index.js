@@ -6,6 +6,8 @@ const list_apps =  require('./list-applications');
 const delete_app =  require('./delete-application');
 const create_api_key = require('./create-api-key');
 const verify_api_key = require('./verify-apikey');
+const GenerateAppSecret = require('./genarate-app-secret');
+
 const {verify_token, generate_unique_key, hash_string} =  require('../../FD').access_utils;
 const app_db =  db.app_db;
 const user_db =  db.user_db;
@@ -19,7 +21,9 @@ module.exports = {
     list_apps: list_apps({app_db, verify_token, generate_unique_key}),
     delete_app: delete_app({app_db}),
     create_api_key: create_api_key({app_db}),
-    verify_app_key: verify_api_key({app_db})
+    verify_app_key: verify_api_key({app_db}),
+    generate_app_secret: GenerateAppSecret({app_db})
+   
 
   
 };

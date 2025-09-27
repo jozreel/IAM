@@ -208,7 +208,12 @@ const update_app = ({app_db, user_db, role_db, access_db, generate_unique_key, e
                 telephonerequired: app.isTelephoneRequired(),
                 selfregistration: app.canSelfRegister(),
                 createddate: app.getCreatedDate(),
-                lastmodifieddate: app.getLastModifiedDate()
+                serviceaccountenabled: app.isServiceAccountEnabled(),
+                clientsecres: app.getClientSecret(),
+                tenantid: app.getTenantId(),
+                lastmodifieddate: app.getLastModifiedDate(),
+                description: app.getDescription(),
+                refreshtokenrotation: app.getRefreshTokenRotation()
             });
 
           

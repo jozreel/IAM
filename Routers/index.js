@@ -7,7 +7,8 @@ module.exports = [
     {path: '/api/authorize', module: require('./authorize-router')},
     {path: '/api/role', module: require('./role-router')},
     {path: '/api/access', module: require('./access-router')},
-    {path: '/api/authorize', module: require('./authorize-router')},
+    //{path: '/api/authorize', module: require('./authorize-router')},
     {path: '/api/token', module: require('./token-router')},
-    {path: '/api/userinfo', module: require('./profile-router')}
+    {path: '/api/userinfo', module: require('./profile-router')},
+    {path: '/api/tenant', module: require('./tenant-router')}
 ]

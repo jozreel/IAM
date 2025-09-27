@@ -1,5 +1,8 @@
 const string =  require('../../strings');
 const user_model =  require('../../Entities/User');
+const app_model =  require('../../Entities/Application');
+const role_model =  require('../../Entities/Role');
+const strings = require('../../strings');
 const user_db_factory =  ({makeDB, ID}) => {
     const insert_user = async (data) => {
         try {
@@ -46,6 +49,17 @@ const user_db_factory =  ({makeDB, ID}) => {
                 options.projection = {password:false};
             }
             const result =  await db.collection(string.USER_COLLECTION).findOne({_id}, options);
+             if(result) {
+                if(result.applications) {
+                    const apps  =  db.collection(strings.APP_COLLECTON).find({id: {$in: result.applications}});
+                   result.applications = await apps.toArray();
+                }
+
+                if(result.roles) {
+                const roles =  db.collection(strings.ROLES_COLLECTION).find({id: {$in: result.roles}});
+                result.roles =  await roles.toArray();
+                }
+            }
             return result ? make_user(result) : null;
             
         } catch (ex) {
@@ -60,6 +74,16 @@ const user_db_factory =  ({makeDB, ID}) => {
                 options.projection = {password:false};
             }
             const result =  await db.collection(string.USER_COLLECTION).findOne({email},options);
+             if(result) {
+                if(result.applications) {
+                    const apps  =  db.collection(strings.APP_COLLECTON).find({id: {$in: result.applications}});
+                    result.applications = await apps.toArray();
+                }
+                if(result.roles) {
+                    const roles =  db.collection(strings.ROLES_COLLECTION).find({id: {$in: result.roles}});
+                    result.roles =  await roles.toArray();
+                }
+            }
             return result ? make_user(result) : null;
 
 
@@ -77,6 +101,16 @@ const user_db_factory =  ({makeDB, ID}) => {
                 options.projection = {password:false};
             }
             const result =  await db.collection(string.USER_COLLECTION).findOne({username},options);
+            if(result) {
+                if(result.applications) {
+                    const apps  =  db.collection(strings.APP_COLLECTON).find({id: {$in: result.applications}});
+                    result.applications = await apps.toArray();
+                }
+                if(result.roles) {
+                    const roles =  db.collection(strings.ROLES_COLLECTION).find({id: {$in: result.roles}});
+                    result.roles =  await roles.toArray();
+                }
+            }
             return result ? make_user(result) : null;
 
 
@@ -93,7 +127,16 @@ const user_db_factory =  ({makeDB, ID}) => {
                 options.projection = {password:false};
             }
             const result =  await db.collection(string.USER_COLLECTION).findOne({$or:[{username},{email:username}]},options);
-            
+            if(result) {
+                if(result.applications) {
+                    const apps  =  db.collection(strings.APP_COLLECTON).find({id: {$in: result.applications}});
+                    result.applications = await apps.toArray();
+                }
+                if(result.roles) {
+                    const roles =  db.collection(strings.ROLES_COLLECTION).find({id: {$in: result.roles}});
+                    result.roles =  await roles.toArray();
+                }
+            }
             return result ? make_user(result) : null;
 
 
@@ -116,9 +159,17 @@ const user_db_factory =  ({makeDB, ID}) => {
                 const re =  new RegExp(q,'i');
                 query.$or = [{fullname: {$regex: re}}, {email: {$regex: re}}];
             }
-            const cursor =  await db.collection(string.USER_COLLECTION).find(query, options).skip(skip).limit(limit);
+            const cursor =  await db.collection(strings.USER_COLLECTION).find(query, options).skip(skip).limit(limit);
             const result =  await cursor.toArray();
+            if(result.applications) {
+                const apps  =  db.collection(strings.APP_COLLECTON).find({id: {$in: result.applications}});
+                result.applications = await apps.toArray();
+            }
+            if(result.roles) {
+                const roles =  db.collection(strings.ROLES_COLLECTION).find({id: {$in: result.roles}});
+                result.roles =  await roles.toArray();
             return result.map(r => make_user(r));
+            }
 
         } catch (ex) {
             throw ex;
@@ -129,6 +180,14 @@ const user_db_factory =  ({makeDB, ID}) => {
             const db = await makeDB();
             const cursor =  await db.collection(string.USER_COLLECTION).find({"applications.appid": appid, "applications.role": roleid});
             const r =  await cursor.toArray();
+            if(r.applications) {
+                const apps  =  db.collection(strings.APP_COLLECTON).find({id: {$in: r.applications}});
+                r.applications = await apps.toArray();
+            }
+            if(r.roles) {
+                const roles =  db.collection(strings.ROLES_COLLECTION).find({id: {$in: r.roles}});
+                r.roles =  await roles.toArray();
+            }
             return r.map(u => make_user(u));
 
         } catch (ex) {
@@ -147,6 +206,8 @@ const user_db_factory =  ({makeDB, ID}) => {
     }
     
     const make_user = (data) => {
+        data.applications = data.applications ?  data.applications.map(s => app_model(a)): [];
+        data.roles = data.roles ?   data.roles.map(r => role_model(r)) : [];
         return user_model({
             id: data._id,
             ...data

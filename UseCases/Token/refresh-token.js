@@ -1,8 +1,37 @@
+const { REFRESH_TOKEN } = require('../../Entities/Application/cred-type');
 const make_token = require('../../Entities/Token');
 const crypto = require('crypto');
-const refresh_token = ({tokendb,userdb, decode_token, verify_token, generate_token, createUTCDate}) => {
+const refresh_token = ({tokendb,userdb, app_db, decode_token, verify_token, generate_token, createUTCDate, get_creds}) => {
     return async (req)=> {
         try {
+
+            const basic_creds =  get_creds(req.credentials);
+
+            if(req.data.grant_type !== REFRESH_TOKEN) {
+                throw new Error('invalid grant type');
+            }
+
+            const clientid = basic_creds.username;
+           
+            const app =  await app_db.get_application(clientid);
+            const rotatetokens =  app.getRefreshTokenRotation();
+
+            console.log(rotatetokens)
+            
+            if(!app) {
+                throw new Error('Invalid client');
+            }
+            const secret =  app.getClientSecret();
+            if(secret !== basic_creds.password) {
+                throw new Error('Bad request');
+            }
+            
+            //const verified = await verify_string(basic_creds?.password, adminPassword); 
+            
+            if(basic_creds && (basic_creds.username !== clientid || basic_creds.password !== secret)) {
+                throw new Error('Invalid client credentials');
+            }
+
             const id_expire =  Math.floor((Date.now() / 1000)) + (60 * 5);
             const access_expire = Math.floor((Date.now() / 1000)) + (60 * 30);
 
@@ -19,15 +48,15 @@ const refresh_token = ({tokendb,userdb, decode_token, verify_token, generate_tok
             }
            
             const token =  await tokendb.GetTokenForSession(loginid);
-            
+             if(!token) {
+                throw new Error('Invalid session');
+            }
             if(!token.offlineaccess) {
                 throw new Error("No offline access scope enabled");
             }
             const userid =  token.uid;
           
-            if(!token) {
-                throw new Error('Invalid session');
-            }
+           
             const user_obj =  await userdb.get_user(userid);
             if(!user_obj) {
                 throw new Error('user does not exist');
@@ -38,7 +67,7 @@ const refresh_token = ({tokendb,userdb, decode_token, verify_token, generate_tok
 
             if(token?.token?.token === session_token) {
                  const token_data = verify_token(session_token);
-               
+                
                  if(!token_data) {
                     throw new Error('Invalid session')
                  }
@@ -127,10 +156,10 @@ const refresh_token = ({tokendb,userdb, decode_token, verify_token, generate_tok
                             token: id_token,
                             valid_until: id_expire
                         },
-                        refresh: {
+                        refresh: rotatetokens ? {
                             token: refresh_token,
                             valid_until: refresh_expire
-                        },
+                        } : token?.token?.token,
                         access: {
                             token: access_token,
                             valid_until: access_expire,

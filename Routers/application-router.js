@@ -9,4 +9,5 @@ app_router.put('/:id', json(), request_handler(app_controller.patch_app));
 app_router.get('/:id', request_handler(app_controller.get_app));
 app_router.get('/', request_handler(app_controller.list_apps));
 app_router.delete('/:id', request_handler(app_controller.delete_app));
+app_router.post('/clientsecret', [json()], request_handler(app_controller.generate_app_secret))
 module.exports =  app_router;

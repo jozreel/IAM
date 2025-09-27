@@ -19,6 +19,7 @@ const createUserFactory = ({ createUTCDate, verify_token}) => {
         telephone,
         ADUser =  false,
         applications = [],
+        roles=[],
         photo,
         status = 0,
         lastcode,
@@ -93,6 +94,7 @@ const createUserFactory = ({ createUTCDate, verify_token}) => {
         }
         
        
+       
         return Object.freeze({
             getId: ()=> id,
             getEmail: () =>email,
@@ -121,6 +123,7 @@ const createUserFactory = ({ createUTCDate, verify_token}) => {
             createLastCodeCreatedTime:() => lastcodecreationtime = createUTCDate(),
             getResetCode: ()=> resetcode,
             getEmailVerified: () => emailverified,
+            getRoles: () => roles,
             getResetCodeCreationTime: () => resetcodecreationtime = createUTCDate(),
             getResetAttemts: () => resetattemts,
             ToJson: ()=>({
@@ -140,6 +143,7 @@ const createUserFactory = ({ createUTCDate, verify_token}) => {
                 status,
                 ADUser,
                 lastcode,
+                roles,
                 lastcodecreationtime,
                 emailverified,
                 resetcode,

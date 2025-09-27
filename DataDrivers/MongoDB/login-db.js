@@ -112,6 +112,18 @@ const login_db = ({makeDB, ID}) => {
         }
     }
 
+    const insert_login_with_token = async(data) => {
+        try {
+            const db =  await makeDB();
+          
+            await db.collection(strings.LOGIN_COLLECION).insertOne(data);
+            return data;
+
+        } catch(ex) {
+            throw ex;
+        }
+    }
+
     const make_login = (data) => {
         return login_model({
             ...data,
@@ -126,7 +138,8 @@ const login_db = ({makeDB, ID}) => {
         get_login,
         delete_login,
         get_last_login,
-        clear_login
+        clear_login, 
+        insert_login_with_token
     });
 }
 module.exports = login_db;

@@ -32,6 +32,7 @@ const update_user_usecase = ({user_db}) => {
                 lastpasswords: user.getLastPasswords(),
                 lastpasswordchangedate: user.getLastPasswordChangeDate(),
                 applications: user.getApplications(),
+                roles: user.getRoles(),
                 lastmodifieddate: user.getLastModifiedDate(),
                 status: user.getStatus(),
                 telephone: user.getTelephone()
