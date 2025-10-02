@@ -2,11 +2,11 @@ const strings = require("../../strings");
 const {AppRole} =  require('../../Entities/Role');
 const access_model =  require('../../Entities/Access');
 
-const role_db_factory = ({makeDB, ID}) => {
+const app_role_db_factory = ({makeDB, ID}) => {
 
     const InsertRole = async(roledata) => {
         try {
-            const _id =  ID(roledata.applicationid);
+            const _id =  roledata.applicationid.length === 24 ? ID(roledata.applicationid): roledata.applicationid;
             roledata.id = crypto.randomUUID();                          
             const db =  await makeDB();
             const ud =  await db.collection(strings.APP_COLLECTON).updateOne({_id} , {
@@ -91,7 +91,7 @@ const role_db_factory = ({makeDB, ID}) => {
             const arr =  await accs.toArray();
             const rl = arr[0];
             if(rl) {
-               const app_id = typeof rl._applicationid ==['string'] ? rl._id: ID(rl.applicationid);
+               const app_id = typeof rl._applicationid ==['stenant_role_dbtring'] ? rl._id: ID(rl.applicationid);
                 const acclst = await db.collection(strings.APP_COLLECTON).findOne({_id: app_id}, {projection: {screens: 1}});
                 if(acclst && rl.access) {
                     if(acclst.screens) {
@@ -146,8 +146,9 @@ const role_db_factory = ({makeDB, ID}) => {
             const rem =  await db.collection(strings.APP_COLLECTON).updateOne({_id, "roles.id": roleid}, {
                 $pull: {roles:  {id: roleid}}
             });
+           
             if(rem?.matchedCount > 0 && rem.modifiedCount !== 0) {
-                return {deteled: true}
+                return {deleted: true}
             } else {
                 throw new Error("Could not delete the role");
             }
@@ -260,7 +261,7 @@ const role_db_factory = ({makeDB, ID}) => {
         try {
             const db = await makeDB();
         
-            const usr_role =  await db.collection(strings.USER_COLLECTION).findOne({"applications.roleid": id}, {projection: {applications: {$elemMatch: {roleid: id}}}});
+            const usr_role =  await db.collection(strings.USER_COLLECTION).findOne({"roles.roleid": id}, {projection: {roles: {$elemMatch: {roleid: id}}}});
             
             return usr_role;
 
@@ -299,4 +300,4 @@ const role_db_factory = ({makeDB, ID}) => {
 
 }
 
-module.exports = role_db_factory;
+module.exports = app_role_db_factory;

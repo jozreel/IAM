@@ -175,20 +175,27 @@ const user_db_factory =  ({makeDB, ID}) => {
             throw ex;
         }
     }
-    const find_with_role = async (roleid, appid) => {
+    const find_with_role = async (roleid, appid = '') => {
         try {
+            const match = appid ? {"applications.appid": appid, "roles.roleid": roleid} : {"roles.roleid": roleid};
             const db = await makeDB();
-            const cursor =  await db.collection(string.USER_COLLECTION).find({"applications.appid": appid, "applications.role": roleid});
-            const r =  await cursor.toArray();
+            const cursor =  await db.collection(string.USER_COLLECTION).find(match);
+            const rarr = []
+            //const r =  await cursor.toArray();
+            while(await cursor.hasNext()) {
+            const r =  await cursor.next();
             if(r.applications) {
                 const apps  =  db.collection(strings.APP_COLLECTON).find({id: {$in: r.applications}});
                 r.applications = await apps.toArray();
             }
             if(r.roles) {
+
                 const roles =  db.collection(strings.ROLES_COLLECTION).find({id: {$in: r.roles}});
                 r.roles =  await roles.toArray();
             }
-            return r.map(u => make_user(u));
+            rarr.push(r);
+           }
+           return rarr.map(u => make_user(u));
 
         } catch (ex) {
             throw ex

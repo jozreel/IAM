@@ -31,7 +31,8 @@ const serviceaccount_role_db = ({makeDB, ID}) => {
         try {
           
             const db =  await makeDB();
-            const rls = await db.collection(strings.APP_COLLECTON).findOne({_id: appid, "serviceaccountroles.roleid": roleid}, {projection: {serviceaccountroles: 1}})
+            const match = {_id: appid, "serviceaccountroles.roleid": roleid};
+            const rls = await db.collection(strings.APP_COLLECTON).findOne(match, {projection: {serviceaccountroles: 1}})
             return rls && rls.serviceaccountroles ? rls.serviceaccountroles[0] : null;
         } catch (ex) {
             throw ex;

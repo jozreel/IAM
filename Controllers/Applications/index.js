@@ -9,6 +9,8 @@ const GenerateAppSecretController = require('./generate-app-secret-controller');
 const AssignClientRoleToSaController = require('./assign-clientrole-to-sa-controller');
 const AssignTenantRoleToSaController = require('./assign-tenant-role-to-sa-controller');
 const UnassignSaRoleController = require('./unassign-sa-role-controller');
+const RemoveAppRoleController = require('./remove-approle-controller');
+const AddAppRoleController = require('./add-app-role-controller');
 
 const add_app =  app_service.add_app;
 const update_app =  app_service.update_app;
@@ -27,5 +29,7 @@ module.exports = Object.freeze({
     generate_app_secret: GenerateAppSecretController({generate_app_secret: app_service.generate_app_secret}),
     AssignClientRoleToSaController: AssignClientRoleToSaController({assign_clientrole_to_serviceaccount: app_service.assign_ckient_role_to_service_account}),
     AssignTenantRoleToSaController: AssignTenantRoleToSaController({assign_tenantrole_to_serviceaccount: app_service.assign_tenant_role_to_service_account}),
-    UnassignSaRoleController: UnassignSaRoleController({unasign_service_account_role: app_service.unassign_serviceaccount_role})
+    UnassignSaRoleController: UnassignSaRoleController({unasign_service_account_role: app_service.unassign_serviceaccount_role}),
+    RemoveAppRoleController: RemoveAppRoleController({RemoveAppRole: app_service.remove_app_role}),
+    AddAppRoleController: AddAppRoleController({AddAppRole: app_service.add_app_role})
 });

@@ -69,6 +69,40 @@ const application_db_factory = ({makeDB, ID, autoID}) => {
     }
 
 
+
+
+    const get_apps_assigned_to_role = async (roleid) => {
+        try {
+            const db =  await makeDB();
+            const res =  db.collection(strings.APP_COLLECTON).find({"serviceaccountroles.roleid": roleid}).project({applicationname: 1, serviceaccountroles: {$elemMatch: {roleid}}})
+            return await res.toArray()
+
+        } catch(ex) {
+            throw ex;
+        }
+
+    }
+
+    const remove_app_role = async(roleid, appid) => {
+        try {
+            const db = await makeDB();
+            const _id = appid.length === 24 ?  ID(appid) : appid;
+            const rem =  await db.collection(strings.APP_COLLECTON).updateOne({_id, "roles.id": roleid}, {
+                $pull: {roles:  {id: roleid}}
+            });
+            if(rem?.matchedCount > 0 && rem.modifiedCount !== 0) {
+                return {deteled: true}
+            } else {
+                throw new Error("Could not delete the role");
+            }
+
+
+        } catch(ex) {
+            throw ex;
+        }
+    }
+
+
     const build_application = (data) => {
         const roles = [];
       
@@ -107,6 +141,8 @@ const application_db_factory = ({makeDB, ID, autoID}) => {
         get_application,
         update_application,
         delete_application,
+        get_apps_assigned_to_role,
+        remove_app_role,
         autoID
     });
     

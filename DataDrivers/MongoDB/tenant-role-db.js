@@ -54,15 +54,18 @@ const tenant_role_db  = ({makeDB, ID}) => {
     }
 
 
+
+
     const remove_tenant_role = async (tenantid, roleid) => {
         try {
             const db = await makeDB();
             const _id = tenantid.length === 24 ?  ID(tenantid) : tenantid;
-            const rem =  await db.collection(strings.TENANT_COLLECTION).updateOne({_id, "roles.id": roleid}, {
-                $pull: {roles:  {id: roleid}}
+            const rem =  await db.collection(strings.TENANT_COLLECTION).updateOne({_id, "roles.roleid": roleid}, {
+                $pull: {roles:  {roleid}}
             });
+            console.log(rem);
             if(rem?.matchedCount > 0 && rem.modifiedCount !== 0) {
-                return {deteled: true}
+                return {deleted: true}
             } else {
                 throw new Error("Could not delete the role");
             }

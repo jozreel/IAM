@@ -1,6 +1,6 @@
 const { RolesApplication } = require("../../Entities/Role");
 
-const AssignClientRoleToServiceAccount = ({serviceaccount_roles_db, role_db, app_db}) => {
+const AssignClientRoleToServiceAccount = ({serviceaccount_roles_db, app_role_db, app_db}) => {
 
     return async (req) => {
         try {
@@ -14,7 +14,7 @@ const AssignClientRoleToServiceAccount = ({serviceaccount_roles_db, role_db, app
 
                 throw new Error('Service account is not enabled')
             }
-            const role = await role_db.GetRoleById(data.roleid, data.applicationid);
+            const role = await app_role_db.GetRoleById(data.roleid, data.applicationid);
            
             if(!role) {
                 throw new Error('Invalid role');
@@ -22,7 +22,7 @@ const AssignClientRoleToServiceAccount = ({serviceaccount_roles_db, role_db, app
 
             
             const isassigned =  await serviceaccount_roles_db.check_if_role_assigned_to_application(data.roleid, data.applicationid);
-            
+            console.log(isassigned)
             if(isassigned) {
                 throw new Error('Role already assigned');
             }
