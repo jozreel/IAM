@@ -145,7 +145,7 @@ const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyKey, ha
                 clientsecret,
                 tenantid,
                 description,
-                getRefreshTokenRotation
+                refrestokenrotation
             })
         });
     }

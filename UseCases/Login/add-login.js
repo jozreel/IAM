@@ -24,7 +24,7 @@ const add_login_usecase  =  ({login_db, user_db, ad_utils}) => {
             const access =  apps.find(a => a.appid === data.appid);
            
             if(!access) {
-                throw new Error('You are not authaurised to access this application');
+             //   throw new Error('You are not authaurised to access this application');
             }
             if(!exist.ADUser) {
                user.encryptPassword(user.getPassword())

@@ -3,5 +3,6 @@ module.exports = {
     APP_COLLECTON: 'applications',
     LOGIN_COLLECION: 'logins',
     ROLES_COLLECTION: 'roles',
-    TENANT_COLLECTION: 'tenants'
+    TENANT_COLLECTION: 'tenants',
+    APP_TENENTROLE_COLLECTION: 'apptenentrole'
 }

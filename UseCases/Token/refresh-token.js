@@ -4,7 +4,7 @@ const crypto = require('crypto');
 const refresh_token = ({tokendb,userdb, app_db, decode_token, verify_token, generate_token, createUTCDate, get_creds}) => {
     return async (req)=> {
         try {
-
+          
             const basic_creds =  get_creds(req.credentials);
 
             if(req.data.grant_type !== REFRESH_TOKEN) {
@@ -16,7 +16,7 @@ const refresh_token = ({tokendb,userdb, app_db, decode_token, verify_token, gene
             const app =  await app_db.get_application(clientid);
             const rotatetokens =  app.getRefreshTokenRotation();
 
-            console.log(rotatetokens)
+           
             
             if(!app) {
                 throw new Error('Invalid client');
@@ -63,11 +63,11 @@ const refresh_token = ({tokendb,userdb, app_db, decode_token, verify_token, gene
             }
             const user = user_obj.ToJson();
 
-            
+           
 
             if(token?.token?.token === session_token) {
                  const token_data = verify_token(session_token);
-                
+              
                  if(!token_data) {
                     throw new Error('Invalid session')
                  }

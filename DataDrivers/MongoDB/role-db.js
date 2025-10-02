@@ -1,5 +1,5 @@
 const strings = require("../../strings");
-const role_model =  require('../../Entities/Role');
+const {AppRole} =  require('../../Entities/Role');
 const access_model =  require('../../Entities/Access');
 
 const role_db_factory = ({makeDB, ID}) => {
@@ -31,8 +31,8 @@ const role_db_factory = ({makeDB, ID}) => {
             
                     
             const db = await makeDB();
-            const match = appid ?  {_id: ID(appid), "roles.id": roleid} :  {"roles.id": roleid}
-           
+            const match = appid ?  {_id: appid.length  === 24 ?  ID(appid): appid, "roles.id": roleid} :  {"roles.id": roleid}
+            
             const accs =  db.collection(strings.APP_COLLECTON).aggregate([
                 {$match:match},
                 {$project: {roles: {$filter: {
@@ -270,7 +270,7 @@ const role_db_factory = ({makeDB, ID}) => {
     }
 
     const build_role = (data) => {
-        const role =  role_model({
+        const role =  AppRole({
             id: data.id,
             name: data.name,
             applicationid: data.applicationid,

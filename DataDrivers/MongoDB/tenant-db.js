@@ -207,7 +207,7 @@ const tenant_db = ({makeDB, ID}) => {
 
 
     const build_tenant = data  => {
-        return make_tenant(...data);
+        return make_tenant({...data});
     }
 
     const build_application = (data) => {

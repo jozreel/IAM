@@ -3,6 +3,7 @@ const { CreateJsonResponse, GetErrorBody } = require("../helpers");
 const AddTenantController = ({AddTenant}) => {
     return async  req => {
         try {
+            console.log('adding tenant')
             const res =  await AddTenant(req);
             return CreateJsonResponse({body: res, statusCode:  201});
             

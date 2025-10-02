@@ -9,7 +9,7 @@ const createTenantRoleFactory = ({CreateUtcDate}) => {
         if(!name) {
             throw new Error("Name is required");
         }
-        if(!applicationid) {
+        if(!tenantid) {
             throw new Error('An application id is required');
         }
 

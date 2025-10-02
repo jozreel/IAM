@@ -73,6 +73,8 @@ const role_db_factory = require('./role-db');
 const access_db_factory  = require('./access-db');
 const token_db = require('./token-db');
 const tenant_db =  require('./tenant-db');
+const tenant_role_db = require('./tenant-role-db');
+const serviceaccount_role_db = require('./serviceaccount-roles-db');
 
 
 module.exports =  Object.freeze({
@@ -84,6 +86,8 @@ module.exports =  Object.freeze({
     access_db: access_db_factory({makeDB, ID, autoID}),
     token_db: token_db({makeDB, ID}),
     tenant_db: tenant_db({makeDB, ID}),
+    tenant_role_db: tenant_role_db({makeDB, ID}),
+    serviceaccount_role_db: serviceaccount_role_db({makeDB, ID}),
     ID,
     autoID
 });
