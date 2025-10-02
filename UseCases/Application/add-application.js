@@ -1,7 +1,20 @@
 const make_application = require('../../Entities/Application');
-const make_role =  require('../../Entities/Role');
+const {AppRole} =  require('../../Entities/Role');
 const make_access =  require('../../Entities/Access');
+const crypto =  require('crypto');
 const add_application = ({app_db, encrypt_string}) => {
+    const create_default_app_roles = (applicationid) => {
+        console.log(applicationid)
+        const roles = [
+            {name: 'manage-account', id: crypto.randomUUID(), applicationid},
+            {name: 'view-profile', id: crypto.randomUUID(), applicationid},
+            {name: 'manage-users', id: crypto.randomUUID(), applicationid}
+        ]
+
+        const mr =  roles.map(r => AppRole(r));
+
+        return mr;
+    }
     return async (data) => {
         try {
             const scrnobjmap = new Map();
@@ -48,11 +61,17 @@ const add_application = ({app_db, encrypt_string}) => {
                         role.access =  allacc;
 
                     }
-                    const role_obj = make_role(role);
+                    const role_obj = AppRole(role);
                     approles.push(role_obj);
                 }
                 data.roles = approles;
             };
+
+            if(data.roles) {
+                data.roles = [...data.roles, ...create_default_app_roles(app_id)];
+            } else {
+                data.roles =  create_default_app_roles(app_id);
+            }
 
              if(data.adminpassword) {
 
