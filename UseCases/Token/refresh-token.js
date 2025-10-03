@@ -1,7 +1,10 @@
 const { REFRESH_TOKEN } = require('../../Entities/Application/cred-type');
 const make_token = require('../../Entities/Token');
 const crypto = require('crypto');
-const refresh_token = ({tokendb,userdb, app_db, decode_token, verify_token, generate_token, createUTCDate, get_creds}) => {
+const{authorize_helpers} = require('../Helpers');
+const refresh_token = ({tokendb,userdb, app_db, decode_token, verify_token, generate_token, createUTCDate, get_creds, hash_string, verify_string, login_db}) => {
+     
+    
     return async (req)=> {
         try {
           
@@ -42,6 +45,11 @@ const refresh_token = ({tokendb,userdb, app_db, decode_token, verify_token, gene
             //const ref_token = req.credentials;
             
             const session_token = req.cookies.refresh_session_cookie;
+            const sessionid =  req.cookies.sessionid;
+            const login = await login_db.get_login(sessionid);
+        
+
+
           
             if(!session_token) {
                 throw new Error('Invalid session');
@@ -65,14 +73,15 @@ const refresh_token = ({tokendb,userdb, app_db, decode_token, verify_token, gene
 
            
 
-            if(token?.token?.token === session_token) {
-                 const token_data = verify_token(session_token);
+            if(await verify_string(session_token, token?.token?.token)) {
+                // const token_data = verify_token(session_token);
               
-                 if(!token_data) {
-                    throw new Error('Invalid session')
-                 }
+                 //if(!token_data) {
+                  //  throw new Error('Invalid session')
+                // }
+                 
                  const now =  createUTCDate();
-                 if(now.valueOf() < token_data.validuntil) {
+                 if(now.valueOf() < token.token.valid_until) {
                     throw new Error('Session expired');
                  }
                   
@@ -97,18 +106,17 @@ const refresh_token = ({tokendb,userdb, app_db, decode_token, verify_token, gene
                 });
 
 
-                
-
-                const refresh_token  =  generate_token({
+                const refresh_token = authorize_helpers.generate_refresh_token();
+               /* const refresh_token  =  generate_token({
                     session: loginid,
                     iat: Math.floor(Date.now() / 1000),
                     exp: refresh_expire,
                     sub: user.id
-                });
+                });*/
 
                 const tk =  make_token({
                     id: crypto.randomUUID(),
-                    token: refresh_token,
+                    token: await hash_string(refresh_token),
                     validuntil: refresh_expire,
                     loginid,
                 });
@@ -152,6 +160,7 @@ const refresh_token = ({tokendb,userdb, app_db, decode_token, verify_token, gene
                 return {
                     cookies,
                     data: {
+                        session: loginid,
                         id: {
                             token: id_token,
                             valid_until: id_expire

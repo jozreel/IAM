@@ -30,6 +30,7 @@ const http_request_handler = (controller) => {
                 res.set(result.headers)
             }
             if(result.cookies) {
+               
                 result.cookies.forEach(c => res.cookie(c.name, c.value, c.options));
             }
             if(result.clearcookies) {

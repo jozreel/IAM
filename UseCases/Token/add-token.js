@@ -6,11 +6,11 @@ const make_login =  require('../../Entities/Login');
 
 
 
-const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_token, createUtcDate, verify_string, verify_token, decode_token}) => {
+const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_token, createUtcDate, verify_string, verify_token, decode_token, hash_string}) => {
     return async(req) => {
         try {
              let offlineaccess =  false;
-             console.log(req.data);
+           
              const {client_id, loginid, cred_type, grant_type, code_verifier, code, offline_access} =  req.data;
            
              if(grant_type === REFRESH_TOKEN) {
@@ -22,7 +22,10 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
                     generate_token,
                     get_creds,
                     userdb: user_db,
-                    verify_token
+                    verify_token,
+                    hash_string,
+                    verify_string,
+                    login_db
                 })
                 return await rt(req);
             }
@@ -41,12 +44,13 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
             const refresh_expire = Math.floor((Date.now() / 1000)) + 31560000; 
             const accesstokendata = {
                 iat: Math.floor(Date.now() / 1000),
+                aud: client_id,
                 exp: access_expire
                }; 
-            const refreshtokendata = {
-                  iat: Math.floor(Date.now() / 1000),
-                  exp: refresh_expire,
-             };
+            //const refreshtokendata = {
+                 // iat: Math.floor(Date.now() / 1000),
+               //   exp: refresh_expire,
+            // };
             const id_token_data = {
                 iat: Math.floor(Date.now() / 1000),
                 exp: id_expire,
@@ -88,11 +92,11 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
 
                  accesstokendata.roles = user.roles;
                  accesstokendata.sub = user.id.toString();
-                 refreshtokendata.sub = user.id.toString();
-                 refreshtokendata.session =  login.id;
+                 //refreshtokendata.sub = user.id.toString();
+                // refreshtokendata.session =  login.id;
 
                  accesstokendata.accounttype =  'user'
-                 refreshtokendata.accounttype = 'user'
+                // refreshtokendata.accounttype = 'user'
                  id_token_data.sub = user.id.toString();
                  id_token_data.session =  login.id;
     
@@ -127,7 +131,7 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
 
 
         //client credentials code flow
-        console.log(grant_type, CLIENT_CREDENTIALS)
+      
 
         if(grant_type === CLIENT_CREDENTIALS) {
             if(offline_access) {
@@ -148,9 +152,9 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
             }
             accesstokendata.roles =  app.getServiceAccountRoles(),
             accesstokendata.sub =  app.getId();
-            refreshtokendata.sub =  app.getId();
+            //refreshtokendata.sub =  app.getId();
             accesstokendata.accounttype =  'serviceaccount'
-            refreshtokendata.accounttype = 'serviceaccount'
+            //refreshtokendata.accounttype = 'serviceaccount'
             id_token_data.sub = app.getId();
             
            
@@ -176,14 +180,14 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
         let refresh_token;
         const cookies = [];
         if(offlineaccess) {
-            refresh_token  =  generate_token(refreshtokendata);
+            refresh_token  = authorize_helpers.generate_refresh_token(); // generate_token(refreshtokendata);
           
             //possibly add condition for client eds workflow
             if(grant_type === AUTHORIZATION_CODE) {
                   const tk =  make_token({
                     id: crypto.randomUUID(),
                     loginid,
-                    token: refresh_token,
+                    token: await hash_string(refresh_token),
                     validuntil: refresh_expire
                  });
                 await token_db.AddToken({
@@ -207,9 +211,9 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
                 }
             }
 
-                const refresh_exp_cookie = {
-                name: "refresh_expiry", 
-                value: refresh_expire,
+                const sessionidcookie = {
+                name: "sessionid", 
+                value: loginid,
                 options: {
                     httpOnly: true, // This is the crucial part
                     secure: process.env.NODE_ENV === 'production', 
@@ -220,7 +224,7 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
                 }
             
                 cookies.push(refresh_session_cookie);
-                cookies.push(refresh_exp_cookie);
+                cookies.push(sessionidcookie);
         } else {
 
             const mlid =  crypto.randomUUID();
@@ -268,6 +272,7 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
 
         const resp =  {
             data: {
+            session: loginid,
             id: {token: id_token, valid_until: id_expire},
             access: {token: access_token, valid_until: access_expire},
             refresh: offlineaccess ? {token: refresh_token, valid_until: refresh_expire} : null

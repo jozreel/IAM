@@ -63,7 +63,7 @@ const access_utils_factory = () => {
             };
             pload.exp = pload.exp || Math.floor(Date.now() / 1000) + (60 * 60) // in 1 hr ot process.env.tokenexpirytime 
             pload.iat = pload.iat ||  Math.floor(Date.now() / 1000);
-            console.log(pload);
+            
             const payload = JSON.stringify(pload);
             const bs4Header =  base64_Url_encode(JSON.stringify(header));
             const bs4pload =  base64_Url_encode(payload);
@@ -142,7 +142,7 @@ const access_utils_factory = () => {
                 }
                 //const headdata = JSON.parse(Buffer.from(decodeURIComponent(header), 'base64').toString('ascii'));
                 let header_decoded =  url_decode(header);
-                console.log(header_decoded, "MY HEADER")
+               
                 const b64bfr =  Buffer.from(header_decoded, 'base64').toString();
                 const headdata = JSON.parse(b64bfr);
 
@@ -301,7 +301,7 @@ const access_utils_factory = () => {
                     }
                     has_access.domain = 'localhost'; // for dev remove on deployment
                     const keydomain = has_access.domain || ['http://localhost','http://localhost:3000',  'http://192.168.1.110', 'http://localhost:3001','https://veppz.com']; //remove this
-                    console.log(keydomain, domain);
+                   
                     if(has_access && keydomain.indexOf(domain) >=0)  {
                         req.appid =  has_access.app
                     next();
@@ -429,7 +429,7 @@ const access_utils_factory = () => {
 
 
     const verify_api_key =  async (req)  => {
-        console.log(req, 'the request')
+      
         const apikey = req.apikey;
         const parts = apikey.split('.');
         if(parts.length  !== 2) {

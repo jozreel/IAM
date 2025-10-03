@@ -19,7 +19,7 @@ const GetPasswordChangeSuccessPage = require("./get-password-change-success-page
 
 
 module.exports =  Object.freeze({
-    Authorize: authorize_factory({verify_token: fd.access_utils.verify_toket_asymetric, app_db}),
+    Authorize: authorize_factory({verify_token: fd.access_utils.verify_toket_asymetric, app_db, hash_string: fd.access_utils.hash_string, login_db}),
     AuthorizePost: AuthorizePost({verify_token: fd.access_utils.verify_toket_asymetric}),
     TwoFactor: two_factor({login_db, app_db}),
     Login: login({login_db, applicationdb: app_db, ad_utils: fd.ad_utils, user_db, message_service: fd.message_util}),

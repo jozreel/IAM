@@ -1,20 +1,23 @@
-const GetProfilePost = ({userdb, logindb, appdb, verify_token}) => {
+const GetProfilePost = ({userdb, logindb, appdb, hash_string}) => {
     return async (req) => {
         try {
-            const {userid} = req.data;
+            let {userid, sessionid} = req.data;
             
-            const session_token = req.cookies.refresh_session_cookie;
-            const tkdata =  verify_token(session_token);
-            const sessionid =  tkdata.session;
+            const session_token = req.cookies.sessionid;
+            console.log(session_token)
+            //const tkdata =  verify_token(session_token);
+           
             
             const user =  await userdb.get_user(userid);
             if(!user) {
                 throw new Error('Invalid user');
             }
-            const session = await logindb.get_login(sessionid);
+           
+            const session =  await logindb.get_login(session_token);
             if(!session) {
                 throw new Error('invalid session');
             }
+           
             
             const app =  await appdb.get_application(session.getAppID());
            

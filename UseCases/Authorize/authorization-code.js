@@ -1,7 +1,7 @@
 const crypto =  require('crypto');
 const LoginPage = require('./login-page'); 
 const RegisterPage = require('./register-page');
-const authorization_code = ({verify_token}) => {
+const authorization_code = ({verify_string, hash_string, login_db}) => {
     return  async (data) => {
         try {
             const {response_type, scope, client_id,state, redirect_uri, code_challenge, code_challenge_method, session_cookie, promt} =  data;
@@ -40,17 +40,26 @@ const authorization_code = ({verify_token}) => {
            
             let loggedin =  false;
             let loginid;
+            console.log(session_cookie);
             if(session_cookie) {
-                payload = verify_token(session_cookie);
-            
-                loginid =  payload.sessionid;
-                if(payload && payload.exp >= Math.floor(Date.now() / 1000)) {
-                   
-                    loggedin = true;
+               // payload = verify_token(session_cookie);
+                const login =  await login_db.get_login(session_cookie);
+                if(!login) {
+                    loggedin =  false;
                 } else {
-                   
-                    loggedin = false;
-                }
+              
+                    loginid =  login._id;
+                // &&payload && payload.exp >= Math.floor(Date.now() / 1000)
+                    const tok =  login.getToken();
+                    console.log(tok)
+                    if(tok.validuntil >= Math.floor(Date.now() / 1000)) {
+                    
+                        loggedin = true;
+                    } else {
+                    
+                        loggedin = false;
+                    }
+            }
             }
            
             if(promt && promt === 'create') {

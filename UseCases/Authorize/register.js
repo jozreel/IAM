@@ -6,7 +6,7 @@ const Register = ({user_db, app_db, login_db, message_service}) => {
         try {
             
             const data =  req.data;
-            const {username, email, password, redirect_url, state, client_id, response_type, nonce, offline_access} =  data;
+            const {username, email, password, redirect_uri, state, client_id, response_type, nonce, offline_access} =  data;
             const exist  = await user_db.find_by_username({username});
             if(exist) {
                 throw new Error('User already exist');
@@ -54,11 +54,12 @@ const Register = ({user_db, app_db, login_db, message_service}) => {
                     hasconsents =  true;
                 }
 
-               
+              
 
             
-                const two_factor_channel =  app.getMultifactorChannel();
+                const two_factor_channel =  app.getMultifactorChannel() ||multiFactorChannels.EMAIL;
                 const multifactor_enabled =  app.isMultifactorEnabled();
+                
                   const logindata = {
                     ...data,
                     offlineaccess: data.offline_access,
@@ -86,11 +87,12 @@ const Register = ({user_db, app_db, login_db, message_service}) => {
                         await  message_service.sms_util.SendSmsLocal('12843452904', msg)
                     }
             } else {
-               const code = crypto.randomBytes(24).toString('hex');
+                const code = crypto.randomBytes(24).toString('hex');
                 logindata.code = code;
                 logindata.codeused =  false;
 
             }
+           
 
             const login = make_login(logindata);
 
@@ -113,7 +115,7 @@ const Register = ({user_db, app_db, login_db, message_service}) => {
             const loginid =  login_saved.id;
             login_saved.id =  login_saved._id;
             delete login_saved._id;
-            if(hasconsents) {
+            if(hasconsents || multifactor_enabled) {
                 return {
                     type: 'json',
                     data: login_saved

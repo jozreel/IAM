@@ -43,12 +43,24 @@ const AuthorizeHelpers = ({encode_string}) => {
 
     }
 
+    const generate_refresh_token = (bytes=32) => {
+        const buffer = crypto.randomBytes(bytes);
+        const base64String = buffer.toString('base64');
+        const base64UrlToken = base64String
+        .replace(/\+/g, '-') 
+        .replace(/\//g, '_')
+        .replace(/=+$/, '');
+        return base64UrlToken;
+    }
+
     return Object.freeze({
         VerifyPkce,
         encrypt_string,
-        decrypt_string
+        decrypt_string,
+        generate_refresh_token
     })
 }
+
 
 
 module.exports =  AuthorizeHelpers;

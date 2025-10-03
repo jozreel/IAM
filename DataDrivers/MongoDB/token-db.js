@@ -7,7 +7,7 @@ const token_db = ({makeDB, ID}) => {
             const db =  await makeDB();
             if(data.loginid) {
             const id = ID(data.loginid); 
-                console.log(id, data.loginid);
+                
                 const token_save =  await db.collection(strings.LOGIN_COLLECION).updateOne({_id: id}, {
                     $set: {token: data, codeused: true}
                 });

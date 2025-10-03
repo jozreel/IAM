@@ -13,7 +13,8 @@ module.exports =  Object.freeze({
          get_creds: access_utils.get_basic_creds, 
          generate_token: access_utils.jwt_asymetric,
          createUtcDate: date_utils.createUTCDate,
-         verify_string: access_utils.verify_string
+         verify_string: access_utils.verify_string,
+         hash_string: access_utils.hash_string
         }),
     RefreshToken:  RefreshToken({
         tokendb:token_db,
@@ -23,7 +24,10 @@ module.exports =  Object.freeze({
         decode_token: access_utils.verify_toket_asymetric,
         generate_token: access_utils.jwt_asymetric,
         verify_token: access_utils.verify_toket_asymetric,
-        createUTCDate: date_utils.createUTCDate
+        createUTCDate: date_utils.createUTCDate,
+        hash_string: access_utils.hash_string,
+        verify_string: access_utils.verify_string,
+        login_db
 
     })
 })

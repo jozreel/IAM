@@ -5,7 +5,7 @@ const login_db = ({makeDB, ID}) => {
         try {
             const db = await makeDB();
             const result =  await db.collection(strings.LOGIN_COLLECION).insertOne(data);
-            console.log(result);
+            
             return {_id: result.insertedId, ...data};
 
         } catch (ex) {
@@ -20,7 +20,7 @@ const login_db = ({makeDB, ID}) => {
                 query.uid =  uid;
             }
             if(from) {
-                console.log(from);
+                
                 query.createddate = {$gte: from, $lte: to}
             }
             const db = await makeDB();
@@ -74,7 +74,7 @@ const login_db = ({makeDB, ID}) => {
         try {
             const db =  await makeDB();
             const _id =  ID(id);
-            console.log(id, uid);
+            
             const aggr =  db.collection(strings.LOGIN_COLLECION).aggregate([
                 
                 {$match: {uid}},
@@ -92,7 +92,7 @@ const login_db = ({makeDB, ID}) => {
             await aggr.toArray();
 
             const res = await db.collection(strings.LOGIN_COLLECION).deleteOne({_id});
-            console.log(res);
+          
         } catch(ex) {
             throw ex;
         }
@@ -101,7 +101,7 @@ const login_db = ({makeDB, ID}) => {
     const get_login = async (id) => {
         try  {
             const _id =  ID(id);
-            console.log(typeof _id)
+            
             const db =  await makeDB();
             const result = await db.collection(strings.LOGIN_COLLECION).findOne({_id});
             return result ?  make_login(result) : null;
@@ -124,6 +124,22 @@ const login_db = ({makeDB, ID}) => {
         }
     }
 
+    const get_login_by_refresh_token = async (refreshtoken, userid='') => {
+        try {
+            const db =  await makeDB();
+            const match =  userid ? {uid: userid, "token.token":refreshtoken} : {"token.token":refreshtoken}
+            
+            const res =  await db.collection(strings.LOGIN_COLLECION).findOne(match);
+            return res;
+
+
+
+        } catch(ex) {
+            throw ex;
+        }
+
+    }
+
     const make_login = (data) => {
         return login_model({
             ...data,
@@ -139,7 +155,8 @@ const login_db = ({makeDB, ID}) => {
         delete_login,
         get_last_login,
         clear_login, 
-        insert_login_with_token
+        insert_login_with_token,
+        get_login_by_refresh_token
     });
 }
 module.exports = login_db;

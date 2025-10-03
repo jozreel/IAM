@@ -4,7 +4,7 @@ const AddTokenController = ({TokenService}) => {
         try {
            
             const res =  await TokenService.AddToken(req);
-              return {statusCode: 200, body: res.data, cookies: res.cookies}
+            return {statusCode: 200, body: res.data, cookies: res.cookies}
 
         } catch(ex) {
             console.log(ex);

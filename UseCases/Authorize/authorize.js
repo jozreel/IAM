@@ -1,6 +1,6 @@
 const authorization_code = require('./authorization-code');
 
-const authorize_factory = ({verify_token, app_db}) => {
+const authorize_factory = ({verify_token, app_db, hash_string, login_db}) => {
 
 
     return async (req) => {
@@ -18,12 +18,12 @@ const authorize_factory = ({verify_token, app_db}) => {
             }
             if(req.query && req.query.response_type === 'code') {
               
-                const auth_code =  authorization_code({verify_token});
+                const auth_code =  authorization_code({verify_token, hash_string, login_db});
                 const hasMultiFactor =  app.isMultifactorEnabled();
                 const consentrequired = app.getConsents();
                 const appname =  app.getApplicationName();
                 const telephone_required = app.isTelephoneRequired();
-                const session_cookie = req.cookies?.refresh_session_cookie;
+                const session_cookie = req.cookies?.sessionid;
                 const selfregistration =  app.canSelfRegister();            
                 return await auth_code({...req.query, hasMultiFactor, consentrequired: consentrequired && consentrequired.length > 0 ? consentrequired : null, appname, session_cookie, showphone: telephone_required, selfregistration});
             }

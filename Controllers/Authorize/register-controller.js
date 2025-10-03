@@ -4,13 +4,17 @@ const RegisterController = ({Register}) => {
     return async (req) => {
         try {
             const res = await Register(req);
+           
             return res.type === 'json' ? {
                 type: res.type,
                 body: res.data,
                 statusCode: 200
             } :  {
                 type: 'redirect',
-                url: res.data.url,
+                body: {
+                    url: res.data.url
+                },
+                
                 statusCode: 301
             };
              
