@@ -99,10 +99,11 @@ const refresh_token = ({tokendb,userdb, app_db, decode_token, verify_token, gene
                 });
 
                 const access_token  =  generate_token({
-                    role: user.role,
+                    roles: user.roles,
                     iat: Math.floor(Date.now() / 1000),
                     exp: access_expire,
-                    sub: user.id
+                    sub: user.id,
+                    aud: clientid
                 });
 
 

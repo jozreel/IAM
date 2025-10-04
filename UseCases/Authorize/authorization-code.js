@@ -1,6 +1,7 @@
 const crypto =  require('crypto');
 const LoginPage = require('./login-page'); 
 const RegisterPage = require('./register-page');
+const make_login = require('../../Entities/Login');
 const authorization_code = ({verify_string, hash_string, login_db}) => {
     return  async (data) => {
         try {
@@ -40,15 +41,16 @@ const authorization_code = ({verify_string, hash_string, login_db}) => {
            
             let loggedin =  false;
             let loginid;
-            console.log(session_cookie);
+            let login;
             if(session_cookie) {
                // payload = verify_token(session_cookie);
-                const login =  await login_db.get_login(session_cookie);
+                login =  await login_db.get_login(session_cookie);
+             
                 if(!login) {
                     loggedin =  false;
                 } else {
               
-                    loginid =  login._id;
+                    loginid =  login.getId();
                 // &&payload && payload.exp >= Math.floor(Date.now() / 1000)
                     const tok =  login.getToken();
                     console.log(tok)
@@ -80,9 +82,17 @@ const authorization_code = ({verify_string, hash_string, login_db}) => {
                     data: LoginPage(data)
                 }
             } else {
-                
                     const code = crypto.randomBytes(24).toString('hex');
-                    const url =  redirect_uri+'?code='+code+'&state='+state+"&session="+loginid
+                    if(data.sessionid) {
+                        await login_db.delete_login(data.sessionid);
+                    }
+                    const mlogin = make_login({...login.ToJson(), ...data, codeused: false, codecreationtime: new Date(), code, codechallenge: code_challenge, codechallengemethod: code_challenge_method});
+                    const new_data = mlogin.ToJson();
+                    delete new_data._id;
+                   
+                    const login_new = await login_db.insert_login(new_data);
+                    
+                    const url =  redirect_uri+'?code='+code+'&state='+state+"&session="+login_new._id
                 return {
                     
                     type: 'redirect',

@@ -9,7 +9,7 @@ const AuthorizeHelpers = ({encode_string}) => {
         try {
             const hash = crypto.createHash(challenge_method).update(code_verifier).digest();
 
-            const generated_code_challenge =  endode_string(hash);
+            const generated_code_challenge =  encode_string(hash);
             return generated_code_challenge === code_challenge;
 
         } catch(ex) {

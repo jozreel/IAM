@@ -30,7 +30,7 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
                 return await rt(req);
             }
            
-          
+           
 
             const app =  await app_db.get_application(client_id);
 
@@ -59,14 +59,17 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
 
 
              //authorization code flow 
-            
+
+             let login;
             if(grant_type === AUTHORIZATION_CODE){
                 const login_obj = await login_db.get_login(loginid);
                 if(!login_obj) {
                   throw new Error("No login found for this user")
                 }
 
-                const login =  login_obj.ToJson();
+                const session_id =  req.cookies.sessionid;
+
+                 login =  login_obj.ToJson();
                 if(login.codeused) {
                     throw new Error('Invalid request code used')
                 }
@@ -114,7 +117,7 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
             
             
 
-            
+                    
         
                 //check if crewds are valid
               
@@ -125,6 +128,14 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
                     
                     if(basic_creds && (basic_creds.username !== clientid || basic_creds.password !== secret)) {
                         throw new Error('Invalid client credentials');
+                    }
+                }
+                console.log(code_verifier, 'the codde')
+                if(code_verifier || login.codechallenge) {
+                    const code_challenge =  login.codechallenge;
+                    const code_challenge_method =  login.codechallengemethod;
+                    if(!code_challenge || !authorize_helpers.VerifyPkce(code_verifier, code_challenge, code_challenge_method)) {
+                        throw new Error('Authentication error');
                     }
                 }
         }
@@ -159,8 +170,11 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
             
            
          }
+
+
+       
         
-        if(grant_type !== CLIENT_CREDENTIALS && (grant_type === PKCE || grant_type == code_verifier)) {
+        if(grant_type !== CLIENT_CREDENTIALS && (grant_type === PKCE)) {
             // validate the code challenge
             const code_challenge =  login.codechallenge;
             const code_challenge_method =  login.codechallengemethod;
