@@ -340,7 +340,7 @@ if(cancel_reset_btn) {
         
         e.preventDefault();
         //create a client for local admin
-        window.location.h = '/api/authorize'
+        window.location.href = '/'
     }
 }
 
