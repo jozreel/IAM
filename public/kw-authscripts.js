@@ -335,7 +335,7 @@ if(reset_btn) {
     }
 }
 
-if(cancel_reset_btn) {  alert('clickity');
+if(cancel_reset_btn) {
     cancel_reset_btn.onclick = (e) => {
       
         e.preventDefault();
