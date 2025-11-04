@@ -3,4 +3,4 @@ const LoginProviderTypes = Object.freeze({
     OPENID: 'openid'
 })
 
-export default LoginProviderTypes;
+module.exports = LoginProviderTypes;
