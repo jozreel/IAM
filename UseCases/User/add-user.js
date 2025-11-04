@@ -44,9 +44,9 @@ const add_user_use_case = ({user_db, ad_utils, sms_utils, verify_token}) => {
            const tkd =  await verify_token(token);
            console.log(tkd)
            let usr;
-           if(!tkd.roles.find(r => r === 'manage-users')){
-                 throw new Error('you dont have access to this resource');
-           }
+         //  if(!tkd.roles.find(r => r === 'manage-users')){
+            //     throw new Error('you dont have access to this resource');
+          // }
             /* usr =  await user_db.get_user(tkd.sub);
               
             if(!usr) {

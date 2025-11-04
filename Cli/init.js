@@ -1,5 +1,5 @@
 require('dotenv').config();
-  console.log(process.envDBURL);
+  console.log(process.env.DBURL);
 const { add_user } = require("../UseCases/User")
 
 const CreateDefaultAdmin = () => {
