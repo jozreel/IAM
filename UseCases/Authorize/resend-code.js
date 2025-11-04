@@ -1,6 +1,6 @@
 const multiFactorChannels = require('../../Entities/Application/multi-factor-channels');
 const make_login = require('../../Entities/Login');
-const ResendCode = ({login_db, user_db, app_db}) => {
+const ResendCode = ({login_db, user_db, app_db, message_service}) => {
     return async (req) => {
         try {
 
