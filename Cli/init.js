@@ -33,7 +33,8 @@ const createApplication = async () => {
     try {
         let appdata = {
             applicationname: 'Kwapo Auth Admin',
-            domain: "kwapodev.com"
+            domain: "kwapodev.com",
+            tenantid: '86391ac9-2d2c-43d0-bc71-fbca8958128b'
 
         }
         await add_app({data: appdata});
@@ -44,6 +45,6 @@ const createApplication = async () => {
 
 (async () => { 
 
-await createTenant();
+//await createTenant();
 await createApplication();
 })()
