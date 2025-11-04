@@ -163,9 +163,11 @@ const application_db_factory = ({makeDB, ID, autoID}) => {
             }
         }
         data.roles =  roles;
-        for(let access of data.screens) {
-            const accs = make_access(access);
-            app_access.push(accs);
+        if(data.screens) {
+            for(let access of data.screens) {
+                const accs = make_access(access);
+                app_access.push(accs);
+            }
         }
         data.screens =  app_access;
        
