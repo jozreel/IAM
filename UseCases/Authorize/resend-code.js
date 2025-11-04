@@ -22,8 +22,8 @@ const ResendCode = ({login_db, user_db, app_db}) => {
 
             let tel = user.getTelephone();
             const app = await app_db.get_application(session.getAppID());
-            console.log(app, session, session.getAppID());
-            let channel =  app.GetMultifactorChannel();
+           
+            let channel =  app.getMultifactorChannel();
             const randcode = Math.floor(100000 + Math.random() * 900000);
 
             if(!tel) {
