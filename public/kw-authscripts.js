@@ -1,5 +1,6 @@
 const sbtn = document.getElementById('submit_btn');
-    const msg =  document.getElementById('message')
+const msg =  document.getElementById('message')
+var BASE_PATH = '/auth'
     
     async function execute_login_user() {
         try {
@@ -37,7 +38,7 @@ const sbtn = document.getElementById('submit_btn');
             const formdata = {username, password, client_id, response_type, scope, redirect_uri, code_challenge, code_challenge_method, state, nonce, offline_access};
             console.log(offline_access_inp?.value)
             console.log(formdata);
-            const API="/api/authorize/login";
+            const API=BASE_PATH+"/api/authorize/login";
             const res = await  fetch(API, {method: "POST",  body: JSON.stringify(formdata), headers: {"content-type": "application/json"}});
             if(!res.ok) {
                throw new Error('Could not log you in.');
@@ -99,7 +100,7 @@ const TwoFactor = async () => {
            if(tinp) {
               tinp.innerHTML = '';
            }
-            const API = '/api/authorize/twofactor';
+            const API = BASE_PATH+'/api/authorize/twofactor';
             const authcode_inp =  document.getElementById('authcode');
             const resp_inp =  document.getElementById('response_id');
             const scope_inp =  document.getElementById('scope');
@@ -257,7 +258,7 @@ const register_page = () => {
 const request_new_code = async() => {
     const tfainp =  document.getElementById('tfa-message');
     try {
-        const API =  '/api/authorize/resendcode';
+        const API =  BASE_PATH+'/api/authorize/resendcode';
         const lgidinp = document.getElementById('loginid');
         let sessionid;
         if(lgidinp) {
@@ -425,7 +426,7 @@ const rg_sbtn = document.getElementById('reg_submit_btn');
             const formdata = {username, password, client_id, response_type, scope, redirect_uri, code_challenge, code_challenge_method, state, nonce, offline_access, email, firstname, lastname, telephone};
             console.log(offline_access_inp?.value)
             console.log(formdata);
-            const API="/api/authorize/register";
+            const API=BASE_PATH+"/api/authorize/register";
             const res = await  fetch(API, {method: "POST",  body: JSON.stringify(formdata), headers: {"content-type": "application/json"}});
             if(!res.ok) {
                throw new Error('Could not log you in.');
@@ -483,7 +484,7 @@ const rg_sbtn = document.getElementById('reg_submit_btn');
         const emailinp =  document.getElementById('email');
        
         const email =  emailinp.value;
-        const API = '/api/authorize/resetpasswordlink';
+        const API = BASE_PATH+'/api/authorize/resetpasswordlink';
         const res =  await fetch(API, {
             body: JSON.stringify({email}),
             method: 'POST',
