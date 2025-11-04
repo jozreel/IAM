@@ -22,6 +22,7 @@ const createApplication = async () => {
     try {
         let appdata = {
             applicationname: 'Kwapo Auth Admin',
+            domain: "kwapodev.com"
 
         }
         await add_app(appdata);
