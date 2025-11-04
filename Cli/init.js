@@ -6,7 +6,7 @@ const CreateDefaultAdmin = () => {
     try {
       
     const userUc =  add_user({data: {
-        "username": "admin",
+        "username": "appadmin",
         "password" : "P8ssw0rd!@",
         "email": "admin@kwapodev.com",
         "firstname": "System",
