@@ -2,6 +2,7 @@ require('dotenv').config();
   console.log(process.env.DBURL);
 const { add_user } = require("../UseCases/User")
 const {add_app} =  require('../UseCases/Application');
+const {AddTenant} = require('../UseCases/Tenant');
 
 const CreateDefaultAdmin = () => {
     try {
@@ -18,6 +19,16 @@ const CreateDefaultAdmin = () => {
 }
 }
 
+const createTenant = async () => {
+    const tenant_data =  {
+        tenantname: 'KwapoDev'
+    }
+
+    await AddTenant({
+        data: tenant_data
+    });
+}
+
 const createApplication = async () => {
     try {
         let appdata = {
@@ -25,11 +36,11 @@ const createApplication = async () => {
             domain: "kwapodev.com"
 
         }
-        await add_app(appdata);
+        await add_app({data: appdata});
     } catch(ex) {
         console.log(ex);
     }
 }
 
-
-createApplication();
+await createTenant();
+await createApplication();
