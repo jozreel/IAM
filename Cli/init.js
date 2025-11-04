@@ -9,7 +9,7 @@ const CreateDefaultAdmin = () => {
         "username": "admin",
         "password" : "P8ssw0rd!@",
         "email": "admin@kwapodev.com"
-    }});
+    }, credentials: "bearer dsffdgd"});
 } catch(ex) {
     console.log(ex);
 }
