@@ -42,5 +42,8 @@ const createApplication = async () => {
     }
 }
 
+(async () => { 
+
 await createTenant();
 await createApplication();
+})()
