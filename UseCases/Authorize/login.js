@@ -1,4 +1,4 @@
-const { default: LoginProviderTypes } = require('../../Entities/Application/login-provider-types');
+const  LoginProviderTypes = require('../../Entities/Application/login-provider-types');
 const make_user = require('../../Entities/User');
 const make_login =  require('../../Entities/Login');
 const crypto = require('crypto');
