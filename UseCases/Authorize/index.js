@@ -26,7 +26,7 @@ module.exports =  Object.freeze({
     Consent: Consent({login_db, app_db}),
     Logout: Logout({login_db, app_db}),
     Register: Register({user_db, app_db, login_db, message_service: fd.message_util}),
-    ResendCode: ResendCode({login_db}),
+    ResendCode: ResendCode({login_db,user_db, app_db}),
     GetResetPasswordPage: GetResetPasswordPage(),
     CreateResetLink: CreateResetLink({user_db, message_service: fd.message_util}),
     GetPasswordInput: GetPasswordInput({user_db}),
