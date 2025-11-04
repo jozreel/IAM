@@ -1,5 +1,6 @@
+const multiFactorChannels = require('../../Entities/Application/multi-factor-channels');
 const make_login = require('../../Entities/Login');
-const ResendCode = ({login_db}) => {
+const ResendCode = ({login_db, user_db, app_db}) => {
     return async (req) => {
         try {
 
@@ -12,8 +13,39 @@ const ResendCode = ({login_db}) => {
         
 
             const existdata = session.ToJson();
-            console.log(existdata);
+            const user = await user_db.get_user(existdata.uid);
+            if(!user) {
+                throw new Error('User not found');
+            }
+
+            console.log(user);
+
+            let tel = user.getTepephone();
+            const app = await app_db.get_application(session.appid);
+            console.log(app);
+            let channel =  app.GetMultifactorChannel();
             const randcode = Math.floor(100000 + Math.random() * 900000);
+
+            if(!tel) {
+                channel =  multiFactorChannels.EMAIL;
+            }
+
+            if(channel === multiFactorChannels.EMAIL) {
+                const mail = {
+                subject: "AUthorization code",
+                html: `<p>Your authentication code id ${randcode} </p>`,
+                to: 'jozreellaurent@outlook.com',
+                from: "support@veppz.com"
+                }
+            
+                await message_service.email_util.SendEmail(mail);
+        
+            } else if (channel === multiFactorChannels.SMS) {
+                const msg = 'Your one time use code is '+randcode;
+                await  message_service.sms_util.SendSmsLocal(tel, msg)
+            }
+
+            ;
             console.log(randcode);
             existdata.multifactorcode = randcode;
             existdata.multifactorcodetime =  new Date();
