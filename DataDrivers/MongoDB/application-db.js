@@ -143,22 +143,24 @@ const application_db_factory = ({makeDB, ID, autoID}) => {
       
         data.id =  data._id;
         const app_access = [];
-        for(let rl of data.roles) {
-            if(rl.access) {
-                const accss = [];
-                for(let access of rl.access) {
-                    const oa =  data.access ? data.screens.find(a => a.id == access) : null;
-                    if(oa) {
-                        const aa =  make_access(oa);
-                        accss.push(aa);
+        if(data.roles) {
+            for(let rl of data.roles) {
+                if(rl.access) {
+                    const accss = [];
+                    for(let access of rl.access) {
+                        const oa =  data.access ? data.screens.find(a => a.id == access) : null;
+                        if(oa) {
+                            const aa =  make_access(oa);
+                            accss.push(aa);
+                        }
+
                     }
-
+                    rl.access  = accss;
                 }
-                rl.access  = accss;
-            }
 
-            const ro =  AppRole(rl)
-            roles.push(ro);
+                const ro =  AppRole(rl)
+                roles.push(ro);
+            }
         }
         data.roles =  roles;
         for(let access of data.screens) {
