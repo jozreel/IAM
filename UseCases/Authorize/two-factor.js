@@ -18,6 +18,8 @@ const two_factor = ({login_db, app_db}) => {
                     throw new Error('Could not find login');
                 }
                 const login =  login_obj.ToJson();
+
+                console.log(login, authcode)
               
                 if(login.multifactorcode && authcode === login.multifactorcode.toString()) {
                     const code = crypto.randomBytes(24).toString('hex');
