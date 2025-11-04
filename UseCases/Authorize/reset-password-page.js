@@ -38,7 +38,7 @@ const ResetPasswordPage = ({data}) => `<!DOCTYPE html>
 
         </div>
          <div class="form-button" style="display: flex; align-items: cemter; gap: .75rem;">
-            <button onclick="javascript:void(0)" class="login-button"   id="reset_btn" type="submit">Submi</button>
+            <button onclick="javascript:void(0)" class="login-button"   id="reset_btn" type="submit">Submit</button>
             <button onclick="javascript:void(0)" class="login-button" id="cancel_reset_btn" type="submit">Cancel</button>
             
         </div>

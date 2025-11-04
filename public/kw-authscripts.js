@@ -335,9 +335,9 @@ if(reset_btn) {
     }
 }
 
-if(cancel_reset_btn) {
+if(cancel_reset_btn) {  alert('clickity');
     cancel_reset_btn.onclick = (e) => {
-        alert('clickity');
+      
         e.preventDefault();
         //create a client for local admin
         window.location.href = '/'
