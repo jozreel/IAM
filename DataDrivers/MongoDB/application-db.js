@@ -29,6 +29,7 @@ const application_db_factory = ({makeDB, ID, autoID}) => {
         while(await cursor.hasNext()) {
             let re =  await cursor.next(); 
             const tenant =  await db.collection(strings.TENANT_COLLECTION).findOne({_id: re.tenantid});
+            console.log(tenant);
             const app_ten =  make_tenant(tenant);
             re.tenant =  app_ten;
             const app = build_application(re);
