@@ -1,6 +1,7 @@
 require('dotenv').config();
   console.log(process.env.DBURL);
 const { add_user } = require("../UseCases/User")
+const {add_app} =  require('../UseCases/Application');
 
 const CreateDefaultAdmin = () => {
     try {
@@ -17,5 +18,17 @@ const CreateDefaultAdmin = () => {
 }
 }
 
+const createApplication = async () => {
+    try {
+        let appdata = {
+            applicationname: 'Kwapo Auth Admin',
 
-CreateDefaultAdmin();
+        }
+        await add_app(appdata);
+    } catch(ex) {
+        console.log(ex);
+    }
+}
+
+
+createApplication();
