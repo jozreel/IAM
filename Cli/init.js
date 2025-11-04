@@ -37,7 +37,7 @@ const createApplication = async () => {
             tenantid: '86391ac9-2d2c-43d0-bc71-fbca8958128b'
 
         }
-        await add_app({data: appdata});
+        await add_app(appdata);
     } catch(ex) {
         console.log(ex);
     }
