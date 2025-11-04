@@ -9,6 +9,8 @@ const ResendCode = ({login_db}) => {
                 throw new Error('Could not find session');
             }
 
+            console.log(req.data);
+
             const existdata = session.ToJson();
             const randcode = Math.floor(100000 + Math.random() * 900000);
             console.log(randcode);
