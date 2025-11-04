@@ -3,6 +3,8 @@ const strings = require('../../strings');
 const login_db = ({makeDB, ID}) => {
     const insert_login = async (data) => {
         try {
+            data._id =  data.id;
+            delete data.id;
             const db = await makeDB();
             const result =  await db.collection(strings.LOGIN_COLLECION).insertOne(data);
             
@@ -38,7 +40,7 @@ const login_db = ({makeDB, ID}) => {
     const update_login  = async ({id, ...changes}) => {
         try {
             const db =  await makeDB();
-            const _id =  ID(id);
+            const _id =  id;
             const result =  await db.collection(strings.LOGIN_COLLECION).findOneAndUpdate({_id}, {$set: changes});
             return result && result.value ? result.value : null;
         } catch (ex) {
@@ -61,7 +63,7 @@ const login_db = ({makeDB, ID}) => {
     const delete_login = async (id) => {
         try {
             const db =  await makeDB();
-            const _id =  ID(id);
+            const _id =  id;
             const result =  await db.collection(strings.LOGIN_COLLECION).deleteOne({_id});
             return result.deletedCount;
 
@@ -73,7 +75,7 @@ const login_db = ({makeDB, ID}) => {
     const clear_login = async(id, uid) => {
         try {
             const db =  await makeDB();
-            const _id =  ID(id);
+            const _id =  id;
             
             const aggr =  db.collection(strings.LOGIN_COLLECION).aggregate([
                 
@@ -100,7 +102,7 @@ const login_db = ({makeDB, ID}) => {
 
     const get_login = async (id) => {
         try  {
-            const _id =  ID(id);
+            const _id =  id;
             
             const db =  await makeDB();
             const result = await db.collection(strings.LOGIN_COLLECION).findOne({_id});

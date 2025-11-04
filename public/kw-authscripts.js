@@ -37,7 +37,7 @@ const sbtn = document.getElementById('submit_btn');
             const formdata = {username, password, client_id, response_type, scope, redirect_uri, code_challenge, code_challenge_method, state, nonce, offline_access};
             console.log(offline_access_inp?.value)
             console.log(formdata);
-            const API="http://localhost:3992/api/authorize/login";
+            const API="/api/authorize/login";
             const res = await  fetch(API, {method: "POST",  body: JSON.stringify(formdata), headers: {"content-type": "application/json"}});
             if(!res.ok) {
                throw new Error('Could not log you in.');
@@ -99,7 +99,7 @@ const TwoFactor = async () => {
            if(tinp) {
               tinp.innerHTML = '';
            }
-            const API = 'http://localhost:3992/api/authorize/twofactor';
+            const API = '/api/authorize/twofactor';
             const authcode_inp =  document.getElementById('authcode');
             const resp_inp =  document.getElementById('response_id');
             const scope_inp =  document.getElementById('scope');
@@ -171,7 +171,7 @@ const TwoFactor = async () => {
 
     const get_consent = async(accepted) => {
        try {
-        const API = 'http://localhost:3992/api/authorize/consent';
+        const API = '/api/authorize/consent';
        
         const resp_inp =  document.getElementById('response_id');
         const scope_inp =  document.getElementById('scope');
@@ -257,7 +257,7 @@ const register_page = () => {
 const request_new_code = async() => {
     const tfainp =  document.getElementById('tfa-message');
     try {
-        const API =  'http://localhost:3992/api/authorize/resendcode';
+        const API =  '/api/authorize/resendcode';
         const lgidinp = document.getElementById('loginid');
         let sessionid;
         if(lgidinp) {
@@ -340,7 +340,7 @@ if(cancel_reset_btn) {
         
         e.preventDefault();
         //create a client for local admin
-        window.location.h = 'http://localhost:3992/api/authorize'
+        window.location.h = '/api/authorize'
     }
 }
 
@@ -425,7 +425,7 @@ const rg_sbtn = document.getElementById('reg_submit_btn');
             const formdata = {username, password, client_id, response_type, scope, redirect_uri, code_challenge, code_challenge_method, state, nonce, offline_access, email, firstname, lastname, telephone};
             console.log(offline_access_inp?.value)
             console.log(formdata);
-            const API="http://localhost:3992/api/authorize/register";
+            const API="/api/authorize/register";
             const res = await  fetch(API, {method: "POST",  body: JSON.stringify(formdata), headers: {"content-type": "application/json"}});
             if(!res.ok) {
                throw new Error('Could not log you in.');
@@ -483,7 +483,7 @@ const rg_sbtn = document.getElementById('reg_submit_btn');
         const emailinp =  document.getElementById('email');
        
         const email =  emailinp.value;
-        const API = 'http://localhost:3992/api/authorize/resetpasswordlink';
+        const API = '/api/authorize/resetpasswordlink';
         const res =  await fetch(API, {
             body: JSON.stringify({email}),
             method: 'POST',

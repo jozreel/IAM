@@ -21,13 +21,16 @@ const tenant_db = ({makeDB, ID}) => {
 
     const get_tenant = async id => {
         try {
-            const _id =  ID(id);
+           
+            const _id = id.length === 24 ? ID(id) : id;
             const db =  await makeDB();
             const res =  await db.collection(strings.TENANT_COLLECTION).findOne({_id});
-            if(res.roles) {
-                res.roles = res.roles.map(r => TenantRole(r));
-            }
-            return build_tenant(res);
+            if(res) {
+                if(res.roles) {
+                    res.roles = res.roles.map(r => TenantRole(r));
+                }
+                return build_tenant(res);
+           }
         } catch (ex){
             throw ex;
         }
@@ -51,7 +54,9 @@ const tenant_db = ({makeDB, ID}) => {
 
     const update_tenant = async ({id, ...data}) => {
         try {
-            const _id =  ID(id);
+            const db =  await makeDB();
+            
+            const _id =  id.length === 24 ?  ID(id) : id;
             const upd =  await db.collection(strings.TENANT_COLLECTION).updateOne({_id}, {$set: data});
             return {
                 id, ...data
@@ -63,7 +68,7 @@ const tenant_db = ({makeDB, ID}) => {
 
     const delete_tenant = async (id) => {
         try {
-            const _id =  ID(id);
+            const _id =  id.length === 24 ?  ID(id) : id;;
             const db =  await makeDB();
 
             const del =  await db.collection(strings.TENANT_COLLECTION).deleteOne({_id});
@@ -77,7 +82,7 @@ const tenant_db = ({makeDB, ID}) => {
     const add_application_to_tenant = async (id, appid) => {
         try {
 
-            const _id =  ID(id);
+            const _id =  id.length === 24 ?  ID(id) : id;;
             const db =  await makeDB();
             const res = await db.collection(strings.TENANT_COLLECTION).updateOne({_id}, {$push: {applications: appid}});
             if(res.modifiedCount > 0) {
@@ -93,7 +98,7 @@ const tenant_db = ({makeDB, ID}) => {
 
     const remove_application_from_tenant = async(id, appid) => {
         try {
-            const _id =  ID(id);
+            const _id = id.length === 24 ?  ID(id) : id;
             const db = await makeDB();
             const rem =  await db.collection(strings.TENANT_COLLECTION).updateOne({_id}, {$pull: {applications: appid}});
 
@@ -104,7 +109,7 @@ const tenant_db = ({makeDB, ID}) => {
 
     const add_role_to_tenant = async (id, role) => {
         try {
-            const _id =  ID(id);
+            const _id =  id.length === 24 ?  ID(id) : id;
             const db =  await makeDB();
             const get_tenant_by_nameins = await db.collection(strings.TENANT_COLLECTION).updateOne({_id}, {$push: role});
             if(ins.modifiedCount > 0) {
@@ -119,7 +124,7 @@ const tenant_db = ({makeDB, ID}) => {
 
       const remove_role_from_tenant = async (id, role) => {
         try {
-            const _id =  ID(id);
+            const _id =  id.length === 24 ?  ID(id) : id;
             const db =  await makeDB();
             const ins = await db.collection(strings.TENANT_COLLECTION).updateOne({_id}, {$pull: role});
             if(ins.modifiedCount > 0) {
@@ -135,7 +140,7 @@ const tenant_db = ({makeDB, ID}) => {
     const get_tenantrole_by_name =  async (id, name) => {
         try {
 
-            const _id =  ID(id);
+            const _id =  id.length === 24 ?  ID(id) : id;
             const db = await makeDB();
             const regex = new RegExp(name, "ig");
             const match = {_id, "roles.name": {$regex: regex}};
@@ -166,7 +171,7 @@ const tenant_db = ({makeDB, ID}) => {
 
     const get_tenant_roles = async(id) => {
         try {
-            const _id =  ID(id);
+            const _id =  id.length === 24 ?  ID(id) : id;
             const db  =  await makeDB();
             const res =  await db.collection(strings.TENANT_COLLECTION).finsOne({_id}, {projection: {roles: 1}});
             if(res) {
@@ -202,12 +207,31 @@ const tenant_db = ({makeDB, ID}) => {
             throw ex;
         }
     }
+
+
+    const get_tenants_for_user = async (user) => {
+        try {
+            const db =  await makeDB();
+            const res =  db.collection(strings.TENANT_COLLECTION).find({managers: user});
+            let result=[];
+            while(await res.hasNext()) {
+                const tn = await res.next();
+                console.log(tn)
+                const rb =  build_tenant(tn);
+                result.push(rb);
+            }
+            return result;
+
+        } catch(ex) {
+            throw ex;
+        }
+    }
     
 
 
 
     const build_tenant = data  => {
-        return make_tenant({...data});
+        return make_tenant({...data, id: data._id});
     }
 
     const build_application = (data) => {
@@ -256,7 +280,8 @@ const tenant_db = ({makeDB, ID}) => {
         get_tenantrole_by_name,
         get_tenant_roles,
         get_tenant_by_name,
-        get_applications_for_tenant
+        get_applications_for_tenant,
+        get_tenants_for_user
     })
 
 }

@@ -40,7 +40,7 @@ const add_login_usecase  =  ({login_db, user_db, ad_utils}) => {
                     uid: exist.id.toString(),
                     success: true
                 });
-                const payload = {iat: new Date().valueOf(), sub: login.getUID(), appid: login.getAppID()};
+                const payload = {iat: new Date().valueOf(), exp: Math.floor(Date.now() /1000) + (60*60), aud: '1ca5521f-a1c5-4628-ba70-1b41833d0329', sub: login.getUID(), appid: login.getAppID()};
                 if(!data.remember) {
                     payload.exp = Date.now() /1000 + (60*60);
                 }

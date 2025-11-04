@@ -20,16 +20,17 @@ const createLoginFactory = ({createUTCDate, createToken}) => {
         multifactorcodetime,
         offlineaccess,
         token,
-        lasttokenrefresh
+        lasttokenrefresh,
+        serviceaccount =false
     } = {}) => {
-        if(!uid) {
+        if(!serviceaccount && !uid) {
             throw new Error('Invalid user. Trya again');
         }
         if(!appid) {
             throw new Error('iInvalid Application. Contact administrator')
         }
-
-        if(!multifactorcode && responsetype === 'code' && !code) {
+        
+        if((!multifactorcode && !serviceaccount) && responsetype === 'code' && !code) {
             throw new Error('No code supplied');
         }
 
@@ -64,6 +65,7 @@ const createLoginFactory = ({createUTCDate, createToken}) => {
             getMultifactorCodeTime: () => multifactorcodetime ? createUTCDate(multifactorcodetime) : createUTCDate(),
             createToken: (payload)=> createToken(payload, secret),
             getLastTokenRefresh: () => lasttokenrefresh,
+            isServiceaccount: () => serviceaccount,
             getToken: () => token,
             ToJson: () => ({
                 id,
@@ -85,6 +87,7 @@ const createLoginFactory = ({createUTCDate, createToken}) => {
                 multifactorcodetime,
                 lasttokenrefresh,
                 token,
+                serviceaccount,
                 offlineaccess 
             })
         });

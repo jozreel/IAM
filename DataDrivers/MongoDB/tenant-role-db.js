@@ -4,12 +4,12 @@ const strings = require("../../strings");
 const tenant_role_db  = ({makeDB, ID}) => {
     const add_tenant_role = async(roledata) => {
         try {
-            const _id =  ID(roledata.tenantid);                      
+            const _id =  roledata.tenantid.length === 24 ? ID(roledata.tenantid) : roledata.tenantid;                      
             const db =  await makeDB();
             const ud =  await db.collection(strings.TENANT_COLLECTION).updateOne({_id} , {
                 $push: {roles: {...roledata}}
             });
-            
+            console.log(ud);
             if(ud.matchedCount > 0 && ud.modifiedCount !==0) {
                 return roledata;
             } else  {
@@ -27,7 +27,7 @@ const tenant_role_db  = ({makeDB, ID}) => {
             const db = await makeDB();
             const roles = [];
             const _id =  tenantid.length === 24 ? ID(tenantid) : tenantid;
-
+          
             const res =  await db.collection(strings.TENANT_COLLECTION).findOne({_id}, {projection: {roles: 1}});
            
             if(res && res.roles) {
@@ -60,8 +60,9 @@ const tenant_role_db  = ({makeDB, ID}) => {
         try {
             const db = await makeDB();
             const _id = tenantid.length === 24 ?  ID(tenantid) : tenantid;
-            const rem =  await db.collection(strings.TENANT_COLLECTION).updateOne({_id, "roles.roleid": roleid}, {
-                $pull: {roles:  {roleid}}
+            console.log(roleid)
+            const rem =  await db.collection(strings.TENANT_COLLECTION).updateOne({_id, "roles.id": roleid}, {
+                $pull: {roles:  {id: roleid}}
             });
             console.log(rem);
             if(rem?.matchedCount > 0 && rem.modifiedCount !== 0) {
@@ -91,7 +92,8 @@ const tenant_role_db  = ({makeDB, ID}) => {
     const get_tenant_role_by_id = async(id, tenantid) => {
         try {
             const db = await makeDB();
-            const match = tenantid ?  {_id: ID(tenantid), "roles.id": id} :  {"roles.id": id}
+            const _id =  tenantid.length === 24 ?  ID(tenantid) : tenantid;
+            const match = tenantid ?  {_id, "roles.id": id} :  {"roles.id": id}
             
             const accs =  db.collection(strings.TENANT_COLLECTION).aggregate([
                 {$match:match},
@@ -120,8 +122,9 @@ const tenant_role_db  = ({makeDB, ID}) => {
         try {
             const db = await makeDB();
             const regex = new RegExp(rolename, "ig");
-             const match = tenantid ?  {_id: ID(tenantid), "roles.name": {$regex: regex}}: {"roles.name": {$regex: regex}};
-            
+            const _id = tenantid.length === 24 ? ID(tenantid) : tenantid;
+             const match = tenantid ?  {_id, "roles.name": {$regex: regex}}: {"roles.name": {$regex: regex}};
+           
             const accs =  db.collection(strings.TENANT_COLLECTION).aggregate([
                 {$match:match},
                 {$project: {roles: {$filter: {

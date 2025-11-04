@@ -1,7 +1,7 @@
 const make_application =  require('../../Entities/Application');
 const make_role = require('../../Entities/Role');
 const make_access = require('../../Entities/Access');
-const update_app = ({app_db, user_db, role_db, access_db, generate_unique_key, encrypt_string}) => {
+const update_app = ({app_db, user_db, role_db, access_db, generate_unique_key, encrypt_string, check_has_role_by_name}) => {
     const check_roles = async (oldroles, newroles, appscreens) => {
         const nrmap =  new Map(newroles.map(r => [r.GetId(), true]));
        
@@ -46,8 +46,11 @@ const update_app = ({app_db, user_db, role_db, access_db, generate_unique_key, e
     }
     return async (req) => {
         try {
+
             const id =  req.params.id;
             const changes = req.data;
+            const {sub, aud} =  req.access;
+            const has_role = await check_has_role_by_name(sub,'manage-apps',aud);
            
             const exist =  await app_db.get_application(id);
             const updatedata = {roles: [],screens:[]};
@@ -196,7 +199,7 @@ const update_app = ({app_db, user_db, role_db, access_db, generate_unique_key, e
                 disabled: app.isDisabled(),
                 clientid: app.getClientId(),
                 domain: app.getDomain(),
-                roles: app.getRoles().map(r => ({...r.ToJson(), access: r.GetAccess().map(a => a.GetId())})),
+                roles: app.getRoles().map(r => ({...r.ToJson()})),
                 screens: app.getScreens().map(sct => sct.ToJson()),
                 multifactorchannel: app.getMultifactorChannel(),
                 multifactorenabled: app.isMultifactorEnabled(),
@@ -209,7 +212,7 @@ const update_app = ({app_db, user_db, role_db, access_db, generate_unique_key, e
                 selfregistration: app.canSelfRegister(),
                 createddate: app.getCreatedDate(),
                 serviceaccountenabled: app.isServiceAccountEnabled(),
-                clientsecres: app.getClientSecret(),
+                clientsecret: app.getClientSecret(),
                 tenantid: app.getTenantId(),
                 lastmodifieddate: app.getLastModifiedDate(),
                 description: app.getDescription(),

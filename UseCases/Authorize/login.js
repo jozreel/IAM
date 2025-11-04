@@ -119,20 +119,22 @@ const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) =
         
           const code = crypto.randomBytes(24).toString('hex');
           const login =  make_login({
-                                    ...data,
-                                    offlineaccess: data.offline_access,
-                                    codechallenge: data.code_challenge,
-                                    codechallengemethod: data.code_challenge_method,
-                                    appid: data.client_id,
-                                    uid: data.uid.toString(),
-                                    success: true,
-                                    code,
-                                    codeused: false
-                                    
-                                    
-                                });
+                id: crypto.randomUUID(),
+                ...data,
+                offlineaccess: data.offline_access,
+                codechallenge: data.code_challenge,
+                codechallengemethod: data.code_challenge_method,
+                appid: data.client_id,
+                uid: data.uid.toString(),
+                success: true,
+                code,
+                codeused: false
+                
+                
+            });
                     //update login entity to includde these
                     const login_saved = await login_db.insert_login({
+                        id: login.getId(), 
                         appid: login.getAppID(),
                         uid: login.getUID(),
                         ip: login.getIP(),
@@ -166,6 +168,7 @@ const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) =
         try {
             
           const login =  make_login({
+                     id: crypto.randomUUID(), 
                     ...data,
                     offlineaccess: data.offline_access,
                     codechallenge: data.code_challenge,
@@ -178,6 +181,7 @@ const login =  ({login_db, applicationdb, user_db, ad_utils, message_service}) =
                   
                     //update login entity to includde these
                     const login_saved = await login_db.insert_login({
+                        id: login.getId(),
                         appid: login.getAppID(),
                         uid: login.getUID(),
                         ip: login.getIP(),

@@ -17,6 +17,7 @@ const {file_helpers} = require('../Helpers');
 const GenerateResetLink = require('./generate-reset-link');
 const ResetPassword = require('./reset-password');
 const CheckPasswordLinkUsecase = require('./check-password-link-usecase');
+const AssignRoleToUser = require('./assign-role-to-user');
 const sms_utils = fd.sms_util;
 
 module.exports = Object.freeze({
@@ -31,6 +32,7 @@ module.exports = Object.freeze({
     get_profile_pic: get_profile_pic_usecase({user_db, read_file: file_helpers.read_file}),
     generate_reset_link: GenerateResetLink({user_db, dateDiff}),
     reset_password: ResetPassword({user_db, dateDiff}),
-    check_password_reset_code: CheckPasswordLinkUsecase({user_db, dateDiff})
+    check_password_reset_code: CheckPasswordLinkUsecase({user_db, dateDiff}),
+    AssignRoleToUser: AssignRoleToUser({user_db, app_role_db: db.app_role_db, tenant_role_db: db.tenant_role_db})
 }
 );

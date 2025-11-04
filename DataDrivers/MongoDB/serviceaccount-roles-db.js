@@ -64,9 +64,11 @@ const serviceaccount_role_db = ({makeDB, ID}) => {
     const get_all_application_roles = async (appid) => {
 
         try {
+            console.log(appid);
             const db =  await makeDB();
-            const _id =  ID(appid);
+            const _id = appid.length === 24 ?  ID(appid) : appid;
             const rls =  await db.collection(strings.APP_COLLECTON).findOne({_id}, {projection: {serviceaccountroles: 1}});
+        
             return rls.serviceaccountroles || [];
 
         } catch(ex) {

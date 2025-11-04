@@ -36,7 +36,7 @@ const refresh_token = ({tokendb,userdb, app_db, decode_token, verify_token, gene
             }
 
             const id_expire =  Math.floor((Date.now() / 1000)) + (60 * 5);
-            const access_expire = Math.floor((Date.now() / 1000)) + (60 * 30);
+            const access_expire = Math.floor((Date.now() / 1000)) + (60 * 15);
 
             const refresh_expire = Math.floor((Date.now() / 1000)) + (60 * 1440); 
             const loginid =  req.data.sessionid;
@@ -47,7 +47,13 @@ const refresh_token = ({tokendb,userdb, app_db, decode_token, verify_token, gene
             const session_token = req.cookies.refresh_session_cookie;
             const sessionid =  req.cookies.sessionid;
             const login = await login_db.get_login(sessionid);
-        
+            if(!login) {
+                throw new Error('invalid login');
+            }
+
+          
+
+            const serviceAccount  = login.isServiceaccount();
 
 
           
@@ -64,14 +70,19 @@ const refresh_token = ({tokendb,userdb, app_db, decode_token, verify_token, gene
             }
             const userid =  token.uid;
           
-           
+         
             const user_obj =  await userdb.get_user(userid);
-            if(!user_obj) {
+            if(!user_obj && !serviceAccount) {
                 throw new Error('user does not exist');
             }
-            const user = user_obj.ToJson();
+            const user = serviceAccount ? {id: app.getId()} : user_obj.ToJson();
 
-           
+
+            if(serviceAccount && app.getId() !== login.getAppID()) {
+                throw new Error('Bad App');
+            }
+
+            
 
             if(await verify_string(session_token, token?.token?.token)) {
                 // const token_data = verify_token(session_token);

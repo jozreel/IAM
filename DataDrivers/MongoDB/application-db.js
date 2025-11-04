@@ -2,6 +2,7 @@ const strings = require('../../strings');
 const make_app =  require('../../Entities/Application');
 const {AppRole} = require('../../Entities/Role');
 const make_access =  require('../../Entities/Access');
+const make_tenant = require('../../Entities/Tenant');
 const application_db_factory = ({makeDB, ID, autoID}) => {
     const insert_application = async (data) => {
         try {
@@ -23,8 +24,17 @@ const application_db_factory = ({makeDB, ID, autoID}) => {
             query = {"applications.appid": appid};
         }
         const cursor =  db.collection(strings.APP_COLLECTON).find(query).skip(skip).limit(limit);
-        const result =  await cursor.toArray();
-        const res = result.map(re => build_application(re));
+        //const result =  await cursor.toArray();
+        let res  = [];
+        while(await cursor.hasNext()) {
+            let re =  await cursor.next(); 
+            const tenant =  await db.collection(strings.TENANT_COLLECTION).findOne({_id: re.tenantid});
+            const app_ten =  make_tenant(tenant);
+            re.tenant =  app_ten;
+            const app = build_application(re);
+            res.push(app);
+        }
+    
         
         return res;
     }
@@ -78,7 +88,7 @@ const application_db_factory = ({makeDB, ID, autoID}) => {
             return await res.toArray()
 
         } catch(ex) {
-            throw ex;
+            throw ex;APP_COLLECTON
         }
 
     }
@@ -101,6 +111,28 @@ const application_db_factory = ({makeDB, ID, autoID}) => {
             throw ex;
         }
     }
+
+    const get_applications_for_tenant = async tid => {
+        try {
+            const db =  await makeDB();
+            const res = db.collection(strings.APP_COLLECTON).find({
+                tenantid: tid
+            });
+            let resarr = [];
+            while(await res.hasNext()) {
+                const r = await  res.next();
+                const aapp = build_application(r);
+                
+                resarr.push(aapp);
+            }
+
+            return resarr;
+
+        } catch (ex) {
+            throw ex;
+        }
+    }
+
 
 
     const build_application = (data) => {
@@ -143,6 +175,7 @@ const application_db_factory = ({makeDB, ID, autoID}) => {
         delete_application,
         get_apps_assigned_to_role,
         remove_app_role,
+        get_applications_for_tenant,
         autoID
     });
     

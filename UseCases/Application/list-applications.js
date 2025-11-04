@@ -4,6 +4,7 @@ const list_applications = ({app_db}) => {
             const skip =  query.skip;
             const limit =  query.limit;
             const result =  await app_db.list_applications({skip, limit});
+            
             const json_res =  result.map(r => r.ToJson());
             return json_res
 

@@ -1,5 +1,6 @@
 const secret = require('../../KEYS').app_secret;
 const make_screen =  require('../Access');
+const make_tenant =  require('../Tenant');
 
 const {AppRole} =  require('../Role');
 const MultiFactorChannels = require('./multi-factor-channels');
@@ -35,7 +36,8 @@ const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyKey, ha
         telephonerequired=false,
         selfregistration = false,
         lastmodifieddate = createUTCDate(),
-        refrestokenrotation = true
+        refrestokenrotation = true, 
+        tenant
     }={}) => {
        
         if(!applicationname) {
@@ -84,6 +86,11 @@ const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyKey, ha
      
         clientid =  id;
         clientid
+        if(tenant) {
+            if(typeof tenant.getId === 'undefined') {
+                tenant =  make_tenant(tenant);
+            }
+        }
         return Object.freeze({
             getId: () => id,
             getApplicationName: () => applicationname,
@@ -144,6 +151,7 @@ const createApplicationFactory =  ({createUTCDate, generateAPIKey, verifyKey, ha
                 serviceaccountroles,
                 clientsecret,
                 tenantid,
+                tenant:  tenant && typeof tenant.getId !== 'undefined'? tenant.toJson() : tenant,  
                 description,
                 refrestokenrotation
             })

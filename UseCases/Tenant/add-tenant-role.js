@@ -9,14 +9,14 @@ const AddTenantRole = ({tenant_db, tenant_role_db}) => {
             const id =  params.id;
             const tenant =  await tenant_db.get_tenant(id);
             if(!tenant) {
-                throw new Error('invalid application');
+                throw new Error('invalid tenant');
             }
             data.id =  crypto.randomUUID();
-            console.log(data)
+            
             const role = TenantRole({...data, tenantid: id});
             const exists = await tenant_role_db.get_tenant_role_by_name(role.GetName().trim(), id);
             
-            
+            console.log(exists);
             if(exists) {
                 throw new Error("A role with this name alreadt exist");
             }

@@ -7,6 +7,7 @@ const GetTenantRoles = ({tenant_role_db}) => {
             return results.map(r => r.ToJson());
 
         } catch(ex){
+            console.log(ex);
             throw ex;
         }
     }

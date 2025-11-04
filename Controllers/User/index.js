@@ -11,6 +11,7 @@ const get_profile_pic_controller = require('./get-profilepic-controller');
 const generate_reset_link_controller = require('./generate-reset-link-controller');
 const reset_password_controller = require('./reset-password-controller');
 const check_reset_link_controller = require('./check-reset-link-controller');
+const AssignRoleToUserController = require('./assign-role-to-user-controller');
 
 const add_user = user_service.add_user;
 const update_user =  user_service.update_user;
@@ -33,5 +34,6 @@ module.exports = Object.freeze({
     get_profile_pic: get_profile_pic_controller({get_profilepic: user_service.get_profile_pic}),
     generate_reset_link: generate_reset_link_controller({generate_reset_link: user_service.generate_reset_link}),
     reset_password: reset_password_controller({reset_password: user_service.reset_password}),
-    check_reset_code: check_reset_link_controller({check_reset_link: user_service.check_password_reset_code})
+    check_reset_code: check_reset_link_controller({check_reset_link: user_service.check_password_reset_code}),
+    assign_role_to_user: AssignRoleToUserController({AssignRoleToUser:user_service.AssignRoleToUser})
 });

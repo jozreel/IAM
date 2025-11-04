@@ -141,7 +141,7 @@ const get_oauth_login_page_usecase = () => {
                        }
                    }
                    sbtn.onclick = (e) => {
-                       alert('hey');
+                     
                        e.preventDefault();
                        execute_login_user();
                    }

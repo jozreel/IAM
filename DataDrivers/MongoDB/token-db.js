@@ -6,7 +6,7 @@ const token_db = ({makeDB, ID}) => {
         try {
             const db =  await makeDB();
             if(data.loginid) {
-            const id = ID(data.loginid); 
+            const id = data.loginid; 
                 
                 const token_save =  await db.collection(strings.LOGIN_COLLECION).updateOne({_id: id}, {
                     $set: {token: data, codeused: true}
@@ -49,7 +49,7 @@ const token_db = ({makeDB, ID}) => {
     const GetTokenForSession  = async (sessionid) => {
         try  {
             const db = await makeDB();
-            const _id =  ID(sessionid);
+            const _id =  sessionid;
             const res =  await db.collection(strings.LOGIN_COLLECION).findOne({_id}, {projection: {token: true, uid: true, offlineaccess: true}});
 
             return res;

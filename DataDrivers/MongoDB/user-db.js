@@ -202,15 +202,67 @@ const user_db_factory =  ({makeDB, ID}) => {
         }
     }
 
-    const check_user_access = async (appid, accesscode) => {
-        try {
-            const app =  application
 
+    const check_if_role_assigned =async (userid, roleid) => {
+        try {
+            const db =  await makeDB();
+              const _id = ID(userid);
+              const has_role = await db.collection(string.USER_COLLECTION).findOne({_id, "roles.roleid": roleid}, {projection :{roles: {$elemMatch: {roleid}}}});
+              if(has_role) {
+
+                const rl =  has_role.roles[0];
+                return rl;
+              }
 
         } catch (ex) {
             throw ex;
         }
     }
+
+
+    const assign_role_to_user = async (data) => {
+        try {
+            const _id =  ID(data.userid);
+            const db = await makeDB();
+            const upd =  await db.collection(strings.USER_COLLECTION).updateOne({_id}, {
+                $push: {roles: data}
+            });
+            if(upd.modifiedCount > 0) {
+                return {data};
+            } else {
+                throw new Error('could not add role to user');
+            }
+        } catch(ex) {
+            throw ex;
+        }
+
+    }
+
+   
+
+    const verify_access = async (userid, roleid) => {
+        try {
+              const db =  await makeDB();
+              const _id = ID(userid);
+              const has_role = await db.collection(string.USER_COLLECTION).findOne({_id, "roles.roleid": roleid}, {projection :{roles: {$elemMatch: {roleid}}}});
+              if(has_role) {
+
+                const rl =  has_role.roles[0];
+                return rl;
+              }
+             
+              const has_app_role = await db.collection(string.APP_COLLECTON).findOne({_id: userid, "serviceaccountroles.roleid": roleid}, {projection: {serviceaccountroles: {$elemMatch: {roleid}}}});
+              if(has_app_role) {
+                const ar =  has_app_role.roles[0];
+                return ar
+              }
+
+        } catch (ex) {
+            throw ex;
+        }
+    }
+
+
     
     const make_user = (data) => {
         data.applications = data.applications ?  data.applications.map(s => app_model(a)): [];
@@ -230,7 +282,10 @@ const user_db_factory =  ({makeDB, ID}) => {
         list_users,
         find_with_role,
         find_by_username,
-        find_by_username_or_email
+        find_by_username_or_email,
+        verify_access,
+         check_if_role_assigned,
+         assign_role_to_user
     });
 }
 module.exports = user_db_factory;

@@ -11,7 +11,7 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
         try {
              let offlineaccess =  false;
            
-             const {client_id, loginid, cred_type, grant_type, code_verifier, code, offline_access} =  req.data;
+            let {client_id, loginid, cred_type, grant_type, code_verifier, code, offline_access} =  req.data;
            
              if(grant_type === REFRESH_TOKEN) {
                 const rt = RefreshToken({
@@ -39,7 +39,7 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
             }
             
             const id_expire =  Math.floor((Date.now() / 1000) + (60 * 5));
-            const access_expire =  Math.floor((Date.now() / 1000) + (60 * 30));
+            const access_expire =  Math.floor((Date.now() / 1000) + (60 * 15));
             
             const refresh_expire = Math.floor((Date.now() / 1000)) + 31560000; 
             const accesstokendata = {
@@ -193,6 +193,7 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
 
         let refresh_token;
         const cookies = [];
+        
         if(offlineaccess) {
             refresh_token  = authorize_helpers.generate_refresh_token(); // generate_token(refreshtokendata);
           
@@ -242,18 +243,22 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
         } else {
 
             const mlid =  crypto.randomUUID();
+            loginid =  mlid;
             const logindata = {
                 id: mlid,
                 uid: app.getId(),
                 appid: app.getId(),
-                code: 'NONE'
+                code: 'NONE',
+                serviceaccount: grant_type === CLIENT_CREDENTIALS ? true : false
             }
+            
             if(offlineaccess) {
+                const token =  await hash_string(refresh_token);
                 logindata.token = make_token(
                     {
                         id: crypto.randomUUID(),
                         loginid: mlid,
-                        token: refresh_token,
+                        token,
                         validuntil: refresh_expire
                     }
                 )
@@ -269,7 +274,8 @@ const AddToken = ({token_db, app_db , user_db, login_db, get_creds, generate_tok
 
                     appid: app_login.getAppID(),
                     token: app_login.getToken().ToJson(),
-                    offlineaccess:app_login.getOfflineAcces()
+                    offlineaccess:app_login.getOfflineAcces(),
+                    serviceaccount: app_login.isServiceaccount()
                 }
             )
 

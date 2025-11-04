@@ -1,11 +1,11 @@
-const { CreateJsonResponse, GetErrorResponse } = require("../helpers")
+const { CreateJsonResponse, GetErrorResponse, GetFullJsonResponse } = require("../helpers")
 
 const AddTenantRoleController = ({AddTenantRole}) => {
     return async (req) => {
         try {
             console.log('ROLE')
             const res =  await AddTenantRole(req);
-            return CreateJsonResponse({body: res, statusCode: 200});
+            return GetFullJsonResponse(res);
 
         } catch(ex) {
             return GetErrorResponse(ex);

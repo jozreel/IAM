@@ -84,15 +84,15 @@ const authorization_code = ({verify_string, hash_string, login_db}) => {
             } else {
                     const code = crypto.randomBytes(24).toString('hex');
                     if(data.sessionid) {
-                        await login_db.delete_login(data.sessionid);
+                       // await login_db.delete_login(data.sessionid);
                     }
                     const mlogin = make_login({...login.ToJson(), ...data, codeused: false, codecreationtime: new Date(), code, codechallenge: code_challenge, codechallengemethod: code_challenge_method});
                     const new_data = mlogin.ToJson();
                     delete new_data._id;
                    
-                    const login_new = await login_db.insert_login(new_data);
+                    const login_new = await login_db.update_login({id: loginid, ...new_data});
                     
-                    const url =  redirect_uri+'?code='+code+'&state='+state+"&session="+login_new._id
+                    const url =  redirect_uri+'?code='+code+'&state='+state+"&session="+loginid
                 return {
                     
                     type: 'redirect',

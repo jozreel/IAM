@@ -242,7 +242,7 @@ const access_utils_factory = () => {
                    
                     const has_access = verify_toket_asymetric(token);
                     
-                    req.access = has_access.payload;
+                    req.access = has_access;
                     next();
                 } else{
                    

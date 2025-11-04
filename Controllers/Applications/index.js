@@ -11,6 +11,8 @@ const AssignTenantRoleToSaController = require('./assign-tenant-role-to-sa-contr
 const UnassignSaRoleController = require('./unassign-sa-role-controller');
 const RemoveAppRoleController = require('./remove-approle-controller');
 const AddAppRoleController = require('./add-app-role-controller');
+const GetAssignedSaRolesController = require('./get-assigned-sa-controller');
+const GetAppsForTenantConrtroller  = require('./get-apps-for-tenant-controller');
 
 const add_app =  app_service.add_app;
 const update_app =  app_service.update_app;
@@ -31,5 +33,7 @@ module.exports = Object.freeze({
     AssignTenantRoleToSaController: AssignTenantRoleToSaController({assign_tenantrole_to_serviceaccount: app_service.assign_tenant_role_to_service_account}),
     UnassignSaRoleController: UnassignSaRoleController({unasign_service_account_role: app_service.unassign_serviceaccount_role}),
     RemoveAppRoleController: RemoveAppRoleController({RemoveAppRole: app_service.remove_app_role}),
-    AddAppRoleController: AddAppRoleController({AddAppRole: app_service.add_app_role})
+    AddAppRoleController: AddAppRoleController({AddAppRole: app_service.add_app_role}),
+    GetAssignedSaRolesController: GetAssignedSaRolesController({GetAssignedSaRoles: app_service.get_assignred_sa_roles}),
+    GetAppsForTenantConrtroller: GetAppsForTenantConrtroller({GetAppsFrTenant: app_service.get_apps_for_tenant})
 });

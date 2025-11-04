@@ -3,6 +3,7 @@ const RemoveTenantRole = ({tenant_role_db, tenant_db, serviceaccount_role_db, us
         try {11
             const {tenantid, roleid} =  req.params;
             const  tenant = await  tenant_db.get_tenant(tenantid);
+            
 
             if(!tenant) {
                 throw new Error('Invalid tenant');
@@ -13,7 +14,7 @@ const RemoveTenantRole = ({tenant_role_db, tenant_db, serviceaccount_role_db, us
             if((app_is_assigned && app_is_assigned.length > 0) || (user_is_assighned && user_is_assighned.lengtn > 0) ) {
                 throw new Error('Role is assigned');
             }
-            const del =  await tenant_role_db.remove_tenant_role(tenantid);
+            const del =  await tenant_role_db.remove_tenant_role(tenantid, roleid);
             console.log(del);
             if(del.deleted) {
                 return del

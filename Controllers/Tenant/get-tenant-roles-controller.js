@@ -1,4 +1,4 @@
-const { GetErrorBody, GetFullJsonResponse } = require("../helpers")
+const { GetErrorBody, GetFullJsonResponse, GetErrorResponse } = require("../helpers")
 
 const GetTenantRolesController = ({GetTenantRoles}) => {
     return async req => {
@@ -10,8 +10,8 @@ const GetTenantRolesController = ({GetTenantRoles}) => {
             return GetFullJsonResponse(res, 200);
 
         } catch (ex) {
-            console.log('errored')
-            return GetErrorBody(ex);
+            
+            return GetErrorResponse(ex);
         }
     }
 }

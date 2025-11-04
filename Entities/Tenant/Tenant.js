@@ -18,7 +18,7 @@ const Tenant = () => {
                 createddate,
                 lastmodifieddate,
                 managers,
-                roles : roles.map(r => typeof r.ToJson !== undefined ? r.ToJson() : r) 
+                roles : roles.map(r => typeof r?.ToJson !== 'undefined' ? r.ToJson() : r) 
             })
         })
     }

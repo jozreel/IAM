@@ -32,4 +32,5 @@ user_router.patch('/profilepic/:id', upload.single('file'),request_handler(user_
 user_router.patch('/resetlink/:id', json(), request_handler(user_controller.generate_reset_link));
 user_router.patch('/resetpassword/:id', json(), request_handler(user_controller.reset_password))
 user_router.get('/profilepic/:id', file_request_handler(user_controller.get_profile_pic));
+user_router.post('/role/:id', json(), request_handler(user_controller.assign_role_to_user))
 module.exports =  user_router;
