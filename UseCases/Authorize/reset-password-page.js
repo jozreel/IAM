@@ -22,7 +22,7 @@ const ResetPasswordPage = ({data}) => `<!DOCTYPE html>
             <!-- Logo Circle with Olive Green -->
             <div class="logo-circle">
                 <!-- SVG Vector of a Simple Frog -->
-                <img style="width: 6rem; height: 6rem; background: transparent;" src="/public/kwapo-logo.png" />
+                <img style="width: 6rem; height: 6rem; background: transparent;" src="${process.env.BASE_PATH}/public/kwapo-logo.png" />
             </div>
            
         </div>
