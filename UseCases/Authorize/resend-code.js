@@ -20,7 +20,7 @@ const ResendCode = ({login_db, user_db, app_db}) => {
 
             console.log(user);
 
-            let tel = user.getTepephone();
+            let tel = user.getTelephone();
             const app = await app_db.get_application(session.appid);
             console.log(app);
             let channel =  app.GetMultifactorChannel();
