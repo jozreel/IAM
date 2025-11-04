@@ -20,12 +20,12 @@ const LoginPage = (data) => {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kwapo Login</title>
-     <link rel="stylesheet" href="/public/kw-auth-style.css" />
+     <link rel="stylesheet" href="${process.env.BASE_PATH}/public/kw-auth-style.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="/public/kw-authscripts.js" defer></script>
+    <script src="${process.env.BASE_PATH}/public/kw-authscripts.js" defer></script>
 </head>
 <body>
 
@@ -37,13 +37,13 @@ const LoginPage = (data) => {
             <!-- Logo Circle with Olive Green -->
             <div class="logo-circle">
                 <!-- SVG Vector of a Simple Frog -->
-                <img style="width: 6rem; height: 6rem; background: transparent;" src="/public/kwapo-logo.png" />
+                <img style="width: 6rem; height: 6rem; background: transparent;" src="${process.env.BASE_PATH}/public/kwapo-logo.png" />
             </div>
            
         </div>
 
         <!-- Form Section -->
-        <form id="app-lg-form" method="POST" action="/api/authorize/consent">
+        <form id="app-lg-form" method="POST" action="${process.env.BASE_PATH}/api/authorize/consent">
          <div  class="form-section" id="lg-form">
              <h1 class="title">Login</h1>
             <div class="input-group">
@@ -58,7 +58,7 @@ const LoginPage = (data) => {
 
             <div style="text-align: right; display: flex; justify-content: flex-end; align-items: center; gap: 16px; margin-top: -0.75rem; margin-bottom: 1.5rem;">
                 ${data.selfregistration ? '<a id="register-link" href="javascript:;" class="forgot-password">Create Account</a>': ''}
-                <a href="/api/authorize/resetpassword" class="forgot-password">Forgot password?</a>
+                <a href="${process.env.BASE_PATH}/api/authorize/resetpassword" class="forgot-password">Forgot password?</a>
             </div>
 
             <div>
