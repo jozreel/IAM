@@ -1,7 +1,8 @@
 const { add_user } = require("../UseCases/User")
-
+require('dotenv').config();
 const CreateDefaultAdmin = () => {
     try {
+        console.log(process.envDBURL);
     const userUc =  add_user({data: {
         "username": "admin",
         "password" : "P8ssw0rd!@",
